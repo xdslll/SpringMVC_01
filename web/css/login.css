@@ -1,0 +1,40 @@
+body{font-family: "Microsoft YaHei";}
+img{border: 0;background-color: transparent;}
+ul{padding: 0;margin: 0;}
+li{list-style: none;}
+a{text-decoration: none;outline: none;color: #00a7eb;}
+.container{min-width: 700px;}
+.top{background-color: #ffffff;border-bottom: 1px solid #e0e0e0;min-width: 1000px;}
+.logo{text-align: center;padding-top: 10px;padding-bottom: 20px;height:100px;}
+.main{background-color: #f7f5eb;min-width: 700px;position: relative;}
+.login_input{position: relative;padding-bottom: 5%;}
+.title{text-align: center;padding-top: 100px;color: #3c3c3c;font-size: 32px;letter-spacing:10px;}
+.under{height: 95px;text-align: center;color: #7d7d7d;font-size: 12px;padding-top: 30px;}
+.login_t{padding-top: 4%;width: 27%;margin: 0 auto;}
+.form-control{height: 44px;border-radius: 0px;margin-bottom: 20px;}
+.forget{color: #848484;font-weight: normal;cursor: pointer;}
+.forget input{margin-right: 8px;}
+.forget_pass{position: relative;min-width: 208px}
+.forget_pass span{margin-left: 62px;}
+.login_btn{margin-top: 24px;background-color:#00a7eb;border:0; color: #fff;width: 100%;height: 47px;font-size: 18px;}
+.main-bg{position: absolute;width: 100%;height: 100%;}
+.main-bg img{width: 100%;height: 100%;}
+
+
+.none{border: 0}
+.logo-index{position: relative;background: #427f8b;box-shadow: 0 0 3px #707576;}
+.li-img{position: relative;width: 100%;height: 100%;background-image: url(../img/shj.jpg);padding: 85px 0;text-align: center;min-width: 1140px;}
+.login-title1{text-align: center;}
+.linkone{position: relative;width: 100%;height: 215px;margin-top: 0px;min-width: 1140px;}
+.linkone img{border: 0;margin: 0;display:block;float: left;}
+.linkone a{text-decoration: none;color: #fff;font-size: 20px;font-family: "Microsoft YaHei";font-weight: normal;
+-webkit-transition-duration: 0.3s;
+-moz-transition-duration: 0.3s;
+-ms-transition-duration: 0.3s;
+-o-transition-duration: 0.3s;
+transition-duration: 0.3s; }
+.linkone a:hover{border: 2px solid #fff}
+.link_a1{float: left; display:block;width: 300px;background-color: #e35d5e;line-height: 210px;vertical-align: middle;text-align: center;border: 2px solid #e35d5e}
+.link_a2{float: left; display:block;width: 230px;background-color: #8cbd40;line-height: 210px;vertical-align: middle;text-align: center;border: 2px solid #8cbd40}
+.link_a3{float: left; display:block;width: 379px;background-color: #00a7eb;line-height: 193px;vertical-align: middle;text-align: center;border:2px solid #00a7eb}
+.link_a4{float: left; display:block;width: 231px;background-color: #bb6ba8;line-height: 193px;vertical-align: middle;text-align: center;border: 2px solid #bb6ba8}

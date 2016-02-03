@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.dao.EnfordSystemMenuMapper" >
+    <resultMap id="BaseResultMap" type="com.demo.model.EnfordSystemMenu" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="text" property="text" jdbcType="VARCHAR" />
+        <result column="state" property="state" jdbcType="VARCHAR" />
+        <result column="parent" property="parent" jdbcType="INTEGER" />
+        <result column="url" property="url" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, text, state, parent, url
+    </sql>
+    <insert id="insert">
+      INSERT INTO enford_system_menu(id, text, state, parent, url)
+      VALUES (
+          #{id, jdbcType=INTEGER},
+          #{text, jdbcType=VARCHAR},
+          #{state, jdbcType=VARCHAR},
+          #{parent, jdbcType=INTEGER},
+          #{url, jdbcType=VARCHAR}
+      )
+    </insert>
+    <update id="update" parameterType="com.demo.model.EnfordSystemMenu">
+        UPDATE enford_system_menu
+        <set >
+            <if test="text != null">
+                text=#{text, jdbcType=VARCHAR},
+            </if>
+            <if test="state != null">
+                state=#{state, jdbcType=VARCHAR},
+            </if>
+            <if test="parent != null">
+                parent=#{parent, jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                url=#{url, jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE id=#{id,jdbcType=INTEGER}
+    </update>
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE FROM enford_system_menu
+        WHERE id=#{id,jdbcType=INTEGER}
+    </delete>
+    <select id="select" resultType="com.demo.model.EnfordSystemMenu">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM enford_system_menu
+        WHERE parent=#{parentId,jdbcType=INTEGER}
+    </select>
+    <select id="selectById" resultType="com.demo.model.EnfordSystemMenu">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM enford_system_menu
+        WHERE id=#{id,jdbcType=INTEGER}
+    </select>
+</mapper>

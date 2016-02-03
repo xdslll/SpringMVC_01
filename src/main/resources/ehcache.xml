@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache dynamicConfig="false" monitoring="off" updateCheck="false"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="ehcache.xsd">
+
+	<defaultCache eternal="false" maxEntriesLocalHeap="0"
+		timeToIdleSeconds="300" timeToLiveSeconds="300" />
+	<cache name="groupTypeCache"
+		maxElementsInMemory="10"
+		eternal="false"
+		timeToIdleSeconds="100"
+		timeToLiveSeconds="100"
+		overflowToDisk="false"/>
+    <cache name="tagCache"
+        maxElementsInMemory="10000"
+        eternal="false"
+        timeToIdleSeconds="100"
+        timeToLiveSeconds="100"
+        overflowToDisk="false"/>
+    <cache name="classifyCache"
+        maxElementsInMemory="10000"
+        eternal="false"
+        timeToIdleSeconds="100"
+        timeToLiveSeconds="100"
+        overflowToDisk="false"/>
+</ehcache>
