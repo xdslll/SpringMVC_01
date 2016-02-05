@@ -120,8 +120,8 @@
                     var url = "<%=request.getContextPath()%>/role/delete?roleId=" + row.id;
                     $.get(url, function(result) {
                         var result = eval('('+result+')');
-                        if (result.errorMsg) {
-                            $.messager.alert('操作失败', result, 'error');
+                        if (result.code != '0') {
+                            $.messager.alert('操作失败', result.msg, 'error');
                         } else {
                             $('#dg').datagrid('reload');
                         }
@@ -142,8 +142,8 @@
             },
             success: function(result){
                 var result = eval('('+result+')');
-                if (result.errorMsg){
-                    $.messager.alert('操作失败', result.errorMsg, 'error');
+                if (result.code != '0'){
+                    $.messager.alert('操作失败', result.msg, 'error');
                 } else {
                     $('#dlg').dialog('close');        // close the dialog
                     $('#dg').datagrid('reload');    // reload the user data

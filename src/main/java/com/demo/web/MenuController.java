@@ -34,7 +34,7 @@ public class MenuController {
             menuList = menuService.queryMenu();
         }
         catch (Exception ex) {
-            logger.error("exception occuried when getMenu:" + ex);
+            logger.error("exception occured when getMenu:" + ex);
         }
 
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(menuList));
@@ -47,7 +47,7 @@ public class MenuController {
             rootMenu = menuService.queryRootMenu();
         }
         catch (Exception ex) {
-            logger.error("exception occuried when getRootMenu:" + ex);
+            logger.error("exception occured when getRootMenu:" + ex);
         }
 
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(rootMenu));
@@ -67,9 +67,9 @@ public class MenuController {
             respBody.setMsg("添加菜单成功！");
         }
         catch (Exception ex) {
-            logger.error("exception occuried when addMenu:" + ex);
+            logger.error("exception occured when addMenu:" + ex);
             respBody.setCode(Consts.FAILED);
-            respBody.setErrorMsg("添加菜单出错:" + ex.getMessage());
+            respBody.setMsg("添加菜单出错:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }
@@ -83,9 +83,9 @@ public class MenuController {
             respBody.setMsg("编辑菜单成功！");
         }
         catch (Exception ex) {
-            logger.error("exception occuried when updateMenu:" + ex);
+            logger.error("exception occured when updateMenu:" + ex);
             respBody.setCode(Consts.FAILED);
-            respBody.setErrorMsg("编辑菜单出错:" + ex.getMessage());
+            respBody.setMsg("编辑菜单出错:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }
@@ -99,9 +99,9 @@ public class MenuController {
             respBody.setMsg("删除菜单成功！");
         }
         catch (Exception ex) {
-            logger.error("exception occuried when deleteMenu:" + ex);
+            logger.error("exception occured when deleteMenu:" + ex);
             respBody.setCode(Consts.FAILED);
-            respBody.setErrorMsg("删除菜单出错:" + ex.getMessage());
+            respBody.setMsg("删除菜单出错:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }

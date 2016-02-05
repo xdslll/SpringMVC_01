@@ -37,7 +37,7 @@ public class OrgController {
             orgs = orgService.getOrgs();
         }
         catch (Exception ex) {
-            logger.error("exception occuried when getOrgs:" + ex);
+            logger.error("exception occured when getOrgs:" + ex);
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(orgs));
     }
@@ -52,9 +52,9 @@ public class OrgController {
         }
         catch (Exception ex)
         {
-            logger.error("exception occuried when addOrg:" + ex);
+            logger.error("exception occured when addOrg:" + ex);
             respBody.setCode(Consts.FAILED);
-            respBody.setErrorMsg("添加机构出错:" + ex.getMessage());
+            respBody.setMsg("添加机构出错:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }
@@ -68,9 +68,9 @@ public class OrgController {
             respBody.setMsg("编辑机构成功！");
         }
         catch (Exception ex) {
-            logger.error("exception occuried when updateOrg:" + ex);
+            logger.error("exception occured when updateOrg:" + ex);
             respBody.setCode(Consts.FAILED);
-            respBody.setErrorMsg("编辑机构出错:" + ex.getMessage());
+            respBody.setMsg("编辑机构出错:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }
@@ -84,9 +84,9 @@ public class OrgController {
             respBody.setMsg("删除机构成功！");
         }
         catch (Exception ex) {
-            logger.error("exception occuried when deleteOrg:" + ex);
+            logger.error("exception occured when deleteOrg:" + ex);
             respBody.setCode(Consts.FAILED);
-            respBody.setErrorMsg("删除用户出错:" + ex.getMessage());
+            respBody.setMsg("删除用户出错:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }

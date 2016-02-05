@@ -14,4 +14,12 @@ public interface Consts {
 
     public static final String PRODUCT_NAME = "后台管理";
     public static final String FOOT_INFO = "2015-2016@copyright";
+
+    public static final int IMPORT_STATE_NOT_IMPORT = 0;
+    public static final int IMPORT_STATE_HAVE_IMPORT = 1;
+    public static final int IMPORT_STATE_IMPORT_FAILED = 2;
+
+    public static final int IMPORT_TYPE_PRODUCT = 1;
+    public static final int IMPORT_TYPE_DEPARTMENT = 2;
+
 }

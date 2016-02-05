@@ -32,6 +32,12 @@
     from enford_product_category
     where id = #{id,jdbcType=INTEGER}
   </select>
+  <select id="countByCode" resultType="java.lang.Integer">
+    select
+    count(*)
+    from enford_product_category
+    where code = #{code,jdbcType=INTEGER}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     <!--
       WARNING - @mbggenerated
@@ -157,4 +163,19 @@
       update_by = #{updateBy,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectByParam" resultType="com.demo.model.EnfordProductCategory">
+    select
+    <include refid="Base_Column_List" />
+    from enford_product_category
+    where 1=1
+    <if test="code != null and code != ''">
+      and code = #{code,jdbcType=INTEGER}
+    </if>
+  </select>
+  <select id="select" resultType="com.demo.model.EnfordProductCategory">
+    select
+    <include refid="Base_Column_List" />
+    from enford_product_category
+  </select>
 </mapper>

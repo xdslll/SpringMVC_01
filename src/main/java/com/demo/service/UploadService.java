@@ -12,6 +12,12 @@ public interface UploadService {
 
     int addImportHistory(EnfordProductImportHistory commodityImport);
 
-    List<EnfordProductImportHistory> getImportHistory();
+    List<EnfordProductImportHistory> getImportHistory(int type);
+
+    int deleteImportHistory(int id);
+
+    int deleteImportHistoryAndFile(int id);
+
+    int updateImportHistory(EnfordProductImportHistory importHistory);
 
 }

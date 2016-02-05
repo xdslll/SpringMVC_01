@@ -49,8 +49,7 @@
                enableUpdateByExample="false"/>
         <table tableName="enford_product_organization" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false"/>
-        <table tableName="enford_product_price" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
-               enableUpdateByExample="false"/>
+
         <table tableName="enford_system_role_menu" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false"/>
         <table tableName="enford_system_platform" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
@@ -58,8 +57,24 @@
         <table tableName="enford_system_role" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false"/>
         <table tableName="enford_system_user" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="true"
-               enableUpdateByExample="false"/>-->
+               enableUpdateByExample="false"/>
+        <table tableName="enford_product_supplier" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false"/>
+        <table tableName="enford_market_research" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false"/>
+        <table tableName="enford_market_research_commodity" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false"/>
+        <table tableName="enford_product_price" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false"/>
+        <table tableName="enford_product_commodity" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false"/>
         <table tableName="enford_product_import_history" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false"/>
+       <table tableName="enford_product_city" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false"/>
+        <table tableName="enford_product_competitors" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false"/>-->
+        <table tableName="enford_product_department" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false"/>
     </context>
 </generatorConfiguration>

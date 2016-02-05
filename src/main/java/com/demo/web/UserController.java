@@ -50,7 +50,7 @@ public class UserController {
         try
         {
             //对密码进行md5加密
-            password = Tools.md5(password);
+            password = EncryptUtil.md5(password);
             //执行登录判断
             user = userService.login(username, password);
             respBody.setCode(Consts.SUCCESS);
@@ -103,7 +103,7 @@ public class UserController {
             users = userService.getUsers();
         }
         catch (Exception ex) {
-            logger.error("exception occuried when getUsers:" + ex);
+            logger.error("exception occured when getUsers:" + ex);
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(users));
     }
@@ -118,9 +118,9 @@ public class UserController {
         }
         catch (Exception ex)
         {
-            logger.error("exception occuried when addUser:" + ex);
+            logger.error("exception occured when addUser:" + ex);
             respBody.setCode(Consts.FAILED);
-            respBody.setErrorMsg("添加用户出错:" + ex.getMessage());
+            respBody.setMsg("添加用户出错:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }
@@ -134,9 +134,9 @@ public class UserController {
             respBody.setMsg("编辑用户成功！");
         }
         catch (Exception ex) {
-            logger.error("exception occuried when updateUser:" + ex);
+            logger.error("exception occured when updateUser:" + ex);
             respBody.setCode(Consts.FAILED);
-            respBody.setErrorMsg("编辑用户出错:" + ex.getMessage());
+            respBody.setMsg("编辑用户出错:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }
@@ -150,9 +150,9 @@ public class UserController {
             respBody.setMsg("删除用户成功！");
         }
         catch (Exception ex) {
-            logger.error("exception occuried when deleteUser:" + ex);
+            logger.error("exception occured when deleteUser:" + ex);
             respBody.setCode(Consts.FAILED);
-            respBody.setErrorMsg("删除用户出错:" + ex.getMessage());
+            respBody.setMsg("删除用户出错:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }

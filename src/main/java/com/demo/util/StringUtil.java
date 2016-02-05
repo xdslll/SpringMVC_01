@@ -8,12 +8,15 @@ public class StringUtil {
 		return UUID.randomUUID().toString().replaceAll("\\-", "");
 	}
 
-	public static boolean isEmpty(String val) {
-		if(val == null || "".equals(val.trim()))
-		{
-			return true;
-		}
-		return false;
-	}
+	public static boolean isEmpty(String str) {
+        return str == null || str.trim().equals("");
+    }
 
+	public static int[] convert(String[] array) {
+        int[] result = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            result[i] = Integer.parseInt(array[i]);
+        }
+        return result;
+    }
 }

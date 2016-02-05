@@ -1,6 +1,10 @@
 package com.demo.dao;
 
 import com.demo.model.EnfordProductCommodity;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 public interface EnfordProductCommodityMapper {
     /**
@@ -50,4 +54,10 @@ public interface EnfordProductCommodityMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(EnfordProductCommodity record);
+
+    int maxId();
+
+    List<EnfordProductCommodity> selectByParam(Map<String, Object> param);
+
+    List<EnfordProductCommodity> select();
 }

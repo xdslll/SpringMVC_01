@@ -53,5 +53,5 @@ public interface EnfordProductImportHistoryMapper {
      */
     int updateByPrimaryKey(EnfordProductImportHistory record);
 
-    List<EnfordProductImportHistory> select();
+    List<EnfordProductImportHistory> selectByType(int type);
 }

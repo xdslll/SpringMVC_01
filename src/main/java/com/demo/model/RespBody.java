@@ -10,16 +10,6 @@ public class RespBody <T>{
 	
 	private int totalnum;
 
-	private String errorMsg;
-
-    public String getErrorMsg() {
-        return errorMsg;
-    }
-
-    public void setErrorMsg(String errorMsg) {
-        this.errorMsg = errorMsg;
-    }
-
     public String getMsg() {
 		return msg;
 	}

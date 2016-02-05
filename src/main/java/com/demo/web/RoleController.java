@@ -4,10 +4,7 @@ import com.demo.model.EnfordSystemMenu;
 import com.demo.model.EnfordSystemRole;
 import com.demo.model.RespBody;
 import com.demo.service.RoleService;
-import com.demo.util.Consts;
-import com.demo.util.FastJSONHelper;
-import com.demo.util.ResponseUtil;
-import com.demo.util.Tools;
+import com.demo.util.*;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +38,7 @@ public class RoleController {
             roles = roleService.getRoles();
         }
         catch (Exception ex) {
-            logger.error("exception occuried when getRoles:" + ex);
+            logger.error("exception occured when getRoles:" + ex);
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(roles));
     }
@@ -60,9 +57,9 @@ public class RoleController {
         }
         catch (Exception ex)
         {
-            logger.error("exception occuried when addRole:" + ex);
+            logger.error("exception occured when addRole:" + ex);
             respBody.setCode(Consts.FAILED);
-            respBody.setErrorMsg("添加角色出错:" + ex.getMessage());
+            respBody.setMsg("添加角色出错:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }
@@ -84,9 +81,9 @@ public class RoleController {
             respBody.setMsg("编辑角色成功！");
         }
         catch (Exception ex) {
-            logger.error("exception occuried when updateRole:" + ex);
+            logger.error("exception occured when updateRole:" + ex);
             respBody.setCode(Consts.FAILED);
-            respBody.setErrorMsg("编辑角色出错:" + ex.getMessage());
+            respBody.setMsg("编辑角色出错:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }
@@ -100,9 +97,9 @@ public class RoleController {
             respBody.setMsg("删除角色成功！");
         }
         catch (Exception ex) {
-            logger.error("exception occuried when deleteRole:" + ex);
+            logger.error("exception occured when deleteRole:" + ex);
             respBody.setCode(Consts.FAILED);
-            respBody.setErrorMsg("删除角色出错:" + ex.getMessage());
+            respBody.setMsg("删除角色出错:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }
@@ -114,7 +111,7 @@ public class RoleController {
             menuList = roleService.getMenusByRoleId(roleId);
         }
         catch (Exception ex) {
-            logger.error("exception occuried when getMenu:" + ex);
+            logger.error("exception occured when getMenu:" + ex);
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(menuList));
     }
@@ -123,9 +120,9 @@ public class RoleController {
         //获取菜单id
         String menuIdsStr = role.getMenu_ids();
         //对菜单id进行处理
-        if (!Tools.isEmpty(menuIdsStr) && menuIdsStr.contains(",")) {
+        if (!StringUtil.isEmpty(menuIdsStr) && menuIdsStr.contains(",")) {
             String[] menuIdsArrayStr = menuIdsStr.split(",");
-            return Tools.convert(menuIdsArrayStr);
+            return StringUtil.convert(menuIdsArrayStr);
         }
         {
             return new int[0];

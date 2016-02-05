@@ -3,7 +3,8 @@ package com.demo.service.impl;
 import com.demo.dao.EnfordSystemUserMapper;
 import com.demo.model.EnfordSystemUser;
 import com.demo.service.UserService;
-import com.demo.util.Tools;
+import com.demo.util.StringUtil;
+import com.demo.util.EncryptUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -37,7 +38,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public int addUser(EnfordSystemUser user) {
         //对密码进行MD5加密
-        user.setPassword(Tools.md5(user.getPassword()));
+        user.setPassword(EncryptUtil.md5(user.getPassword()));
+        //如果用户名称为空,则默认填入登录名
+        if (StringUtil.isEmpty(user.getName())) {
+            user.setName(user.getUsername());
+        }
         return userMapper.insert(user);
     }
 

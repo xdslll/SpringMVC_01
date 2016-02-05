@@ -51,7 +51,7 @@
         </ul>
     </div>
     <div data-options="region:'center'" id="center" >
-        <iframe id="main_frame" style="height:100%;width:100%"></iframe>
+        <iframe id="main_frame" style="height:100%;width:100%" scrolling="no" frameborder="0"></iframe>
     </div>
     <div data-options="region:'south', border:false" id="south">
         <div id="south_title_div">
