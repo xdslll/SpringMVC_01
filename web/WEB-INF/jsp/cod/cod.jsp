@@ -11,76 +11,111 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>${title}</title>
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/IconExtension.css">
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/icon.css">
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/demo.css">
     <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/layout.css">
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/layout.js"></script>
+    <script type="text/javascript" src="<%=request.getContextPath()%>/js/common.js"></script>
 </head>
 <body>
-<div style="margin:5px 5px;">
-    <%--<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="newDlg()">新增</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="editDlg()">编辑</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="removeDlg()">删除</a>--%>
+<div id="toolbar">
+    <div style="margin: 5px 5px;">
+        <input class="easyui-textbox" data-options="prompt:'请输入品名'" style="width:25%;height:28px;" id="search_name">
+        <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="searchCod()"></a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-coins'" plain="true" onclick="showPriceDlg()">查看商品价格</a>
+    </div>
+    <!--<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="editDlg()">编辑</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="removeDlg()">删除</a>-->
 </div>
-<table id="dg" title="商品列表" class="easyui-datagrid" style="width:100%;height:550px;"
-       data-options="
-                url: '<%=request.getContextPath()%>/cod/get',
-                method: 'get',
-                idField: 'id',
-                showFooter: true,
-                fitColumns: true,
-                collapsible: false,
-                animate: true,
-                rownumbers: true,
-                iconCls: 'icon-ok',
-                pagination: false,
-                singleSelect: true,
-                ">
-    <thead>
-    <tr>
-        <th data-options="field:'categoryCode'" width="10%">品类编码</th>
-        <th data-options="field:'categoryName'" width="10%">品类</th>
-        <th data-options="field:'code'" width="10%">编码</th>
-        <th data-options="field:'artNo'" width="10%">货号</th>
-        <th data-options="field:'pName'" width="10%">品名</th>
-        <th data-options="field:'pSize'" width="10%">规格</th>
-        <th data-options="field:'unit'" width="5%">单位</th>
-        <th data-options="field:'barCode'" width="10%">条形码</th>
-        <th data-options="field:'createUsername'" width="10%">创建人</th>
-        <th data-options="field:'createDt'" width="15%">创建时间</th>
-    </tr>
-    </thead>
-</table>
-<div id="dlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
-     closed="true" buttons="#dlg-buttons">
-    <div class="ftitle">填写部门信息</div>
-    <form id="fm" method="post" novalidate>
-        <div class="fitem">
-            <label>编号:</label>
-            <input name="code" class="easyui-textbox" required="true">
-        </div>
-        <div class="fitem">
-            <label>名称:</label>
-            <input name="name" class="easyui-textbox">
-        </div>
-        <div class="fitem">
-            <label>城市:</label>
-            <input name="cityId" class="easyui-textbox">
-        </div>
-        <div class="fitem">
-            <label>竞争门店:</label>
-            <input name="compId" class="easyui-textbox">
-        </div>
-        <div class="fitem">
-            <input name="id" type="hidden">
-        </div>
-    </form>
+<!=============================
+    商品信息列表
+==============================!>
+<div class="main_table">
+    <table id="dg" title="商品列表" class="easyui-datagrid"
+           data-options="
+                    url: '<%=request.getContextPath()%>/cod/get',
+                    method: 'get',
+                    idField: 'id',
+                    showFooter: true,
+                    fitColumns: true,
+                    collapsible: false,
+                    animate: true,
+                    rownumbers: true,
+                    iconCls: 'icon-ok',
+                    pagination: true,
+                    singleSelect: true,
+                    pageSize: 15,
+                    pageList: [10, 15, 30],
+                    toolbar: '#toolbar',
+                    border: false,
+                    fit: true,
+                    nowrap: false,
+                    striped: true,
+                    ">
+        <thead>
+        <tr>
+            <th data-options="field:'categoryCode'" width="10%" sortable="true">品类编码</th>
+            <th data-options="field:'categoryName'" width="10%">品类</th>
+            <th data-options="field:'code'" width="10%">编码</th>
+            <th data-options="field:'artNo'" width="10%">货号</th>
+            <th data-options="field:'pName'" width="10%">品名</th>
+            <th data-options="field:'pSize'" width="10%">规格</th>
+            <th data-options="field:'unit'" width="5%">单位</th>
+            <th data-options="field:'barCode'" width="10%">条形码</th>
+            <th data-options="field:'createUsername'" width="10%">创建人</th>
+            <th data-options="field:'createDt'" width="15%">创建时间</th>
+        </tr>
+        </thead>
+    </table>
 </div>
-<div id="dlg-buttons">
-    <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="save()" style="width:90px">保存</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">取消</a>
+
+<!=============================
+    商品价格信息
+==============================!>
+<div id="price" class="easyui-dialog" style="width: 90%;height: 550px;"
+     closed="true" buttons="#price-buttons">
+    <table id="price-dg" class="easyui-datagrid" style="width: 100%"
+           data-options="
+            url: '<%=request.getContextPath()%>/cod/price/get',
+            method: 'get',
+            idField: 'id',
+            showFooter: true,
+            fitColumns: true,
+            collapsible: false,
+            animate: true,
+            rownumbers: true,
+            iconCls: 'icon-ok',
+            pagination: true,
+            singleSelect: true,
+            toolbar: '#price-toolbar',
+            nowrap: false,
+            striped: true,
+            pageSize: 15,
+            pageList: [10, 15, 30],
+            border: false,
+            fit: true
+         ">
+        <thead><tr>
+            <th data-options="field:'importId'" width="20%">市调名称</th>
+            <th data-options="field:'comId'" width="20%">品名</th>
+            <th data-options="field:'purchasePrice'" width="20%">进价</th>
+            <th data-options="field:'retailPrice'" width="20%">零售价</th>
+            <th data-options="field:'orgId'" width="20%">所属门店</th>
+        </tr></thead>
+    </table>
+</div>
+<div id="price-toolbar">
+    <%--<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_go'" plain="true" onclick="checkPublish()">发布</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-2012080412301'" plain="true" onclick="checkCallback()">撤回</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_form_magnify'" plain="true" onclick="showDeptDetail()">查看市调门店</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_form_magnify'" plain="true" onclick="showCodDetail()">查看市调商品</a>--%>
+</div>
+<div id="price-buttons">
+    <%--<a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="showDept()" style="width:90px">确定</a>--%>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#price').dialog('close')" style="width:90px">关闭</a>
 </div>
 <script>
     var url;
@@ -139,6 +174,31 @@
                 }
             }
         });
+    }
+
+    function searchCod() {
+        var dg = $('#dg');
+        //设置关键字
+        var queryParams = dg.datagrid('options').queryParams;
+        queryParams.pName = $("#search_name").val();
+        dg.datagrid('options').queryParams = queryParams;
+        //设置起始页数
+        var options = dg.datagrid('getPager').data("pagination").options;
+        options.pageNumber = 1;
+        dg.datagrid('reload');
+    }
+
+    function showPriceDlg() {
+        var row = $('#dg').datagrid('getSelected');
+        if (row) {
+            $('#price').dialog('open').dialog('center').dialog('setTitle', '市调商品信息');
+            var dg = $('#price-dg');
+            //设置datagrid请求参数
+            var queryParams = dg.datagrid('options').queryParams;
+            queryParams.comId = row.id;
+            dg.datagrid('options').queryParams = queryParams;
+            dg.datagrid('reload');
+        }
     }
 </script>
 </body>

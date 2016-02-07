@@ -10,7 +10,7 @@ import java.util.Map;
  * @author xiads
  * @date 16/2/3
  */
-public interface ResearchMarketService {
+public interface MarketResearchSerivce {
 
     /**
      * 统计某一品类数据
@@ -61,7 +61,7 @@ public interface ResearchMarketService {
      */
     int deleteProductCommodity(int id);
 
-    List<EnfordProductCommodity> selectCommodityByParam(Map<String, Object> param);
+    List<EnfordProductCommodity> getCommodityByParam(Map<String, Object> param);
     /**
      * 添加供应商信息
      * @param supplier
@@ -89,7 +89,7 @@ public interface ResearchMarketService {
      * @param code
      * @return
      */
-    EnfordProductSupplier selectSupplierByCode(String code);
+    EnfordProductSupplier getSupplierByCode(String code);
 
     /**
      * 添加价格信息
@@ -138,7 +138,7 @@ public interface ResearchMarketService {
      * @param importId
      * @return
      */
-    EnfordMarketResearch selectByImportId(int importId);
+    EnfordMarketResearch getMarketResearchByImportId(int importId);
 
     /**
      * 添加市调清单下的商品
@@ -161,6 +161,8 @@ public interface ResearchMarketService {
      */
     int delteResearchCommodity(int id);
 
+    List<EnfordMarketResearch> getMarketResearchByParam(Map<String, Object> param);
+
     /**
      * 解析Excel,导入市调清单,品类,商品,供应商,价格等信息
      * @param importHistory
@@ -176,4 +178,26 @@ public interface ResearchMarketService {
     boolean importDeptData(
             EnfordProductImportHistory importHistory,
             boolean ifCoverData);
+
+    int countMarketResearchByParam(Map<String, Object> param);
+
+    /**
+     * 发布市调
+     * @param research
+     */
+    void publicResearch(EnfordMarketResearch research);
+
+    /**
+     * 撤回发布
+     * @param research
+     */
+    void callbackResearch(EnfordMarketResearch research);
+
+    List<EnfordMarketResearchDept> getResearchDeptByParam(Map<String, Object> param);
+
+    int countResearchDeptByParam(Map<String, Object> param);
+
+    List<EnfordMarketResearchCommodity> getResearchCodByParam(Map<String, Object> param);
+
+    int countResearchCodByParam(Map<String, Object> param);
 }

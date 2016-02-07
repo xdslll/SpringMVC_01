@@ -19,34 +19,38 @@
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/layout.js"></script>
 </head>
 <body>
-<div style="margin:5px 5px;">
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="newDlg()">新增</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="editDlg()">编辑</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="removeDlg()">删除</a>
+<div id="toolbar">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add'" plain="true" onclick="newDlg()">新增</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" plain="true" onclick="editDlg()">编辑</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" plain="true" onclick="removeDlg()">删除</a>
 </div>
-<table id="dg" title="菜单列表" class="easyui-treegrid" style="width:100%;height:500px;"
-       data-options="
-                url: '<%=request.getContextPath()%>/menu/get',
-                method: 'get',
-                idField: 'id',
-                treeField: 'text',
-                showFooter: true,
-                fitColumns: true,
-                collapsible: false,
-                animate: true,
-                rownumbers: true,
-                iconCls: 'icon-ok'
-                ">
-    <thead>
-        <tr>
-            <th data-options="field:'text'" width="20%">菜单名称</th>
-            <th data-options="field:'id', align:'right'" width="10%">菜单ID</th>
-            <th data-options="field:'state', align:'center'" width="10%">打开状态</th>
-            <th data-options="field:'parent', align:'right'" width="10%">父菜单</th>
-            <th data-options="field:'url'" width="50%">URL</th>
-        </tr>
-    </thead>
-</table>
+<div class="main_table">
+    <table id="dg" title="菜单列表" class="easyui-treegrid" style="width:100%;height:500px;"
+           data-options="
+                    url: '<%=request.getContextPath()%>/menu/get',
+                    method: 'get',
+                    idField: 'id',
+                    treeField: 'text',
+                    showFooter: true,
+                    fitColumns: true,
+                    collapsible: false,
+                    animate: true,
+                    rownumbers: true,
+                    iconCls: 'icon-ok',
+                    fit: true,
+                    toolbar: '#toolbar'
+                    ">
+        <thead>
+            <tr>
+                <th data-options="field:'text'" width="20%">菜单名称</th>
+                <th data-options="field:'id', align:'right'" width="10%">菜单ID</th>
+                <th data-options="field:'state', align:'center'" width="10%">打开状态</th>
+                <th data-options="field:'parent', align:'right'" width="10%">父菜单</th>
+                <th data-options="field:'url'" width="50%">URL</th>
+            </tr>
+        </thead>
+    </table>
+</div>
 <div id="dlg_select_parent" class="easyui-dialog" style="width:400px;height:280px;"
      closed="true" buttons="#dlg_select_parent_buttons">
     <table id="dlg_select_parent_grid" class="easyui-treegrid" style="width:100%;height:100%;"
@@ -134,7 +138,7 @@
     function removeDlg() {
         var row = $('#dg').treegrid('getSelected');
         if (row){
-            $.messager.confirm('确定','您确定删除该菜单吗?',function(r){
+            $.messager.confirm('确认','您确定删除该菜单吗?',function(r){
                 if (r){
                     var url = "<%=request.getContextPath()%>/menu/delete?menuId=" + row.id;
                     $.get(url, function(result) {

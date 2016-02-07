@@ -1,7 +1,7 @@
 package com.demo.web;
 
 import com.demo.model.*;
-import com.demo.service.ResearchMarketService;
+import com.demo.service.MarketResearchSerivce;
 import com.demo.service.UploadService;
 import com.demo.util.*;
 import com.google.gson.Gson;
@@ -34,7 +34,7 @@ public class DataImportController {
     UploadService uploadService;
 
     @Resource
-    ResearchMarketService marketService;
+    MarketResearchSerivce marketService;
 
     @RequestMapping("/import")
     public String importCommodity() {

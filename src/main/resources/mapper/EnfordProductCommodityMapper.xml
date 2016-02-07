@@ -244,5 +244,22 @@
   select
   <include refid="Base_Column_List" />
   from enford_product_commodity
+  where 1=1
+  <if test="pName != null and pName != ''">
+    and p_name like CONCAT('%','${pName}','%' )
+  </if>
+  <if test="sort != null and order != null">
+    order by #{sort} #{order}
+  </if>
+  limit #{page,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+  </select>
+  <select id="count" resultType="java.lang.Integer">
+    select
+    count(*)
+    from enford_product_commodity
+    where 1=1
+    <if test="pName != null and pName != ''">
+      and p_name like CONCAT('%','${pName}','%' )
+    </if>
   </select>
 </mapper>

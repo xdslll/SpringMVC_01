@@ -3,6 +3,7 @@ package com.demo.service;
 import com.demo.model.EnfordProductCommodity;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author xiads
@@ -10,6 +11,7 @@ import java.util.List;
  */
 public interface CommodityService {
 
-    List<EnfordProductCommodity> select();
+    List<EnfordProductCommodity> select(Map<String, Object> param);
 
+    int count(Map<String, Object> param);
 }

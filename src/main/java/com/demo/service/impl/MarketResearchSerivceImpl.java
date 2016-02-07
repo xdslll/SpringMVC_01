@@ -2,8 +2,9 @@ package com.demo.service.impl;
 
 import com.demo.dao.*;
 import com.demo.model.*;
-import com.demo.service.ResearchMarketService;
+import com.demo.service.MarketResearchSerivce;
 import com.demo.util.Config;
+import com.demo.util.Consts;
 import com.demo.util.ExcelUtil;
 import com.demo.util.StringUtil;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -18,17 +19,14 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author xiads
  * @date 16/2/3
  */
 @Service("marketService")
-public class ResearchMarketSerivceImpl implements ResearchMarketService {
+public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts {
 
     @Resource
     EnfordProductCategoryMapper categoryMapper;
@@ -56,6 +54,12 @@ public class ResearchMarketSerivceImpl implements ResearchMarketService {
 
     @Resource
     EnfordProductDepartmentMapper deptMapper;
+
+    @Resource
+    EnfordSystemUserMapper userMapper;
+
+    @Resource
+    EnfordMarketResearchDeptMapper researchDeptMapper;
 
     @Override
     public int countCategory(EnfordProductCategory category) {
@@ -93,7 +97,7 @@ public class ResearchMarketSerivceImpl implements ResearchMarketService {
     }
 
     @Override
-    public List<EnfordProductCommodity> selectCommodityByParam(Map<String, Object> param) {
+    public List<EnfordProductCommodity> getCommodityByParam(Map<String, Object> param) {
         return productMapper.selectByParam(param);
     }
 
@@ -113,7 +117,7 @@ public class ResearchMarketSerivceImpl implements ResearchMarketService {
     }
 
     @Override
-    public EnfordProductSupplier selectSupplierByCode(String code) {
+    public EnfordProductSupplier getSupplierByCode(String code) {
         return supplierMapper.selectByCode(code);
     }
 
@@ -148,7 +152,7 @@ public class ResearchMarketSerivceImpl implements ResearchMarketService {
     }
 
     @Override
-    public EnfordMarketResearch selectByImportId(int importId) {
+    public EnfordMarketResearch getMarketResearchByImportId(int importId) {
         return researchMapper.selectByImportId(importId);
     }
 
@@ -165,6 +169,67 @@ public class ResearchMarketSerivceImpl implements ResearchMarketService {
     @Override
     public int delteResearchCommodity(int id) {
         return researchCommodityMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public List<EnfordMarketResearch> getMarketResearchByParam(Map<String, Object> param) {
+        List<EnfordMarketResearch> marketResearchList = researchMapper.selectByParam(param);
+        for (EnfordMarketResearch marketResearch : marketResearchList) {
+            //写入用户信息
+            int userId = marketResearch.getCreateBy();
+            EnfordSystemUser user = userMapper.selectByPrimaryKey(userId);
+            if (user != null) {
+                marketResearch.setCreateUsername(user.getName());
+            }
+            int state = marketResearch.getState();
+            switch (state) {
+                case RESEARCH_STATE_NOT_PUBLISH:
+                    marketResearch.setStateDesp("未发布");
+                    break;
+                case RESEARCH_STATE_HAVE_PUBLISHED:
+                    marketResearch.setStateDesp("已发布");
+                    break;
+                case RESEARCH_STATE_HAVE_FINISHED:
+                    marketResearch.setStateDesp("已结束");
+                    break;
+                case RESEARCH_STATE_CANCELED:
+                    marketResearch.setStateDesp("已撤销");
+                    break;
+                case RESEARCH_STATE_HAVE_STARTED:
+                    marketResearch.setStateDesp("已开始");
+                    break;
+                default:
+                    marketResearch.setStateDesp("未知状态");
+            }
+            //写入执行门店信息
+            /*Integer deptId = marketResearch.getExeStoreId();
+            if (deptId != null) {
+                EnfordProductDepartment dept = deptMapper.selectByPrimaryKey(deptId);
+                if (dept != null) {
+                    marketResearch.setExeStoreName(dept.getName());
+                    //写入城市信息
+                    int cityId = dept.getCityId();
+                    EnfordProductCity city = cityMapper.selectByPrimaryKey(cityId);
+                    if (city != null) {
+                        marketResearch.setCityName(city.getName());
+                    }
+                    //写入竞争门店信息
+                    Integer resId = dept.getCompId();
+                    if (resId != null) {
+                        EnfordProductCompetitors comp = competitorsMapper.selectByPrimaryKey(resId);
+                        if (comp != null) {
+                            marketResearch.setResStoreName(comp.getName());
+                        }
+                    }
+                }
+            }*/
+        }
+        return marketResearchList;
+    }
+
+    @Override
+    public int countMarketResearchByParam(Map<String, Object> param) {
+        return researchMapper.countByParam(param);
     }
 
     /**
@@ -205,7 +270,7 @@ public class ResearchMarketSerivceImpl implements ResearchMarketService {
                 String dateStr = sdf.format(date);
                 EnfordMarketResearch research;
                 //判断市调清单是否存在
-                research = selectByImportId(importId);
+                research = getMarketResearchByImportId(importId);
                 if (research == null) {
                     //新建一条市调清单
                     research = new EnfordMarketResearch();
@@ -214,9 +279,10 @@ public class ResearchMarketSerivceImpl implements ResearchMarketService {
                     research.setCreateBy(userId);
                     research.setCreateDt(date);
                     research.setImportId(importHistory.getId());
+                    research.setState(RESEARCH_STATE_NOT_PUBLISH);
                     //将市调清单插入数据库
                     addResearch(research);
-                    research = selectByImportId(importId);
+                    research = getMarketResearchByImportId(importId);
                 }
 
                 //解析导入数据
@@ -307,7 +373,7 @@ public class ResearchMarketSerivceImpl implements ResearchMarketService {
                     param.put("pSize", productCod.getpSize());
                     param.put("unit", productCod.getUnit());
                     param.put("supplierCode", productCod.getSupplierCode());
-                    List<EnfordProductCommodity> productCodList = selectCommodityByParam(param);
+                    List<EnfordProductCommodity> productCodList = getCommodityByParam(param);
                     EnfordProductCommodity productCod1 = null;
                     if (productCodList != null && productCodList.size() > 0) {
                         productCod1 = productCodList.get(0);
@@ -530,5 +596,107 @@ public class ResearchMarketSerivceImpl implements ResearchMarketService {
             }
             return false;
         }
+    }
+
+    /**
+     * 发布市调
+     *
+     * @param research
+     */
+    @Transactional
+    @Override
+    public void publicResearch(EnfordMarketResearch research) {
+        //获取所有的门店信息
+        List<EnfordProductDepartment> deptList = deptMapper.selectAll();
+        for (int index = 0; index < deptList.size(); index++) {
+            EnfordProductDepartment dept = deptList.get(index);
+            if (dept.getCompId() != -1) {
+                EnfordMarketResearchDept researchDept = new EnfordMarketResearchDept();
+                researchDept.setResId(research.getId());
+                researchDept.setExeId(dept.getId());
+                researchDept.setCompId(dept.getCompId());
+                researchDeptMapper.insertSelective(researchDept);
+            }
+        }
+    }
+
+    /**
+     * 撤回市调
+     *
+     * @param research
+     */
+    @Transactional
+    @Override
+    public void callbackResearch(EnfordMarketResearch research) {
+        int resId = research.getId();
+        //根据市调清单获取所有市调门店信息
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("resId", resId);
+        List<EnfordMarketResearchDept> deptList = researchDeptMapper.selectByParam(param);
+        for (int index = 0; index < deptList.size(); index++) {
+            EnfordMarketResearchDept dept = deptList.get(index);
+            EnfordMarketResearchDeptKey key = new EnfordMarketResearchDeptKey();
+            key.setExeId(dept.getExeId());
+            key.setResId(dept.getResId());
+            researchDeptMapper.deleteByPrimaryKey(key);
+        }
+    }
+
+    @Override
+    public List<EnfordMarketResearchDept> getResearchDeptByParam(Map<String, Object> param) {
+        List<EnfordMarketResearchDept> deptList = researchDeptMapper.selectByParam(param);
+        for (EnfordMarketResearchDept dept : deptList) {
+            EnfordMarketResearch research = researchMapper.selectByPrimaryKey(dept.getResId());
+            if (research != null) {
+                dept.setResName(research.getName());
+            }
+            EnfordProductDepartment exeDept = deptMapper.selectByPrimaryKey(dept.getExeId());
+            if (exeDept != null) {
+                dept.setExeName(exeDept.getName());
+            }
+            EnfordProductCompetitors compDept = competitorsMapper.selectByPrimaryKey(dept.getCompId());
+            if (compDept != null) {
+                dept.setCompName(compDept.getName());
+            }
+        }
+        return deptList;
+    }
+
+    @Override
+    public int countResearchDeptByParam(Map<String, Object> param) {
+        return researchDeptMapper.countByParam(param);
+    }
+
+    @Override
+    public List<EnfordMarketResearchCommodity> getResearchCodByParam(Map<String, Object> param) {
+        List<EnfordMarketResearchCommodity> codList = researchCommodityMapper.selectByParam(param);
+        for (EnfordMarketResearchCommodity cod : codList) {
+            EnfordMarketResearch research = researchMapper.selectByPrimaryKey(cod.getResId());
+            if (research != null) {
+                cod.setResName(research.getName());
+            }
+            EnfordProductCommodity commodity = productMapper.selectByPrimaryKey(cod.getCodId());
+            if (commodity != null) {
+                cod.setCodName(commodity.getpName());
+                cod.setCodSize(commodity.getpSize());
+                cod.setCodUnit(commodity.getUnit());
+                cod.setCodBarCode(commodity.getBarCode());
+                int catCode = commodity.getCategoryCode();
+                Map<String, Object> catParam = new HashMap<String, Object>();
+                catParam.put("code", catCode);
+                List<EnfordProductCategory> category = categoryMapper.selectByParam(catParam);
+                if (category != null) {
+                    EnfordProductCategory cat = category.get(0);
+                    cod.setCodCategory(cat.getName());
+                }
+            }
+
+        }
+        return codList;
+    }
+
+    @Override
+    public int countResearchCodByParam(Map<String, Object> param) {
+        return researchCommodityMapper.countByParam(param);
     }
 }

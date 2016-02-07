@@ -31,8 +31,8 @@ public class CommodityServiceImpl implements CommodityService {
     EnfordSystemUserMapper userMapper;
 
     @Override
-    public List<EnfordProductCommodity> select() {
-        List<EnfordProductCommodity> cods = commodityMapper.select();
+    public List<EnfordProductCommodity> select(Map<String, Object> param) {
+        List<EnfordProductCommodity> cods = commodityMapper.select(param);
         for (EnfordProductCommodity cod : cods) {
             //获取品类名称
             Integer categoryCode = cod.getCategoryCode();
@@ -49,5 +49,10 @@ public class CommodityServiceImpl implements CommodityService {
             }
         }
         return cods;
+    }
+
+    @Override
+    public int count(Map<String, Object> param) {
+        return commodityMapper.count(param);
     }
 }

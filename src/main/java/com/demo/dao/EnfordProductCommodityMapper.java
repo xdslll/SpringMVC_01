@@ -59,5 +59,7 @@ public interface EnfordProductCommodityMapper {
 
     List<EnfordProductCommodity> selectByParam(Map<String, Object> param);
 
-    List<EnfordProductCommodity> select();
+    List<EnfordProductCommodity> select(Map<String, Object> param);
+
+    int count(Map<String, Object> param);
 }
