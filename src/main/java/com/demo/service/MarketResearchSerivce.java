@@ -107,10 +107,10 @@ public interface MarketResearchSerivce {
 
     /**
      * 删除价格信息
-     * @param key
+     * @param id
      * @return
      */
-    int deletePrice(EnfordProductPriceKey key);
+    int deletePrice(int id);
 
     /**
      * 添加市调清单信息

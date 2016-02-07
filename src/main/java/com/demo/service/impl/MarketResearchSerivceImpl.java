@@ -132,8 +132,8 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
     }
 
     @Override
-    public int deletePrice(EnfordProductPriceKey key) {
-        return priceMapper.deleteByPrimaryKey(key);
+    public int deletePrice(int id) {
+        return priceMapper.deleteByPrimaryKey(id);
     }
 
     @Override
@@ -394,11 +394,16 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
                         codId = productCod.getId();
                     }
                     //插入价格信息
-                    price.setOrgId(orgId);
-                    price.setCreateBy(userId);
-                    price.setCreateDt(date);
+                    price.setUploadBy(userId);
+                    price.setUploadDt(date);
                     price.setComId(codId);
-                    price.setImportId(importId);
+                    price.setResId(research.getId());
+                    if (price.getPurchasePrice() != 0.0f ||
+                            price.getRetailPrice() != 0.0f) {
+                        price.setMiss(MISS_TAG_NOT_MISS);
+                    } else {
+                        price.setMiss(MISS_TAG_MISS);
+                    }
                     try {
                         //将价格信息插入数据库
                         addPrice(price);
@@ -615,7 +620,11 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
                 researchDept.setResId(research.getId());
                 researchDept.setExeId(dept.getId());
                 researchDept.setCompId(dept.getCompId());
-                researchDeptMapper.insertSelective(researchDept);
+                try {
+                    researchDeptMapper.insertSelective(researchDept);
+                } catch (Exception ex) {
+
+                }
             }
         }
     }

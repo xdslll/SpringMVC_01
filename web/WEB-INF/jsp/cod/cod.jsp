@@ -99,11 +99,14 @@
             fit: true
          ">
         <thead><tr>
-            <th data-options="field:'importId'" width="20%">市调名称</th>
-            <th data-options="field:'comId'" width="20%">品名</th>
-            <th data-options="field:'purchasePrice'" width="20%">进价</th>
-            <th data-options="field:'retailPrice'" width="20%">零售价</th>
-            <th data-options="field:'orgId'" width="20%">所属门店</th>
+            <th data-options="field:'resName'" width="10%">市调名称</th>
+            <th data-options="field:'comName'" width="10%">品名</th>
+            <th data-options="field:'purchasePrice',align:'right',styler:cellStyler" width="10%">进价</th>
+            <th data-options="field:'retailPrice',align:'right',styler:cellStyler" width="10%">零售价</th>
+            <th data-options="field:'compName'" width="20%">所属门店</th>
+            <th data-options="field:'missDesp',styler:cellStyler2" width="10%">缺货状态</th>
+            <th data-options="field:'uploadName'" width="10%">上传人</th>
+            <th data-options="field:'uploadDt'" width="20%">上传时间</th>
         </tr></thead>
     </table>
 </div>
@@ -198,6 +201,18 @@
             queryParams.comId = row.id;
             dg.datagrid('options').queryParams = queryParams;
             dg.datagrid('reload');
+        }
+    }
+
+    function cellStyler(value,row,index){
+        return 'color:green;font-style:italic';
+    }
+
+    function cellStyler2(value,row,index){
+        if (value == '有货') {
+            return 'color:green;';
+        } else {
+            return 'color:red;';
         }
     }
 </script>
