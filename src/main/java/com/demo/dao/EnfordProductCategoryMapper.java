@@ -59,4 +59,8 @@ public interface EnfordProductCategoryMapper {
     List<EnfordProductCategory> selectByParam(Map<String, Object> param);
 
     List<EnfordProductCategory> select();
+
+    int countCodCount(Map<String, Object> param);
+
+    int countHaveFinished(Map<String, Object> param);
 }

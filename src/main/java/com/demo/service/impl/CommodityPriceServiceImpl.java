@@ -2,7 +2,7 @@ package com.demo.service.impl;
 
 import com.demo.dao.*;
 import com.demo.model.*;
-import com.demo.service.EnfordProductPriceService;
+import com.demo.service.CommodityPriceService;
 import com.demo.util.Consts;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.util.Map;
  * @date 16/2/7
  */
 @Service("priceService")
-public class EnfordProductPriceServiceImpl implements EnfordProductPriceService, Consts {
+public class CommodityPriceServiceImpl implements CommodityPriceService, Consts {
 
     @Resource
     EnfordProductPriceMapper priceMapper;
@@ -33,7 +33,7 @@ public class EnfordProductPriceServiceImpl implements EnfordProductPriceService,
     EnfordSystemUserMapper userMapper;
 
     @Override
-    public List<EnfordProductPrice> getProductPrice(Map<String, Object> param) {
+    public List<EnfordProductPrice> getPrice(Map<String, Object> param) {
         List<EnfordProductPrice> priceList = priceMapper.selectByParam(param);
         for (EnfordProductPrice price : priceList) {
             //写入市调信息
@@ -54,6 +54,8 @@ public class EnfordProductPriceServiceImpl implements EnfordProductPriceService,
                 EnfordProductCompetitors comp = compMapper.selectByPrimaryKey(compId);
                 if (comp != null) {
                     price.setCompName(comp.getName());
+                } else {
+                    price.setCompName("我司");
                 }
             } else {
                 price.setCompName("我司");
@@ -78,7 +80,17 @@ public class EnfordProductPriceServiceImpl implements EnfordProductPriceService,
     }
 
     @Override
-    public int countProductPrice(Map<String, Object> param) {
+    public int countPrice(Map<String, Object> param) {
         return priceMapper.countByParam(param);
+    }
+
+    @Override
+    public int addPrice(EnfordProductPrice price) {
+        return priceMapper.insertSelective(price);
+    }
+
+    @Override
+    public int updatePrice(EnfordProductPrice price) {
+        return priceMapper.updateByPrimaryKeySelective(price);
     }
 }

@@ -100,9 +100,10 @@
          ">
         <thead><tr>
             <th data-options="field:'resName'" width="10%">市调名称</th>
-            <th data-options="field:'comName'" width="10%">品名</th>
-            <th data-options="field:'purchasePrice',align:'right',styler:cellStyler" width="10%">进价</th>
-            <th data-options="field:'retailPrice',align:'right',styler:cellStyler" width="10%">零售价</th>
+            <th data-options="field:'comName'" width="15%">品名</th>
+            <th data-options="field:'purchasePrice',align:'right',styler:cellStyler" width="5%">进价</th>
+            <th data-options="field:'retailPrice',align:'right',styler:cellStyler" width="5%">零售价</th>
+            <th data-options="field:'promptPrice',align:'right',styler:cellStyler" width="5%">促销价</th>
             <th data-options="field:'compName'" width="20%">所属门店</th>
             <th data-options="field:'missDesp',styler:cellStyler2" width="10%">缺货状态</th>
             <th data-options="field:'uploadName'" width="10%">上传人</th>

@@ -56,7 +56,7 @@ public class UserController {
             respBody.setCode(Consts.SUCCESS);
             respBody.setMsg("登录成功");
             //登录成功后,将用户信息写入session
-            if (user != null) {
+            if (user != null && !StringUtil.isEmpty(rememberpwd)) {
                 if("on".equals(rememberpwd))
                 {
                     CookiesUtil.saveCookie(resp,"rempwd","1");

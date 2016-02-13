@@ -398,6 +398,7 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
                     price.setUploadDt(date);
                     price.setComId(codId);
                     price.setResId(research.getId());
+                    price.setCompId(-1); //-1表示本店
                     if (price.getPurchasePrice() != 0.0f ||
                             price.getRetailPrice() != 0.0f) {
                         price.setMiss(MISS_TAG_NOT_MISS);

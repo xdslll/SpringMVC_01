@@ -1,12 +1,8 @@
 package com.demo.service.impl;
 
-import com.demo.dao.EnfordProductCategoryMapper;
 import com.demo.dao.EnfordProductSupplierMapper;
-import com.demo.dao.EnfordSystemUserMapper;
 import com.demo.model.EnfordProductCategory;
 import com.demo.model.EnfordProductSupplier;
-import com.demo.model.EnfordSystemUser;
-import com.demo.service.CategoryService;
 import com.demo.service.SupplierService;
 import org.springframework.stereotype.Service;
 

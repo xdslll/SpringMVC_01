@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.demo.dao.EnfordApiMapper">
+
+    <select id="selectCategoryCommodityByParam" resultType="com.demo.model.EnfordProductCommodity">
+        select b.id, b.p_name, b.p_size, b.unit, b.bar_code
+        from enford_product_category a, enford_product_commodity b,
+        enford_market_research_commodity c, enford_market_research_dept d
+        where a.code = #{code,jdbcType=INTEGER}
+        and c.res_id = #{resId,jdbcType=INTEGER}
+        and d.exe_id = #{deptId,jdbcType=INTEGER}
+        and a.code = b.category_code
+        and b.id = c.cod_id
+        and c.res_id = d.res_id
+        order by a.code asc
+    </select>
+    <select id="selectCommodityPriceByParam" resultType="com.demo.model.EnfordProductPrice">
+        select b.id, b.prompt_price, b.retail_price, b.miss, b.upload_by, b.upload_dt, b.remark
+        from enford_product_commodity a, enford_product_price b
+        where a.id = b.com_id
+        and b.res_id = #{resId,jdbcType=INTEGER}
+        and a.id = #{codId,jdbcType=INTEGER}
+        and b.dept_id = #{deptId,jdbcType=INTEGER}
+        order by b.upload_dt desc
+    </select>
+</mapper>

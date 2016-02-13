@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.serializer.PropertyPreFilter;
 
 public class FastJSONHelper {
 
@@ -14,6 +15,10 @@ public class FastJSONHelper {
      */
     public static <T> String serialize(T object) {
         return JSON.toJSONString(object);
+    }
+
+    public static <T> String serialize(T object, PropertyPreFilter filter) {
+        return JSON.toJSONString(object, filter);
     }
 
     /**

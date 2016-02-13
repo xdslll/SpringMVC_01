@@ -45,6 +45,10 @@ public class Config {
         return getProperty("uploadpath");
     }
 
+    public static String getCategoryPath() {
+        return getProperty("categorypath");
+    }
+
     /**
      * 获取上传文件路径
      *
@@ -58,6 +62,9 @@ public class Config {
         String fileType = importHistory.getFileType();
         //获取文件存放的路径
         File fileDir = new File(dirPath);
+        if (!fileDir.exists()) {
+            fileDir.mkdirs();
+        }
         //生成文件对象
         File file = new File(fileDir, fileName + "." + fileType);
         return file;

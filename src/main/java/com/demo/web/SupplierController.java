@@ -2,7 +2,6 @@ package com.demo.web;
 
 import com.demo.model.EnfordProductCategory;
 import com.demo.model.EnfordProductSupplier;
-import com.demo.service.CategoryService;
 import com.demo.service.SupplierService;
 import com.demo.util.FastJSONHelper;
 import com.demo.util.ResponseUtil;

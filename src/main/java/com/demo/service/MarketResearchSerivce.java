@@ -1,7 +1,6 @@
 package com.demo.service;
 
 import com.demo.model.*;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -200,4 +199,5 @@ public interface MarketResearchSerivce {
     List<EnfordMarketResearchCommodity> getResearchCodByParam(Map<String, Object> param);
 
     int countResearchCodByParam(Map<String, Object> param);
+
 }

@@ -2,7 +2,7 @@ package com.demo.web;
 
 import com.alibaba.fastjson.JSONObject;
 import com.demo.model.EnfordProductPrice;
-import com.demo.service.EnfordProductPriceService;
+import com.demo.service.CommodityPriceService;
 import com.demo.util.FastJSONHelper;
 import com.demo.util.ResponseUtil;
 import com.demo.util.StringUtil;
@@ -28,7 +28,7 @@ public class CommodityPriceController {
     private static final Logger logger = Logger.getLogger(CommodityPriceController.class);
 
     @Resource
-    EnfordProductPriceService priceService;
+    CommodityPriceService priceService;
 
     @RequestMapping("/cod/price/get")
     public void getCodPrice(HttpServletRequest req, HttpServletResponse resp,
@@ -45,8 +45,8 @@ public class CommodityPriceController {
             param.put("page", (page - 1) * pageSize);
             param.put("pageSize", pageSize);
             param.put("comId", req.getParameter("comId"));
-            priceList = priceService.getProductPrice(param);
-            total = priceService.countProductPrice(param);
+            priceList = priceService.getPrice(param);
+            total = priceService.countPrice(param);
         }
         catch (Exception ex) {
             logger.error("exception occurred when getCodPrice:" + ex);

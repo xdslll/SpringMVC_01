@@ -1,9 +1,9 @@
 package com.demo.service;
 
 import com.demo.model.EnfordProductCategory;
-import com.demo.model.EnfordProductCommodity;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author xiads
@@ -11,6 +11,12 @@ import java.util.List;
  */
 public interface CategoryService {
 
-    List<EnfordProductCategory> select();
+    List<EnfordProductCategory> getAllCategory();
+
+    List<EnfordProductCategory> getRootCategory(int resId, int deptId);
+
+    int update(EnfordProductCategory category);
+
+    List<EnfordProductCategory> getCategoryByParam(Map<String, Object> param);
 
 }
