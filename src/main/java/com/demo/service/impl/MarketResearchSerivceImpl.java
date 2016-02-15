@@ -709,4 +709,9 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
     public int countResearchCodByParam(Map<String, Object> param) {
         return researchCommodityMapper.countByParam(param);
     }
+
+    @Override
+    public EnfordMarketResearch getMarketResearchById(int resId) {
+        return researchMapper.selectByPrimaryKey(resId);
+    }
 }

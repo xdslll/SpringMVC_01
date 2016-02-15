@@ -13,5 +13,7 @@ public interface CommodityService {
 
     List<EnfordProductCommodity> select(Map<String, Object> param);
 
+    List<EnfordProductCommodity> selectByParam(Map<String, Object> param);
+
     int count(Map<String, Object> param);
 }

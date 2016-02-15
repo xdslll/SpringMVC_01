@@ -200,4 +200,5 @@ public interface MarketResearchSerivce {
 
     int countResearchCodByParam(Map<String, Object> param);
 
+    EnfordMarketResearch getMarketResearchById(int resId);
 }

@@ -20,4 +20,5 @@ public interface UploadService {
 
     int updateImportHistory(EnfordProductImportHistory importHistory);
 
+    EnfordProductImportHistory getImportHistoryById(int importId);
 }

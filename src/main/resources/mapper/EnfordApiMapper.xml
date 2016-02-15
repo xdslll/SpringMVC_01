@@ -22,5 +22,33 @@
         and a.id = #{codId,jdbcType=INTEGER}
         and b.dept_id = #{deptId,jdbcType=INTEGER}
         order by b.upload_dt desc
+        <if test="page != null and pageSize != null">
+            limit #{page,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+        </if>
+    </select>
+    <select id="selectCommodityByBarcode" resultType="com.demo.model.EnfordProductCommodity">
+        select a.id, a.p_name, a.p_size, a.unit, a.bar_code, a.category_code, d.name as categoryName
+        from enford_product_commodity a, enford_market_research_commodity b,
+        enford_market_research_dept c, enford_product_category d
+        where b.res_id = #{resId,jdbcType=INTEGER}
+        and c.exe_id = #{deptId,jdbcType=INTEGER}
+        and a.bar_code like CONCAT('%','${barcode}','%' )
+        and a.id = b.cod_id
+        and b.res_id = c.res_id
+        and a.category_code = d.code
+        <if test="page != null and pageSize != null">
+            limit #{page,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+        </if>
+    </select>
+    <select id="countCommodityByBarcode" resultType="java.lang.Integer">
+        select count(*)
+        from enford_product_commodity a, enford_market_research_commodity b,
+        enford_market_research_dept c, enford_product_category d
+        where b.res_id = #{resId,jdbcType=INTEGER}
+        and c.exe_id = #{deptId,jdbcType=INTEGER}
+        and a.bar_code like CONCAT('%','${barcode}','%' )
+        and a.id = b.cod_id
+        and b.res_id = c.res_id
+        and a.category_code = d.code
     </select>
 </mapper>

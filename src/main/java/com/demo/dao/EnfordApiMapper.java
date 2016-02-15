@@ -21,4 +21,9 @@ public interface EnfordApiMapper {
     List<EnfordProductCommodity> selectCategoryCommodityByParam(Map<String, Object> param);
 
     List<EnfordProductPrice> selectCommodityPriceByParam(Map<String, Object> param);
+
+
+    List<EnfordProductCommodity> selectCommodityByBarcode(Map<String, Object> param);
+
+    int countCommodityByBarcode(Map<String, Object> param);
 }

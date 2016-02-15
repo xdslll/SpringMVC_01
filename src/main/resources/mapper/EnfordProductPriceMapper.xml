@@ -183,7 +183,19 @@
         remark = #{remark,jdbcType=VARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    where 1=1
+    <if test="id != null" >
+      and id = #{id,jdbcType=INTEGER}
+    </if>
+    <if test="comId != null" >
+      and com_id= #{comId,jdbcType=INTEGER}
+    </if>
+    <if test="resId != null" >
+      and res_id= #{resId,jdbcType=INTEGER}
+    </if>
+    <if test="compId != null" >
+      and comp_id= #{compId,jdbcType=INTEGER}
+    </if>
   </update>
   <update id="updateByPrimaryKey" parameterType="com.demo.model.EnfordProductPrice" >
     <!--
@@ -224,7 +236,9 @@
     <if test="deptId != null">
       and dept_id = #{deptId,jdbcType=INTEGER}
     </if>
-    limit #{page,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+    <if test="page != null and pageSize != null">
+      limit #{page,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+    </if>
   </select>
   <select id="countByParam" resultType="java.lang.Integer">
     select

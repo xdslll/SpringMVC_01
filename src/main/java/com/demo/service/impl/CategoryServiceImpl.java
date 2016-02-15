@@ -63,7 +63,9 @@ public class CategoryServiceImpl implements CategoryService {
             param.put("resId", resId);
             param.put("deptId", deptId);
             int finishCount = categoryMapper.countHaveFinished(param);
-            category.setHaveFinished(finishCount);
+            int finishPercent = (int) (((float) finishCount / codCount) * 100);
+            category.setFinishCount(finishCount);
+            category.setHaveFinished(finishPercent);
         }
         return categoryList;
     }

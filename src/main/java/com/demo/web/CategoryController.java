@@ -53,13 +53,13 @@ public class CategoryController implements Consts {
     public void getRootCategory(HttpServletRequest req, HttpServletResponse resp,
                                 @RequestParam("resId") int resId,
                                 @RequestParam("deptId") int deptId) {
-        RespBody<List<EnfordProductCategory>> respBody = new RespBody<List<EnfordProductCategory>>();
+        RespBody<EnfordProductCategory> respBody = new RespBody<EnfordProductCategory>();
         try {
             List<EnfordProductCategory> rootCategories = categoryService.getRootCategory(resId, deptId);
             if (rootCategories != null) {
                 respBody.setCode(SUCCESS);
                 respBody.setMsg("获取分类成功!");
-                respBody.setData(rootCategories);
+                respBody.setDatas(rootCategories);
                 respBody.setTotalnum(rootCategories.size());
             } else {
                 respBody.setCode(FAILED);

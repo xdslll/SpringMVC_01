@@ -105,6 +105,8 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
                 param.put("resId", resId);
                 param.put("deptId", deptId);
                 param.put("codId", commodityList.get(j).getId());
+                param.put("page", 0);
+                param.put("pageSize", 1);
                 List<EnfordProductPrice> price = apiMapper.selectCommodityPriceByParam(param);
                 if (price != null && price.size() > 0) {
                     commodityList.get(j).setPrice(price.get(0));
@@ -113,5 +115,40 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
         }
 
         return categoryList;
+    }
+
+    @Override
+    public List<EnfordProductCommodity> getCommodityByBarcode(int resId, int deptId, String barcode,
+                                                              int page, int pageSize) {
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("resId", resId);
+        param.put("deptId", deptId);
+        param.put("barcode", barcode);
+        param.put("page", page);
+        param.put("pageSize", pageSize);
+        List<EnfordProductCommodity> commodityList = apiMapper.selectCommodityByBarcode(param);
+        for (int i = 0; i < commodityList.size(); i++) {
+            EnfordProductCommodity commodity = commodityList.get(i);
+            param.clear();
+            param.put("resId", resId);
+            param.put("deptId", deptId);
+            param.put("codId", commodity.getId());
+            param.put("page", 0);
+            param.put("pageSize", 1);
+            List<EnfordProductPrice> price = apiMapper.selectCommodityPriceByParam(param);
+            if (price != null && price.size() > 0) {
+                commodity.setPrice(price.get(0));
+            }
+        }
+        return commodityList;
+    }
+
+    @Override
+    public int countCommodityByBarcode(int resId, int deptId, String barcode) {
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("resId", resId);
+        param.put("deptId", deptId);
+        param.put("barcode", barcode);
+        return apiMapper.countCommodityByBarcode(param);
     }
 }

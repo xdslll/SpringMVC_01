@@ -49,8 +49,12 @@ public class Config {
         return getProperty("categorypath");
     }
 
+    public static String getExportPath() {
+        return getProperty("exportpath");
+    }
+
     /**
-     * 获取上传文件路径
+     * 获取上传文件的完整路径
      *
      * @param importHistory
      * @return
@@ -68,6 +72,18 @@ public class Config {
         //生成文件对象
         File file = new File(fileDir, fileName + "." + fileType);
         return file;
+    }
+
+    public static File getUploadFile(EnfordProductImportHistory importHistory) {
+        return getFilePath(importHistory, getUploadFilePath());
+    }
+
+    public static String getFileName(EnfordProductImportHistory importHistory) {
+        //获取文件名
+        String fileName = importHistory.getFilePath();
+        //获取文件类型
+        String fileType = importHistory.getFileType();
+        return fileName + "." + fileType;
     }
 
 }

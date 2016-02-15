@@ -76,4 +76,9 @@ public class UploadServiceImpl implements UploadService {
         return importMapper.updateByPrimaryKeySelective(importHistory);
     }
 
+    @Override
+    public EnfordProductImportHistory getImportHistoryById(int importId) {
+        return importMapper.selectByPrimaryKey(importId);
+    }
+
 }

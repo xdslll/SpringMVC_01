@@ -234,6 +234,12 @@
     <if test="supplierCode != null and supplierCode != ''">
       and supplier_code = #{supplierCode,jdbcType=VARCHAR}
     </if>
+    <if test="barCode != null">
+      and bar_code = #{barCode,jdbcType=VARCHAR}
+    </if>
+    <if test="categoryCode != null">
+      and category_code = #{categoryCode,jdbcType=INTEGER}
+    </if>
   </select>
   <select id="maxId" resultType="java.lang.Integer">
     select

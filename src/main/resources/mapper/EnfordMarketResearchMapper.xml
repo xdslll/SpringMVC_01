@@ -199,6 +199,9 @@
     <include refid="Base_Column_List" />
     from enford_market_research
     where 1=1
+    <if test="id != null">
+      and id = #{id,jdbcType=INTEGER}
+    </if>
     <if test="page != null and pageSize != null">
       limit #{page,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
     </if>

@@ -207,13 +207,19 @@
     order by b.code asc
   </select>
   <select id="countHaveFinished" resultType="java.lang.Integer">
-    select count(*) from enford_market_research_commodity a, enford_market_research_dept b,
-    enford_product_price c, enford_product_category d
-    where a.res_id = b.res_id = c.res_id
-    and a.res_id = #{resId,jdbcType=INTEGER}
-    and b.exe_id = #{deptId,jdbcType=INTEGER}
-    and c.com_id = a.cod_id
-    and b.comp_id = c.comp_id
-    and d.parent = #{parent,jdbcType=INTEGER};
+    select count(*)
+    from
+    (select b.id as cod_id, c.code as code, a.res_id as res_id, d.exe_id as dept_id
+    from enford_market_research_commodity a, enford_product_commodity b,
+    enford_product_category c, enford_market_research_dept d
+    where a.cod_id = b.id
+    and b.category_code = c.code
+    and a.res_id = d.res_id
+    and c.parent = #{parent,jdbcType=INTEGER}
+    and d.exe_id = #{deptId,jdbcType=INTEGER}
+    and a.res_id = #{resId,jdbcType=INTEGER}) a, enford_product_price b
+    where a.cod_id = b.com_id
+    and a.res_id = b.res_id
+    and a.dept_id = b.dept_id
   </select>
 </mapper>

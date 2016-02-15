@@ -100,8 +100,8 @@
     </table>
 </div>
 <div id="dept-toolbar">
-    <%--<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_go'" plain="true" onclick="checkPublish()">发布</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-2012080412301'" plain="true" onclick="checkCallback()">撤回</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_osx_go'" plain="true" onclick="exportResearch()">导出</a>
+    <%--<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-2012080412301'" plain="true" onclick="checkCallback()">撤回</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_form_magnify'" plain="true" onclick="showDeptDetail()">查看市调门店</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_form_magnify'" plain="true" onclick="showCodDetail()">查看市调商品</a>--%>
 </div>
@@ -128,7 +128,7 @@
             iconCls: 'icon-ok',
             pagination: true,
             singleSelect: true,
-            toolbar: '#dept-toolbar',
+            toolbar: '#cod-toolbar',
             nowrap: false,
             striped: true,
             pageSize: 15,
@@ -292,6 +292,16 @@
                 }
             }
         });
+    }
+
+    function exportResearch() {
+        var row = $('#dept-dg').datagrid('getSelected');
+        if (row) {
+            var resId = row.resId;
+            var deptId = row.exeId;
+            url = $("#contextpath").val() + '/market_research/export?resId='+resId+'&deptId='+deptId;
+            window.location.href = url;
+        }
     }
 </script>
 </body>

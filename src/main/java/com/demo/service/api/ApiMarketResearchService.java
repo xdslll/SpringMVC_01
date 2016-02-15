@@ -2,6 +2,7 @@ package com.demo.service.api;
 
 import com.demo.model.EnfordApiMarketResearch;
 import com.demo.model.EnfordProductCategory;
+import com.demo.model.EnfordProductCommodity;
 
 import java.util.List;
 
@@ -28,4 +29,17 @@ public interface ApiMarketResearchService {
      * @return
      */
     List<EnfordProductCategory> getResearchCategory(int resId, int deptId, int code);
+
+    /**
+     * 通过条形码查询商品
+     *
+     * @param resId
+     * @param deptId
+     * @param barcode
+     * @return
+     */
+    List<EnfordProductCommodity> getCommodityByBarcode(int resId, int deptId, String barcode,
+                                                       int page, int pageSize);
+
+    int countCommodityByBarcode(int resId, int deptId, String barcode);
 }

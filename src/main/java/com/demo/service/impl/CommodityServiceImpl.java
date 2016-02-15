@@ -52,6 +52,11 @@ public class CommodityServiceImpl implements CommodityService {
     }
 
     @Override
+    public List<EnfordProductCommodity> selectByParam(Map<String, Object> param) {
+        return commodityMapper.selectByParam(param);
+    }
+
+    @Override
     public int count(Map<String, Object> param) {
         return commodityMapper.count(param);
     }

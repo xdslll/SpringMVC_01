@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author xiads
@@ -43,14 +44,14 @@ public class ApiMarketController implements Consts {
     @RequestMapping("/api/market/dept/get")
     public void getResearchDept(HttpServletRequest req, HttpServletResponse resp,
                                   @RequestParam("exeId") String exeId) {
-        RespBody<List<EnfordApiMarketResearch>> respBody = new RespBody<List<EnfordApiMarketResearch>>();
+        RespBody<EnfordApiMarketResearch> respBody = new RespBody<EnfordApiMarketResearch>();
         try {
             List<EnfordApiMarketResearch> researchDeptList = apiMarketService
                     .getMarketResearch(Integer.parseInt(exeId));
             if (researchDeptList != null) {
                 respBody.setCode(SUCCESS);
                 respBody.setMsg("获取市调清单成功!");
-                respBody.setData(researchDeptList);
+                respBody.setDatas(researchDeptList);
                 respBody.setTotalnum(researchDeptList.size());
             } else {
                 respBody.setCode(FAILED);
@@ -77,7 +78,7 @@ public class ApiMarketController implements Consts {
                                      @RequestParam("resId") String resId,
                                      @RequestParam("deptId") String deptId,
                                      @RequestParam("code") String code) {
-        RespBody<List<EnfordProductCategory>> respBody = new RespBody<List<EnfordProductCategory>>();
+        RespBody<EnfordProductCategory> respBody = new RespBody<EnfordProductCategory>();
         try {
             List<EnfordProductCategory> researchCommodityList = apiMarketService
                     .getResearchCategory(Integer.parseInt(resId),
@@ -86,7 +87,7 @@ public class ApiMarketController implements Consts {
             if (researchCommodityList != null) {
                 respBody.setCode(SUCCESS);
                 respBody.setMsg("获取市调商品成功!");
-                respBody.setData(researchCommodityList);
+                respBody.setDatas(researchCommodityList);
                 respBody.setTotalnum(researchCommodityList.size());
             } else {
                 respBody.setCode(FAILED);
@@ -103,9 +104,10 @@ public class ApiMarketController implements Consts {
 
     @RequestMapping("/api/price/add")
     public void addCommodityPrice(HttpServletRequest req, HttpServletResponse resp,
-                                  EnfordProductPrice price) {
+                                  @RequestParam("json") String json) {
         RespBody respBody = new RespBody();
         try {
+            EnfordProductPrice price = FastJSONHelper.deserialize(json, EnfordProductPrice.class);
             int count = priceService.addPrice(price);
             if (count > 0) {
                 respBody.setCode(SUCCESS);
@@ -123,9 +125,10 @@ public class ApiMarketController implements Consts {
 
     @RequestMapping("/api/price/update")
     public void updateCommodityPrice(HttpServletRequest req, HttpServletResponse resp,
-                                  EnfordProductPrice price) {
+                                     @RequestParam("json") String json) {
         RespBody respBody = new RespBody();
         try {
+            EnfordProductPrice price = FastJSONHelper.deserialize(json, EnfordProductPrice.class);
             int count = priceService.updatePrice(price);
             if (count > 0) {
                 respBody.setCode(SUCCESS);
@@ -137,6 +140,43 @@ public class ApiMarketController implements Consts {
         } catch (Exception ex) {
             respBody.setCode(FAILED);
             respBody.setMsg("修改价格失败:" + ex.getMessage());
+        }
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
+    }
+
+    @RequestMapping("/api/cod/get")
+    public void getCommodityByBarcode(HttpServletRequest req, HttpServletResponse resp,
+                                     @RequestParam("resId") int resId,
+                                     @RequestParam("deptId") int deptId,
+                                     @RequestParam("barcode") String barcode) {
+        RespBody<EnfordProductCommodity> respBody = new RespBody<EnfordProductCommodity>();
+        try {
+            String pageStr = req.getParameter("page");
+            String pageSizeStr = req.getParameter("pageSize");
+            int page = 0;
+            int pageSize = 10;
+            if (pageStr != null) {
+                page = Integer.parseInt(pageStr) - 1;
+            }
+            if (pageSizeStr != null) {
+                pageSize = Integer.parseInt(pageSizeStr);
+            }
+            List<EnfordProductCommodity> commodityList = apiMarketService
+                    .getCommodityByBarcode(resId, deptId, barcode, page * pageSize, pageSize);
+            int total = apiMarketService
+                    .countCommodityByBarcode(resId, deptId, barcode);
+            if (commodityList != null) {
+                respBody.setCode(SUCCESS);
+                respBody.setMsg("获取市调商品成功!");
+                respBody.setDatas(commodityList);
+                respBody.setTotalnum(total);
+            } else {
+                respBody.setCode(FAILED);
+                respBody.setMsg("获取市调商品失败!");
+            }
+        } catch (Exception ex) {
+            respBody.setCode(FAILED);
+            respBody.setMsg("获取市调商品失败:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }

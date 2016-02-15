@@ -61,4 +61,9 @@ public class DeptServiceImpl implements DeptService {
     public int deleteDept(int id) {
         return deptMapper.deleteByPrimaryKey(id);
     }
+
+    @Override
+    public EnfordProductDepartment getDepartmentByDeptId(int deptId) {
+        return deptMapper.selectByPrimaryKey(deptId);
+    }
 }
