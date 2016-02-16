@@ -617,7 +617,22 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
         for (int index = 0; index < deptList.size(); index++) {
             EnfordProductDepartment dept = deptList.get(index);
             if (dept.getCompId() != -1) {
-                EnfordMarketResearchDept researchDept = new EnfordMarketResearchDept();
+                //确保一个竞争对手只有一条市调清单
+                /*int resId = research.getId();
+                int compId = dept.getCompId();
+                Map<String, Object> param = new HashMap<String, Object>();
+                param.put("resId", resId);
+                param.put("compId", compId);
+                List<EnfordMarketResearchDept> researchDeptList = researchDeptMapper.selectByParam(param);*/
+                EnfordMarketResearchDept researchDept = null;
+                //如果该竞争对手已经有市调清单,则不再新增
+                /*if (researchDeptList != null && researchDeptList.size() > 0) {
+                    System.out.println("市调已经存在,无需新增(多家门店对一家竞争门店)");
+                    continue;
+                } else {
+
+                }*/
+                researchDept = new EnfordMarketResearchDept();
                 researchDept.setResId(research.getId());
                 researchDept.setExeId(dept.getId());
                 researchDept.setCompId(dept.getCompId());

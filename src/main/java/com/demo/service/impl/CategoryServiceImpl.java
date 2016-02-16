@@ -1,8 +1,10 @@
 package com.demo.service.impl;
 
 import com.demo.dao.EnfordProductCategoryMapper;
+import com.demo.dao.EnfordProductDepartmentMapper;
 import com.demo.dao.EnfordSystemUserMapper;
 import com.demo.model.EnfordProductCategory;
+import com.demo.model.EnfordProductDepartment;
 import com.demo.model.EnfordSystemUser;
 import com.demo.service.CategoryService;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Resource
     EnfordSystemUserMapper userMapper;
+
+    @Resource
+    EnfordProductDepartmentMapper deptMapper;
 
     @Override
     public List<EnfordProductCategory> getAllCategory() {
@@ -57,11 +62,14 @@ public class CategoryServiceImpl implements CategoryService {
             param.put("resId", resId);
             int codCount = categoryMapper.countCodCount(param);
             category.setCodCount(codCount);
+            //获取竞争对手门店信息
+            EnfordProductDepartment dept = deptMapper.selectByPrimaryKey(deptId);
+            int compId = dept.getCompId();
             //统计该分类下的市调进度
             param.clear();
             param.put("parent", category.getCode());
             param.put("resId", resId);
-            param.put("deptId", deptId);
+            param.put("compId", compId);
             int finishCount = categoryMapper.countHaveFinished(param);
             int finishPercent = (int) (((float) finishCount / codCount) * 100);
             category.setFinishCount(finishCount);

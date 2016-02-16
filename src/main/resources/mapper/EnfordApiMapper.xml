@@ -18,9 +18,18 @@
         select b.id, b.prompt_price, b.retail_price, b.miss, b.upload_by, b.upload_dt, b.remark
         from enford_product_commodity a, enford_product_price b
         where a.id = b.com_id
-        and b.res_id = #{resId,jdbcType=INTEGER}
-        and a.id = #{codId,jdbcType=INTEGER}
-        and b.dept_id = #{deptId,jdbcType=INTEGER}
+        <if test="resId != null">
+          and b.res_id = #{resId,jdbcType=INTEGER}
+        </if>
+        <if test="codId != null">
+            and a.id = #{codId,jdbcType=INTEGER}
+        </if>
+        <if test="deptId != null">
+          and b.dept_id = #{deptId,jdbcType=INTEGER}
+        </if>
+        <if test="compId != null">
+            and b.comp_id = #{compId,jdbcType=INTEGER}
+        </if>
         order by b.upload_dt desc
         <if test="page != null and pageSize != null">
             limit #{page,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}

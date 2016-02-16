@@ -216,7 +216,7 @@
     and b.category_code = c.code
     and a.res_id = d.res_id
     and c.parent = #{parent,jdbcType=INTEGER}
-    and d.exe_id = #{deptId,jdbcType=INTEGER}
+    and d.comp_id = #{compId,jdbcType=INTEGER}
     and a.res_id = #{resId,jdbcType=INTEGER}) a, enford_product_price b
     where a.cod_id = b.com_id
     and a.res_id = b.res_id

@@ -7,6 +7,7 @@ import com.demo.util.Consts;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -86,7 +87,21 @@ public class CommodityPriceServiceImpl implements CommodityPriceService, Consts 
 
     @Override
     public int addPrice(EnfordProductPrice price) {
-        return priceMapper.insertSelective(price);
+        //判断该竞争对手的价格是否已经录入
+        int resId = price.getResId();
+        int compId = price.getCompId();
+        int comId = price.getComId();
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("resId", resId);
+        param.put("compId", compId);
+        param.put("comId", comId);
+        int size = priceMapper.countByParam(param);
+        //如果已经录入则更新,如果未录入,则新增
+        if (size > 0) {
+            return priceMapper.updateByPrimaryKeySelective(price);
+        } else {
+            return priceMapper.insertSelective(price);
+        }
     }
 
     @Override

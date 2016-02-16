@@ -72,6 +72,7 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
                 //计算完成进度
                 param.clear();
                 param.put("compId", compId);
+                param.put("resId", resId);
                 int finishCount = priceMapper.countByParam(param);
                 float finishPercentFloat = (float) finishCount / codCount;
                 int finishPercent = (int) (finishPercentFloat * 100);
@@ -86,6 +87,14 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
         return list;
     }
 
+    /**
+     * 获取某个分类下的所有市调商品
+     *
+     * @param resId
+     * @param deptId
+     * @param code
+     * @return
+     */
     @Override
     public List<EnfordProductCategory> getResearchCategory(int resId, int deptId, int code) {
         Map<String, Object> param = new HashMap<String, Object>();
@@ -100,10 +109,13 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
             List<EnfordProductCommodity> commodityList = apiMapper.selectCategoryCommodityByParam(param);
             category.setCodCount(commodityList.size());
             category.setCommodityList(commodityList);
+            //搜索市调商品的价格,根据竞争对手来搜索价格
             for (int j = 0; j < commodityList.size(); j++) {
+                EnfordProductDepartment dept = deptMapper.selectByPrimaryKey(deptId);
                 param.clear();
                 param.put("resId", resId);
-                param.put("deptId", deptId);
+                //param.put("deptId", deptId);
+                param.put("compId", dept.getCompId());
                 param.put("codId", commodityList.get(j).getId());
                 param.put("page", 0);
                 param.put("pageSize", 1);
