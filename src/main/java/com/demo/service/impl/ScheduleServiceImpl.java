@@ -24,7 +24,7 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
     EnfordMarketResearchMapper researchMapper;
 
     /**
-     * 每分钟触发一次,刷新市调清单状态
+     * 每30分钟触发一次,刷新市调清单状态
      */
     @Scheduled(cron = "0 0/30 * * * ?")
     @Override

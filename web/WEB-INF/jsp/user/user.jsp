@@ -19,10 +19,10 @@
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/layout.js"></script>
 </head>
 <body>
-<div style="margin:5px 5px;">
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="newDlg()">新增</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" onclick="editDlg()">编辑</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="removeDlg()">删除</a>
+<div id="user-toolbar">
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add'" plain="true" onclick="newDlg()">新增</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" plain="true" onclick="editDlg()">编辑</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" plain="true" onclick="removeDlg()">删除</a>
 </div>
 <table id="dg" title="用户列表" class="easyui-datagrid" style="width:100%;height:500px;"
        data-options="
@@ -36,7 +36,8 @@
                 rownumbers: true,
                 iconCls: 'icon-man',
                 singleSelect: true,
-                pagination: false
+                pagination: false,
+                toolbar: '#user-toolbar'
                 ">
     <thead>
     <tr>
