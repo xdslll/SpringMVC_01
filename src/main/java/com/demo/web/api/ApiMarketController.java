@@ -1,8 +1,10 @@
 package com.demo.web.api;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.demo.model.*;
+import com.demo.model.EnfordApiMarketResearch;
+import com.demo.model.EnfordProductCategory;
+import com.demo.model.EnfordProductCommodity;
+import com.demo.model.EnfordProductPrice;
 import com.demo.service.CommodityPriceService;
 import com.demo.service.api.ApiMarketResearchService;
 import com.demo.util.Consts;
@@ -17,7 +19,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author xiads

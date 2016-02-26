@@ -1,7 +1,11 @@
 package com.demo.service.impl;
 
 import com.demo.dao.*;
-import com.demo.model.*;
+import com.demo.model.EnfordMarketResearch;
+import com.demo.model.EnfordProductCommodity;
+import com.demo.model.EnfordProductCompetitors;
+import com.demo.model.EnfordProductPrice;
+import com.demo.model.EnfordSystemUser;
 import com.demo.service.CommodityPriceService;
 import com.demo.util.Consts;
 import org.springframework.stereotype.Service;

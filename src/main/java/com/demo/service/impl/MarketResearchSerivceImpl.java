@@ -2,6 +2,7 @@ package com.demo.service.impl;
 
 import com.demo.dao.*;
 import com.demo.model.*;
+import com.demo.model.EnfordSystemUser;
 import com.demo.service.MarketResearchSerivce;
 import com.demo.util.Config;
 import com.demo.util.Consts;

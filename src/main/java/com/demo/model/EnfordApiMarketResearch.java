@@ -1,7 +1,5 @@
 package com.demo.model;
 
-import java.util.List;
-
 /**
  * @author xiads
  * @date 16/2/12

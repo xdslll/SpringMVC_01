@@ -2,7 +2,6 @@ package com.demo.service.impl;
 
 import com.demo.dao.EnfordProductCityMapper;
 import com.demo.dao.EnfordProductCompetitorsMapper;
-import com.demo.model.EnfordProductCategory;
 import com.demo.model.EnfordProductCity;
 import com.demo.model.EnfordProductCompetitors;
 import com.demo.service.CompetitorService;

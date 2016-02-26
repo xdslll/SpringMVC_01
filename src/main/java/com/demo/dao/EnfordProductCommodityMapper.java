@@ -1,7 +1,6 @@
 package com.demo.dao;
 
 import com.demo.model.EnfordProductCommodity;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;

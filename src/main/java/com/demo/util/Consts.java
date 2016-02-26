@@ -6,6 +6,9 @@ package com.demo.util;
  */
 public interface Consts {
 
+    public static final String HTTP_URL = "http://192.168.31.130:8080/";
+    //public static final String HTTP_URL = "http://weixin.enford.com.cn/sg/";
+
     public static final String MENU_STATE_OPEN = "open";
     public static final String MENU_STATE_CLOSED = "closed";
 
@@ -30,5 +33,11 @@ public interface Consts {
 
     public static final int MISS_TAG_NOT_MISS = 0;
     public static final int MISS_TAG_MISS = 1;
+
+    public static final String TOKEN = "weiphp";
+
+    public static final String APP_ID = "wx2eec10e84259d4f9";
+    public static final String APP_SECRET_KEY = "237e76067bf76223ad18940e4036dc82";
+    public static final String ENCODING_AES_KEY = "3aAdCcbkSuz9Jw32pAsaUjvU0UALLivMxRtzBMmMFOk";
 
 }

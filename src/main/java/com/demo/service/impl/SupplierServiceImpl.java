@@ -1,7 +1,6 @@
 package com.demo.service.impl;
 
 import com.demo.dao.EnfordProductSupplierMapper;
-import com.demo.model.EnfordProductCategory;
 import com.demo.model.EnfordProductSupplier;
 import com.demo.service.SupplierService;
 import org.springframework.stereotype.Service;

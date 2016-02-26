@@ -53,6 +53,10 @@ public class Config {
         return getProperty("exportpath");
     }
 
+    public static String getProductCode() {
+        return getProperty("product_code");
+    }
+
     /**
      * 获取上传文件的完整路径
      *
