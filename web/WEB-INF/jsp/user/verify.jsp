@@ -14,39 +14,9 @@
   <script src="<%=request.getContextPath() %>/js/login.js" type="text/javascript"></script>
   <link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/css/login.css">
   <link rel="stylesheet" href="<%=request.getContextPath() %>/css/bootstrap.min.css" >
-  <script>
-    function login(){
-      if($("#username").val() ==''){
-        $("#errormsg").html("用户名不能为空!");
-        return false;
-      }
-      if($("#password").val()== ''){
-        $("#errormsg").html("密码不能为空!");
-        return false;
-      }
-      return true;
-    }
-
-    check();
-
-    function check(){
-      $.ajax({
-        url: '<%=request.getContextPath() %>/check/enable',
-        type: 'GET',
-        success: function(data) {
-          var result = eval('('+data+')');
-          if (result.code == '0') {
-            //alert(result.msg);
-          } else {
-            window.location.href = '<%=request.getContextPath() %>/check/verify?errormsg=Error Licence';
-          }
-        }
-      })
-    }
-  </script>
 </head>
 <body>
-<form action="<%=request.getContextPath() %>/dologin" method="post">
+<form action="<%=request.getContextPath() %>/check/update" method="get">
   <div class="top">
     <div class="container">
       <div class="logo">
@@ -61,19 +31,12 @@
     <div class="container">
       <div class="login_input">
         <div class="title" >
-          <p>管理平台</p>
+          <p>请输入Licence</p>
         </div>
         <div class="login_t">
           <div><strong id="errormsg" style="color:red">${errormsg}</strong></div>
-          <input type="text" id="username" name="username" value="${username}" class="form-control" placeholder="用户名"/>
-          <input type="password" id="password" name="password" value="${password}" class="form-control" placeholder="密码"/>
-          <div class="forget_pass">
-            <label class="forget">
-              <input name="rememberpwd" id="rememberpwd" type="checkbox" checked="${rememberpwd}"/>记住密码
-            </label>
-            <span><a href="">忘记密码?</a></span>
-          </div>
-          <button type="submit" id="btnLogin" class="login_btn" onclick="return login();">登录</button>
+          <textarea maxlength="100" id="licence" name="licence" class="form-control" placeholder="Licence"></textarea>
+          <button type="submit" id="btnLogin" class="login_btn" onclick="return check();">验证</button>
         </div>
       </div>
     </div>   

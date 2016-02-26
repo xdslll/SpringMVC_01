@@ -57,6 +57,13 @@ public class Config {
         return getProperty("product_code");
     }
 
+    public static String getLicencePath() {
+        return getProperty("licencepath");
+    }
+
+    public static String getSecrectKey() {
+        return getProperty("secret_key");
+    }
     /**
      * 获取上传文件的完整路径
      *
@@ -89,5 +96,4 @@ public class Config {
         String fileType = importHistory.getFileType();
         return fileName + "." + fileType;
     }
-
 }

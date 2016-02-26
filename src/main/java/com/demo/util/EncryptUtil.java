@@ -1,5 +1,9 @@
 package com.demo.util;
 
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
+
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -36,15 +40,14 @@ public class EncryptUtil {
             md = MessageDigest.getInstance(encName);
             md.update(bt);
             strDes = bytes2Hex(md.digest());  //to HexString
-        }
-        catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             System.out.println("Invalid algorithm.");
             return null;
         }
         return strDes;
     }
 
-    public static String bytes2Hex(byte[]bts) {
+    public static String bytes2Hex(byte[] bts) {
         String des = "";
         String tmp = null;
         for (int i = 0; i < bts.length; i++) {
@@ -55,6 +58,37 @@ public class EncryptUtil {
             des += tmp;
         }
         return des;
+    }
+
+    // 加密
+    public static String encodeBase64(String str) {
+        byte[] b = null;
+        String s = null;
+        try {
+            b = str.getBytes("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        if (b != null) {
+            s = new BASE64Encoder().encode(b);
+        }
+        return s;
+    }
+
+    // 解密
+    public static String decodeBase64(String str) {
+        byte[] b = null;
+        String result = null;
+        if (str != null) {
+            BASE64Decoder decoder = new BASE64Decoder();
+            try {
+                b = decoder.decodeBuffer(str);
+                result = new String(b, "utf-8");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
 }
