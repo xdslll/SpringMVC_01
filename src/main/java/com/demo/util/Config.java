@@ -64,6 +64,11 @@ public class Config {
     public static String getSecrectKey() {
         return getProperty("secret_key");
     }
+
+    public static String getTempPath() {
+        return getProperty("temppath");
+    }
+
     /**
      * 获取上传文件的完整路径
      *

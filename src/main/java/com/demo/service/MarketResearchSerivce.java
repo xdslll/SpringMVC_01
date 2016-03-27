@@ -170,14 +170,13 @@ public interface MarketResearchSerivce {
      * @param ifCoverData
      * @return
      */
-    boolean importMarketResearchData(
-            EnfordProductImportHistory importHistory,
-            EnfordSystemUser user,
-            boolean ifCoverData);
+    boolean importMarketResearchData(EnfordProductImportHistory importHistory, EnfordSystemUser user, boolean ifCoverData);
 
-    boolean importDeptData(
-            EnfordProductImportHistory importHistory,
-            boolean ifCoverData);
+    boolean importDeptData(EnfordProductImportHistory importHistory, boolean ifCoverData);
+
+    boolean importAreaData(EnfordProductImportHistory importHistory, boolean ifCoverData);
+
+    boolean importEmployeeData(EnfordProductImportHistory importHistory, boolean ifCoverData);
 
     int countMarketResearchByParam(Map<String, Object> param);
 

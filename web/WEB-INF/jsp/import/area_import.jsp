@@ -24,11 +24,10 @@
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-20130406125647919_easyicon_net_16'" onclick="newDlg()">上传</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-20130406011050744_easyicon_net_16'" onclick="importExcel()">导入</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="removeDlg()">删除</a>
-    <!--<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="testImport()">测试</a>-->
 </div>
 <table id="dg" title="导入历史" class="easyui-datagrid" style="width:100%;height:500px;"
        data-options="
-                url: '<%=request.getContextPath()%>/import/get?type=1',
+                url: '<%=request.getContextPath()%>/import/get?type=3',
                 method: 'get',
                 idField: 'id',
                 showFooter: true,
@@ -74,7 +73,7 @@
 
     function upload() {
         $('#uploadfrm').form('submit',{
-            url: '<%=request.getContextPath()%>/import/excel?type=1',
+            url: '<%=request.getContextPath()%>/import/excel?type=3',
             onSubmit: function(){
                 return $(this).form('validate');
             },
@@ -93,38 +92,37 @@
     //执行导入操作
     function importExcel() {
         $.messager.confirm('确定','是否开始导入?',
-            function(r) {
-                var ifCover = 0;
-                if (r) {
-                    ifCover = 1;
-                } else {
-                    ifCover = 0;
-                }
-                if (ifCover == 1) {
-                    var row = $('#dg').datagrid('getSelected');
-                    var json = JSON.stringify(row);
-                    url = '<%=request.getContextPath()%>/import/do?ifCover=' + ifCover;
-                    $.ajax({
-                        type: 'post',
-                        url: url,
-                        data: 'data=' + json,
-                        dataType: 'json',
-                        beforeSend: function() {
-                            ajaxLoading();
-                        },
-                        success: function(data) {
-                            var result = eval('('+data+')');
-                            if (data.code != '0') {
-                                $.messager.alert('操作失败', data.msg, 'error');
-                            } else {
-                                $.messager.alert('操作成功', data.msg, 'info');
+                function(r) {
+                    var ifCover = 0;
+                    if (r) {
+                        ifCover = 1;
+                    } else {
+                        ifCover = 0;
+                    }
+                    if (ifCover == 1) {
+                        var row = $('#dg').datagrid('getSelected');
+                        var json = JSON.stringify(row);
+                        url = '<%=request.getContextPath()%>/import/area/do?ifCover=' + ifCover;
+                        $.ajax({
+                            type: 'post',
+                            url: url,
+                            data: 'data=' + json,
+                            dataType: 'json',
+                            beforeSend: function() {
+                                ajaxLoading();
+                            },
+                            success: function(data) {
+                                if (data.code != '0') {
+                                    $.messager.alert('操作失败', data.msg, 'error');
+                                } else {
+                                    $.messager.alert('操作成功', data.msg, 'info');
+                                }
+                                ajaxLoadEnd();
+                                $('#dg').datagrid('reload');
                             }
-                            ajaxLoadEnd();
-                            $('#dg').datagrid('reload');
-                        }
-                    })
-                }
-        });
+                        })
+                    }
+                });
     }
 
     //删除菜单
@@ -164,15 +162,6 @@
                 }
             }
         });
-    }
-
-    function testImport() {
-        $.get("<%=request.getContextPath()%>/import/test",
-            function(r) {
-                if (r) {
-                    alert(r);
-                }
-            });
     }
 
 </script>

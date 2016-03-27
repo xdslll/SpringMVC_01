@@ -19,4 +19,6 @@ public interface DeptService {
     int deleteDept(int id);
 
     EnfordProductDepartment getDepartmentByDeptId(int deptId);
+
+    EnfordProductDepartment getDepartmentByDeptCode(String deptCode);
 }

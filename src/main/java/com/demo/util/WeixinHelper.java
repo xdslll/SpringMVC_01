@@ -206,22 +206,20 @@ public final class WeixinHelper implements Consts {
 
     public static WeixinMenuButtonType createMenuThree() {
         WeixinMenuButtonType menuButton = new WeixinMenuButtonType();
-        menuButton.setName("服务天地");
-        menuButton.setKey("INTERACTION");
+        menuButton.setName("关于我们");
+        menuButton.setKey("ABOUT");
 
         WeixinMenuSubButton subButton1 = new WeixinMenuSubButton();
         subButton1.setType("click");
-        subButton1.setName("常用服务");
-        subButton1.setKey("INTERACTION_SELF_SERVICE");
+        subButton1.setName("绑定会员账号");
+        subButton1.setKey("ABOUT_BIND");
 
         WeixinMenuSubButton subButton2 = new WeixinMenuSubButton();
-        subButton2.setName("研讨室预约");
-        //subButton2.setType("click");
-        //subButton2.setKey("INTERACTION_QA");
-        subButton2.setType("view");
-        subButton2.setUrl("http://xkfw.shou.edu.cn/wap/ytsyy.php");
+        subButton2.setType("click");
+        subButton2.setName("取消账号绑定");
+        subButton2.setKey("ABOUT_UNBIND");
 
-        WeixinMenuSubButton subButton3 = new WeixinMenuSubButton();
+        /*WeixinMenuSubButton subButton3 = new WeixinMenuSubButton();
         subButton3.setName("电子教参");
         subButton3.setType("view");
         subButton3.setUrl("http://shfujc.superlib.com:8012/mobile/");
@@ -238,13 +236,13 @@ public final class WeixinHelper implements Consts {
         subButton5.setName("加入图书馆");
         subButton5.setKey("INTERACTION_JOIN");
         //subButton5.setUrl("http://xkfw.shou.edu.cn/wap/m.php?id=8");
-
+*/
         List<WeixinMenuSubButton> subButtons = new ArrayList<WeixinMenuSubButton>();
         subButtons.add(subButton1);
         subButtons.add(subButton2);
-        subButtons.add(subButton3);
-        subButtons.add(subButton4);
-        subButtons.add(subButton5);
+        //subButtons.add(subButton3);
+        //subButtons.add(subButton4);
+        //subButtons.add(subButton5);
         menuButton.setSub_button(subButtons);
 
         return menuButton;
@@ -304,7 +302,7 @@ public final class WeixinHelper implements Consts {
 
         WeixinMenuButtonType menuButtonOne = createMenuOne();
         //WeixinMenuButtonType menuButtonTwo = createMenuTwo();
-        //WeixinMenuButtonType menuButtonThree = createMenuThree();
+        WeixinMenuButtonType menuButtonThree = createMenuThree();
 
         //WeixinMenuButtonType menuTestButton = createTestMenu();
         //WeixinMenuButtonType menuLocationButton = createLocationMenu();
@@ -313,7 +311,7 @@ public final class WeixinHelper implements Consts {
         List<WeixinMenuButtonType> menuTypes = new ArrayList<WeixinMenuButtonType>();
         menuTypes.add(menuButtonOne);
         //menuTypes.add(menuButtonTwo);
-        //menuTypes.add(menuButtonThree);
+        menuTypes.add(menuButtonThree);
         //menuTypes.add(menuTestButton);
         //menuTypes.add(menuLocationButton);
 

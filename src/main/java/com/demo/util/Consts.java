@@ -6,7 +6,7 @@ package com.demo.util;
  */
 public interface Consts {
 
-    public static final String HTTP_URL = "http://192.168.31.130:8080/";
+    public static final String HTTP_URL = "http://192.168.1.180:8080/";
     //public static final String HTTP_URL = "http://weixin.enford.com.cn/sg/";
 
     public static final String MENU_STATE_OPEN = "open";

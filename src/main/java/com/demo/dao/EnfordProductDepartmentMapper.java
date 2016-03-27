@@ -57,4 +57,8 @@ public interface EnfordProductDepartmentMapper {
     List<EnfordProductDepartment> selectByParam(Map<String, Object> param);
 
     List<EnfordProductDepartment> selectAll();
+
+    List<EnfordProductDepartment> selectByResId(Map<String, Object> param);
+
+    List<EnfordProductDepartment> selectByAreaName(Map<String, Object> param);
 }

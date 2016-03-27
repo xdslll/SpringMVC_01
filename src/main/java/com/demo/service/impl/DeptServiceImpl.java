@@ -10,7 +10,9 @@ import com.demo.service.DeptService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author xiads
@@ -65,5 +67,12 @@ public class DeptServiceImpl implements DeptService {
     @Override
     public EnfordProductDepartment getDepartmentByDeptId(int deptId) {
         return deptMapper.selectByPrimaryKey(deptId);
+    }
+
+    @Override
+    public EnfordProductDepartment getDepartmentByDeptCode(String deptCode) {
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("code", deptCode);
+        return deptMapper.selectByParam(param).get(0);
     }
 }

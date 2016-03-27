@@ -17,6 +17,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -46,9 +48,17 @@ public class MarketResearchController implements Consts {
     @Resource
     CommodityPriceService priceService;
 
+    @Resource
+    AreaService areaService;
+
     @RequestMapping("/market_research/manage")
     public String marketResearchList() {
         return "/market_research/market_research";
+    }
+
+    @RequestMapping("/market_research/export2")
+    public String marketResearchExport() {
+        return "/market_research/market_research_export";
     }
 
     @RequestMapping("/market_research/get")
@@ -138,10 +148,181 @@ public class MarketResearchController implements Consts {
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }
 
+    @RequestMapping("/market_research/export_area")
+    public void exportArea(HttpServletRequest req, HttpServletResponse resp,
+                           @RequestParam("resId") int resId) {
+        List<EnfordProductDepartment> deptList = null;
+        BufferedInputStream in = null;
+        BufferedOutputStream out = null;
+        try {
+            //获取参数
+            String areaName = new String(req.getParameter("areaName").getBytes("ISO-8859-1"), "UTF-8");
+            System.out.println("resId=" + resId);
+            System.out.println("areaName=" + areaName);
+            //获取所有的部门列表
+            deptList = areaService.getAreaDept(resId, areaName);
+            System.out.println("deptList.size()=" + deptList.size());
+            //在上传目录下新建一个区域目录
+            String dirPath = Config.getExportPath();
+            //查询是否存在区域目录,如存在,则直接删除
+            dirPath = dirPath + areaName + "/";
+            System.out.println("dir path=" + dirPath);
+            File dir = new File(dirPath);
+            if (dir.exists()) {
+                File[] files = dir.listFiles();
+                for (File f : files) {
+                    f.delete();
+                }
+                dir.delete();
+            }
+            //重新创建文件夹
+            dir.mkdirs();
+            //依次导出所有文件
+            for (int i = 0; i < deptList.size(); i++) {
+                System.out.println("正在执行第" + (i + 1) + "次导出");
+                exportExcel(deptList.get(i), dir, resId);
+                System.out.println("第" + (i + 1) + "次导出执行完毕");
+            }
+            System.out.println("开始压缩...");
+            File zipFile = new File(Config.getExportPath(), areaName + ".zip");
+
+            if (zipFile.exists()) {
+                zipFile.delete();
+            }
+            //压缩文件夹
+            boolean r = FileHelper.fileToZip(dir.getPath(), Config.getExportPath(), areaName);
+            if (r) {
+                resp.setContentType("text/html;charset=UTF-8");
+                req.setCharacterEncoding("UTF-8");
+                resp.setContentType("application/zip");
+                resp.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(zipFile.getName(), "UTF-8"));
+                resp.setHeader("Content-Length", String.valueOf(zipFile.length()));
+                in = new BufferedInputStream(new FileInputStream(zipFile));
+                out = new BufferedOutputStream(resp.getOutputStream());
+                byte[] data = new byte[1024];
+                int len = 0;
+                while (-1 != (len = in.read(data, 0, data.length))) {
+                    out.write(data, 0, len);
+                }
+                out.flush();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                in.close();
+            }
+            catch (Exception ex) {
+                logger.error("exception occurred when exportExcel: " + ex);
+            }
+            try {
+                out.close();
+            }
+            catch (Exception ex) {
+                logger.error("exception occurred when exportExcel: " + ex);
+            }
+        }
+    }
+
+    private void exportExcel(EnfordProductDepartment department, File exportDir, int resId) {
+        FileOutputStream fos = null;
+        FileInputStream fis = null;
+        try {
+            //获取市调清单
+            EnfordMarketResearch research = marketService.getMarketResearchById(resId);
+            //获取导入文件id
+            int importId = research.getImportId();
+            //获取市调清单的Excel文件
+            EnfordProductImportHistory importHistory = uploadService.getImportHistoryById(importId);
+            File originFile = Config.getUploadFile(importHistory);
+            System.out.println("origin file: " + originFile.getAbsolutePath());
+            //获取市调清单名称
+            String researchName = research.getName();
+            //根据部门id生成唯一的导出文件名
+            String exportFileName = researchName + "_" + department.getName() + "." + importHistory.getFileType();
+            File exportFile = new File(exportDir, exportFileName);
+            if (exportFile.exists()) {
+                exportFile.delete();
+            }
+            System.out.println(exportFile.getAbsolutePath());
+            //将市调清单文件复制到导出文件夹
+            fis = new FileInputStream(originFile);
+            fos = new FileOutputStream(exportFile);
+            //回写Excel数据
+            Workbook book = ExcelUtil.read(fis);
+            Sheet sheet = book.getSheetAt(0);
+            //获取总行数
+            int rowNum = sheet.getLastRowNum() + 1;
+            //去除标题和列名
+            int firstRow = sheet.getFirstRowNum() + 2;
+            //解析市调数据,回写价格数据
+            for (int index = firstRow; index < rowNum; index++) {
+                //获取商品信息
+                Row row = sheet.getRow(index);
+                //获取商品四级分类编码
+                Cell categoryCodeCell = ExcelUtil.getCell(row, 2);
+                //获取商品名称
+                Cell codNameCell = ExcelUtil.getCell(row, 6);
+                //获取商品条形码
+                Cell barcodeCell = ExcelUtil.getCell(row, 9);
+                //获取竞争门店促销价
+                Cell promptPriceCell = ExcelUtil.getCell(row, 19);
+                //获取竞争门店零售价
+                Cell retailPriceCell = ExcelUtil.getCell(row, 18);
+
+                int categoryCode = Integer.parseInt(categoryCodeCell.getStringCellValue());
+                String barcode = barcodeCell.getStringCellValue();
+                String pName = codNameCell.getStringCellValue();
+                //根据条形码,分类码和品名获取商品信息
+                Map<String, Object> param = new HashMap<String, Object>();
+                param.put("categoryCode", categoryCode);
+                param.put("barCode", barcode);
+                param.put("pName", pName);
+                List<EnfordProductCommodity> commodityList = commodityService.selectByParam(param);
+                if (commodityList != null && commodityList.size() > 0) {
+                    EnfordProductCommodity commodity = commodityList.get(0);
+                    //根据商品信息,市调清单id,所属部门id查询商品价格
+                    param.clear();
+                    param.put("comId", commodity.getId());
+                    param.put("resId", resId);
+                    param.put("deptId", department.getId());
+                    List<EnfordProductPrice> priceList = priceService.getPrice(param);
+                    if (priceList != null && priceList.size() > 0) {
+                        EnfordProductPrice price = priceList.get(0);
+                        if (price != null && price.getPromptPrice() != null) {
+                            promptPriceCell.setCellValue(price.getPromptPrice());
+                        }
+                        if (price != null && price.getRetailPrice() != null) {
+                            retailPriceCell.setCellValue(price.getRetailPrice());
+                        }
+                    }
+                }
+            }
+            book.write(fos);
+        }
+        catch (Exception ex) {
+            logger.error("exception occurred when exportExcel: " + ex);
+            ex.printStackTrace();
+        }
+        finally {
+            try {
+                fis.close();
+            }
+            catch (Exception ex) {
+                logger.error("exception occurred when exportExcel: " + ex);
+            }
+            try {
+                fos.close();
+            }
+            catch (Exception ex) {
+                logger.error("exception occurred when exportExcel: " + ex);
+            }
+        }
+    }
+
     @RequestMapping("/market_research/export")
     public void exportMarketResearch(HttpServletRequest request, HttpServletResponse response,
-                                  @RequestParam("resId") int resId,
-                                  @RequestParam("deptId") int deptId) {
+                                  @RequestParam("resId") int resId) {
         BufferedInputStream in = null;
         BufferedOutputStream out = null;
         FileOutputStream fos = null;
@@ -154,7 +335,17 @@ public class MarketResearchController implements Consts {
             //获取市调清单的Excel文件
             EnfordProductImportHistory importHistory = uploadService.getImportHistoryById(importId);
             //根据部门id获取部门信息
-            EnfordProductDepartment department = deptService.getDepartmentByDeptId(deptId);
+            EnfordProductDepartment department;
+            String deptIdStr = request.getParameter("deptId");
+            int deptId;
+            if (!StringUtil.isEmpty(deptIdStr)) {
+                deptId = Integer.parseInt(deptIdStr);
+                department = deptService.getDepartmentByDeptId(deptId);
+            } else {
+                String deptCode = request.getParameter("deptCode");
+                department = deptService.getDepartmentByDeptCode(deptCode);
+                deptId = department.getId();
+            }
             File originFile = Config.getUploadFile(importHistory);
             System.out.println("origin file: " + originFile.getAbsolutePath());
             //获取导出文件夹
@@ -223,8 +414,12 @@ public class MarketResearchController implements Consts {
                     List<EnfordProductPrice> priceList = priceService.getPrice(param);
                     if (priceList != null && priceList.size() > 0) {
                         EnfordProductPrice price = priceList.get(0);
-                        promptPriceCell.setCellValue(price.getPromptPrice());
-                        retailPriceCell.setCellValue(price.getRetailPrice());
+                        if (price != null && price.getPromptPrice() != null) {
+                            promptPriceCell.setCellValue(price.getPromptPrice());
+                        }
+                        if (price != null && price.getRetailPrice() != null) {
+                            retailPriceCell.setCellValue(price.getRetailPrice());
+                        }
                     }
                 }
             }

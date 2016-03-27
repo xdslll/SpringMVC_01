@@ -12,6 +12,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 微信相关的操作
@@ -26,7 +29,16 @@ public class WexinController implements Consts {
 
     @RequestMapping("/weixin/check")
     public void check(HttpServletRequest req, HttpServletResponse resp) {
-        try {
+        Map param = req.getParameterMap();
+        Set<Map.Entry> set = param.entrySet();
+        Iterator<Map.Entry> it = set.iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = it.next();
+            System.out.println("------------------------");
+            System.out.println(entry.getKey().toString() + "=" + entry.getValue().toString());
+            System.out.println("------------------------");
+        }
+        /*try {
             String echostr = req.getParameter("echostr");
             String timestamp = req.getParameter("timestamp");
             String nonce = req.getParameter("nonce");
@@ -39,7 +51,7 @@ public class WexinController implements Consts {
             }
         } catch (Exception ex) {
             ResponseUtil.writeStringResponse(resp, "error!");
-        }
+        }*/
     }
 
     /**

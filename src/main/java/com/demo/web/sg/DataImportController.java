@@ -10,7 +10,9 @@ import com.google.gson.Gson;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.aspectj.util.FileUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -46,6 +48,16 @@ public class DataImportController {
     @RequestMapping("/import/dept")
     public String importDept() {
         return "import/dep_import";
+    }
+
+    @RequestMapping("/import/area")
+    public String importArea() {
+        return "import/area_import";
+    }
+
+    @RequestMapping("/import/employee")
+    public String importEmployee() {
+        return "import/employee_import";
     }
 
     @RequestMapping("/import/get")
@@ -85,6 +97,34 @@ public class DataImportController {
      */
     @RequestMapping("/import/excel")
     public void importExcel(HttpServletRequest req, HttpServletResponse resp, int type) {
+        uploadExcelFile(req, resp, type);
+    }
+
+    private void createFolder(String filePath) {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+    }
+
+    /*
+    private void uploadExcelFile2() {
+        //获取临时目录
+        String tempPath = Config.getTempPath();
+        //文件目录名
+        String filePath = Config.getUploadFilePath();
+        createFolder(tempPath);
+        createFolder(filePath);
+        DiskFileItemFactory factory = new DiskFileItemFactory();
+        //设置最大缓存
+        factory.setSizeThreshold(5 * 1024);
+        //设置临时文件目录
+        factory.setRepository(new File(tempPath));
+        ServletFileUpload upload = new ServletFileUpload(factory);
+    }
+    */
+
+    private void uploadExcelFile(HttpServletRequest req, HttpServletResponse resp, int type) {
         BufferedInputStream bis = null;
         BufferedOutputStream bos = null;
         RespBody<String> respBody = new RespBody<String>();
@@ -92,7 +132,9 @@ public class DataImportController {
             DiskFileItemFactory factory = new DiskFileItemFactory();
             factory.setSizeThreshold(4 * 1024);
             File uploadDir = new File(Config.getUploadFilePath());
-            factory.setRepository(uploadDir);
+            File tempDir = new File(Config.getTempPath());
+            //factory.setRepository(uploadDir);
+            factory.setRepository(tempDir);
             ServletFileUpload upload = new ServletFileUpload(factory);
             upload.setSizeMax(100 * 1024 * 1024);
             List items = upload.parseRequest(req);
@@ -123,6 +165,10 @@ public class DataImportController {
                         fileName = fileName.substring(0, fileName.lastIndexOf(".xls"));
                     }
                     File storeFile = new File(Config.getUploadFilePath() + storeFileName + endPrex);
+                    System.out.println("upload file: " + storeFile.toString());
+                    if (!storeFile.exists()) {
+                        storeFile.createNewFile();
+                    }
                     item.write(storeFile);
 
                     importHistory.setFilePath(randomStr);
@@ -141,6 +187,7 @@ public class DataImportController {
             respBody.setMsg("上传成功");
         }
         catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("error occured when importExcel:" + ex);
             respBody.setCode(Consts.FAILED);
             respBody.setCode("上传失败");
@@ -189,6 +236,18 @@ public class DataImportController {
         doImport(req, resp, data, ifCover, 2);
     }
 
+    @RequestMapping("/import/area/do")
+    public void doImportArea(HttpServletRequest req, HttpServletResponse resp,
+                             String data, int ifCover) {
+        doImport(req, resp, data, ifCover, 3);
+    }
+
+    @RequestMapping("/import/employee/do")
+    public void doImportEmployee(HttpServletRequest req, HttpServletResponse resp,
+                             String data, int ifCover) {
+        doImport(req, resp, data, ifCover, 4);
+    }
+
     private void doImport(HttpServletRequest req, HttpServletResponse resp,
                           String data, int ifCover, int type) {
         boolean ifCoverData;
@@ -229,6 +288,30 @@ public class DataImportController {
                     respBody.setMsg("导入出错:未找到Excel文件或Excel解析失败!");
                 }
                 uploadService.updateImportHistory(importHistory);
+            } else if (type == 3) {
+                if (marketService.importAreaData(
+                        importHistory, ifCoverData)) {
+                    importHistory.setState(Consts.IMPORT_STATE_HAVE_IMPORT);
+                    respBody.setCode(Consts.SUCCESS);
+                    respBody.setMsg("导入成功");
+                } else {
+                    importHistory.setState(Consts.IMPORT_STATE_IMPORT_FAILED);
+                    respBody.setCode(Consts.FAILED);
+                    respBody.setMsg("导入出错:未找到Excel文件或Excel解析失败!");
+                }
+                uploadService.updateImportHistory(importHistory);
+            } else if (type == 4) {
+                if (marketService.importEmployeeData(
+                        importHistory, ifCoverData)) {
+                    importHistory.setState(Consts.IMPORT_STATE_HAVE_IMPORT);
+                    respBody.setCode(Consts.SUCCESS);
+                    respBody.setMsg("导入成功");
+                } else {
+                    importHistory.setState(Consts.IMPORT_STATE_IMPORT_FAILED);
+                    respBody.setCode(Consts.FAILED);
+                    respBody.setMsg("导入出错:未找到Excel文件或Excel解析失败!");
+                }
+                uploadService.updateImportHistory(importHistory);
             }
         }
         catch (Exception ex) {
@@ -237,6 +320,8 @@ public class DataImportController {
             respBody.setMsg("导入出错:" + ex.getMessage());
             importHistory.setState(Consts.IMPORT_STATE_IMPORT_FAILED);
             uploadService.updateImportHistory(importHistory);
+
+            ex.printStackTrace();
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }

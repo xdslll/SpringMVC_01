@@ -62,6 +62,9 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
     @Resource
     EnfordMarketResearchDeptMapper researchDeptMapper;
 
+    @Resource
+    EnfordProductAreaMapper areaMapper;
+
     @Override
     public int countCategory(EnfordProductCategory category) {
         return categoryMapper.countByCode(category.getCode());
@@ -549,6 +552,108 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+        return ret;
+    }
+
+    @Transactional
+    @Override
+    public boolean importAreaData(EnfordProductImportHistory importHistory, boolean ifCoverData) {
+        boolean ret = false;
+        //获取Excel文件对象
+        File excelFile = Config.getFilePath(importHistory,
+                Config.getUploadFilePath());
+        //判断文件是否存在
+        if (excelFile.exists()) {
+            Workbook workbook = null;
+            try {
+                workbook = ExcelUtil.read(excelFile);
+                Sheet sheet = workbook.getSheetAt(0);
+                //获取总行数
+                int rowNum = sheet.getLastRowNum() + 1;
+                //去除标题和列名
+                int firstRow = sheet.getFirstRowNum() + 1;
+                for (int index = firstRow; index < rowNum; index++) {
+                    Row row = sheet.getRow(index);
+                    //获取所在区域
+                    Cell areaCell = getCell(row, 0);
+                    //获取名店编号
+                    Cell codeCell = getCell(row, 1);
+                    Map<String, Object> param = new HashMap<String, Object>();
+                    if (areaCell != null && codeCell != null) {
+                        //查询区域是否存在
+                        String areaName = areaCell.getStringCellValue();
+                        param.clear();
+                        param.put("name", areaName);
+                        List<EnfordProductArea> areaList = areaMapper.selectByParam(param);
+                        EnfordProductArea area = null;
+                        if (areaList == null || areaList.size() == 0) {
+                            area = new EnfordProductArea();
+                            area.setName(areaName);
+                            int count = areaMapper.insertSelective(area);
+                            if (count > 0) {
+                                area = areaMapper.selectByParam(param).get(0);
+                            }
+                        } else {
+                            area = areaList.get(0);
+                        }
+                        //更新部门的区域id
+                        String deptCode = codeCell.getStringCellValue();
+                        param.clear();
+                        param.put("code", deptCode);
+                        List<EnfordProductDepartment> deptList = deptMapper.selectByParam(param);
+                        if (deptList != null && deptList.size() > 0 && deptList.get(0) != null) {
+                            EnfordProductDepartment dept = deptList.get(0);
+                            dept.setAreaId(area.getId());
+                            deptMapper.updateByPrimaryKeySelective(dept);
+                        }
+                        ret = true;
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return ret;
+    }
+
+    @Override
+    public boolean importEmployeeData(EnfordProductImportHistory importHistory, boolean ifCoverData) {
+        boolean ret = false;
+        //获取Excel文件对象
+        File excelFile = Config.getFilePath(importHistory,
+                Config.getUploadFilePath());
+        //判断文件是否存在
+        if (excelFile.exists()) {
+            Workbook workbook = null;
+            try {
+                workbook = ExcelUtil.read(excelFile);
+                Sheet sheet = workbook.getSheetAt(0);
+                //获取总行数
+                int rowNum = sheet.getLastRowNum() + 1;
+                //去除标题和列名
+                int firstRow = sheet.getFirstRowNum() + 1;
+                for (int index = firstRow; index < rowNum; index++) {
+                    Row row = sheet.getRow(index);
+                    //获取门店编号
+                    Cell deptCodeCell = getCell(row, 1);
+                    //获取市调人员姓名
+                    Cell empNameCell = getCell(row, 3);
+                    //获取市调人员工号
+                    Cell empCodeCell = getCell(row, 4);
+                    Map<String, Object> param = new HashMap<String, Object>();
+                    if (deptCodeCell != null &&
+                            empNameCell != null &&
+                            empCodeCell != null) {
+                        String deptCode = deptCodeCell.getStringCellValue();
+                        String empName = empNameCell.getStringCellValue();
+                        String empCode = empCodeCell.getStringCellValue();
+
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
         return ret;
