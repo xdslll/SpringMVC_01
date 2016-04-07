@@ -87,8 +87,8 @@
         <table tableName="enford_custom_product" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false"/>
         <table tableName="enford_user" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
-               enableUpdateByExample="false"/>-->
-        <table tableName="enford_product_area" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false"/>
+        <table tableName="enford_product_area" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false"/>-->
     </context>
 </generatorConfiguration>

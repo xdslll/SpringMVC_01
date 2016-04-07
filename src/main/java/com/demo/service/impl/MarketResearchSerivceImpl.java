@@ -4,10 +4,7 @@ import com.demo.dao.*;
 import com.demo.model.*;
 import com.demo.model.EnfordSystemUser;
 import com.demo.service.MarketResearchSerivce;
-import com.demo.util.Config;
-import com.demo.util.Consts;
-import com.demo.util.ExcelUtil;
-import com.demo.util.StringUtil;
+import com.demo.util.*;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -162,7 +159,7 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
 
     @Override
     public int addResearchCommodity(EnfordMarketResearchCommodity researchCommodity) {
-        return researchCommodityMapper.insert(researchCommodity);
+        return researchCommodityMapper.insertSelective(researchCommodity);
     }
 
     @Override
@@ -422,7 +419,7 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
                         //将市调清单和商品的对应关系插入数据库
                         addResearchCommodity(researchCommodity);
                     } catch (Exception ex) {
-
+                        ex.printStackTrace();
                     }
                 }
                 ret = true;
@@ -642,16 +639,26 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
                     Cell empNameCell = getCell(row, 3);
                     //获取市调人员工号
                     Cell empCodeCell = getCell(row, 4);
-                    Map<String, Object> param = new HashMap<String, Object>();
+                    //Map<String, Object> param = new HashMap<String, Object>();
                     if (deptCodeCell != null &&
                             empNameCell != null &&
                             empCodeCell != null) {
                         String deptCode = deptCodeCell.getStringCellValue();
                         String empName = empNameCell.getStringCellValue();
                         String empCode = empCodeCell.getStringCellValue();
-
+                        System.out.println("部门编号:" + deptCode);
+                        System.out.println("员工姓名:" + empName);
+                        System.out.println("员工工号:" + empCode);
+                        EnfordSystemUser user = new EnfordSystemUser();
+                        user.setName(empName);
+                        user.setUsername(empCode);
+                        user.setPassword(EncryptUtil.md5(empCode));
+                        user.setDeptId(Integer.valueOf(deptCode));
+                        user.setOrgId(11);
+                        userMapper.insertSelective(user);
                     }
                 }
+                ret = true;
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
