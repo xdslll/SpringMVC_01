@@ -56,19 +56,17 @@ public class UserController {
             respBody.setCode(Consts.SUCCESS);
             respBody.setMsg("登录成功");
             //登录成功后,将用户信息写入session
-            if (user != null && !StringUtil.isEmpty(rememberpwd)) {
-                if("on".equals(rememberpwd))
-                {
+            if (user != null) {// && !StringUtil.isEmpty(rememberpwd)) {
+                /*if("on".equals(rememberpwd)) {
                     CookiesUtil.saveCookie(resp,"rempwd","1");
                     CookiesUtil.saveCookie(resp,"username",username);
                     CookiesUtil.saveCookie(resp,"password",password);
                 }
-                else
-                {
+                else {
                     CookiesUtil.removeCookie(resp, "rempwd");
                     CookiesUtil.removeCookie(resp,"username");
                     CookiesUtil.removeCookie(resp,"password");
-                }
+                }*/
                 req.getSession().setAttribute("user", user);
 
                 model.addAttribute("user", user);

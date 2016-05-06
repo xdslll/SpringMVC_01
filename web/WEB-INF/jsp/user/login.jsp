@@ -67,12 +67,6 @@
           <div><strong id="errormsg" style="color:red">${errormsg}</strong></div>
           <input type="text" id="username" name="username" value="${username}" class="form-control" placeholder="用户名"/>
           <input type="password" id="password" name="password" value="${password}" class="form-control" placeholder="密码"/>
-          <div class="forget_pass">
-            <label class="forget">
-              <input name="rememberpwd" id="rememberpwd" type="checkbox" checked="${rememberpwd}"/>记住密码
-            </label>
-            <span><a href="">忘记密码?</a></span>
-          </div>
           <button type="submit" id="btnLogin" class="login_btn" onclick="return login();">登录</button>
         </div>
       </div>
