@@ -51,4 +51,16 @@ public final class ExcelUtil {
         return cell;
     }
 
+    public static Cell createCell(Row row, int index) {
+        Cell cell = row.createCell(index);
+        cell.setCellType(Cell.CELL_TYPE_STRING);
+        return cell;
+    }
+
+    public static void copyCell(Row orgRow, Row row, int count) {
+        for (int i = 0; i <= count; i++) {
+            String orgValue = getCell(orgRow, i).getStringCellValue();
+            createCell(row, i).setCellValue(orgValue);
+        }
+    }
 }

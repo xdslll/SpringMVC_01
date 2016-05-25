@@ -154,6 +154,114 @@ public class MarketResearchController implements Consts {
         List<EnfordProductDepartment> deptList = null;
         BufferedInputStream in = null;
         BufferedOutputStream out = null;
+        FileOutputStream fos = null;
+        FileInputStream fis = null;
+        try {
+            //获取参数
+            String areaName = new String(req.getParameter("areaName").getBytes("ISO-8859-1"), "UTF-8");
+            System.out.println("resId=" + resId);
+            System.out.println("areaName=" + areaName);
+            //获取所有的部门列表
+            deptList = areaService.getAreaDept(resId, areaName);
+            System.out.println("deptList.size()=" + deptList.size());
+            //在上传目录下新建一个区域目录
+            String dirPath = Config.getExportPath();
+            //查询是否存在区域目录,如存在,则直接删除
+            dirPath = dirPath + areaName + "/";
+            System.out.println("dir path=" + dirPath);
+            File dir = new File(dirPath);
+            if (dir.exists()) {
+                File[] files = dir.listFiles();
+                for (File f : files) {
+                    f.delete();
+                }
+                dir.delete();
+            }
+            //重新创建文件夹
+            dir.mkdirs();
+
+            //将市调清单复制到文件夹下
+            //获取市调清单
+            EnfordMarketResearch research = marketService.getMarketResearchById(resId);
+            //获取导入文件id
+            int importId = research.getImportId();
+            //获取市调清单的Excel文件
+            EnfordProductImportHistory importHistory = uploadService.getImportHistoryById(importId);
+            File originFile = Config.getUploadFile(importHistory);
+            System.out.println("origin file: " + originFile.getAbsolutePath());
+            //获取市调清单名称
+            String researchName = research.getName();
+            //根据部门id生成唯一的导出文件名
+            String exportFileName = researchName + "_" + System.currentTimeMillis() + "." + importHistory.getFileType();
+            File exportFile = new File(dir, exportFileName);
+            if (exportFile.exists()) {
+                exportFile.delete();
+            }
+            System.out.println(exportFile.getAbsolutePath());
+            //将市调清单文件复制到导出文件夹
+            fis = new FileInputStream(originFile);
+            fos = new FileOutputStream(exportFile);
+
+            //依次导出所有文件
+            Workbook book = ExcelUtil.read(fis);
+            for (int i = 0; i < deptList.size(); i++) {
+            //for (int i = 0; i < 2; i++) {
+                System.out.println("正在执行第" + (i + 1) + "次导出");
+                exportExcel(deptList.get(i), resId, book, i + 1);
+                System.out.println("第" + (i + 1) + "次导出执行完毕");
+            }
+            book.write(fos);
+            resp.setContentType("text/html;charset=UTF-8");
+            req.setCharacterEncoding("UTF-8");
+            resp.setContentType("application/x-excel");
+            //resp.setHeader("Content-Disposition", "attachment; filename=" + Config.getFileName(importHistory));
+            resp.setHeader("Content-Disposition", "attachment; filename=" + exportFileName);
+            resp.setHeader("Content-Length", String.valueOf(exportFile.length()));
+            in = new BufferedInputStream(new FileInputStream(exportFile));
+            out = new BufferedOutputStream(resp.getOutputStream());
+            byte[] data = new byte[1024];
+            int len = 0;
+            while (-1 != (len = in.read(data, 0, data.length)))
+            {
+                out.write(data, 0, len);
+            }
+            out.flush();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                in.close();
+            }
+            catch (Exception ex) {
+                logger.error("exception occurred when exportExcel: " + ex);
+            }
+            try {
+                out.close();
+            }
+            catch (Exception ex) {
+                logger.error("exception occurred when exportExcel: " + ex);
+            }
+            try {
+                fis.close();
+            }
+            catch (Exception ex) {
+                logger.error("exception occurred when exportExcel: " + ex);
+            }
+            try {
+                fos.close();
+            }
+            catch (Exception ex) {
+                logger.error("exception occurred when exportExcel: " + ex);
+            }
+        }
+    }
+
+    /*@RequestMapping("/market_research/export_area")
+    public void exportArea(HttpServletRequest req, HttpServletResponse resp,
+                           @RequestParam("resId") int resId) {
+        List<EnfordProductDepartment> deptList = null;
+        BufferedInputStream in = null;
+        BufferedOutputStream out = null;
         try {
             //获取参数
             String areaName = new String(req.getParameter("areaName").getBytes("ISO-8859-1"), "UTF-8");
@@ -222,53 +330,40 @@ public class MarketResearchController implements Consts {
                 logger.error("exception occurred when exportExcel: " + ex);
             }
         }
-    }
+    }*/
 
-    private void exportExcel(EnfordProductDepartment department, File exportDir, int resId) {
-        FileOutputStream fos = null;
-        FileInputStream fis = null;
+    private void exportExcel(EnfordProductDepartment department, int resId,
+                             Workbook book, int position) {
         try {
-            //获取市调清单
-            EnfordMarketResearch research = marketService.getMarketResearchById(resId);
-            //获取导入文件id
-            int importId = research.getImportId();
-            //获取市调清单的Excel文件
-            EnfordProductImportHistory importHistory = uploadService.getImportHistoryById(importId);
-            File originFile = Config.getUploadFile(importHistory);
-            System.out.println("origin file: " + originFile.getAbsolutePath());
-            //获取市调清单名称
-            String researchName = research.getName();
-            //根据部门id生成唯一的导出文件名
-            String exportFileName = researchName + "_" + department.getName() + "." + importHistory.getFileType();
-            File exportFile = new File(exportDir, exportFileName);
-            if (exportFile.exists()) {
-                exportFile.delete();
-            }
-            System.out.println(exportFile.getAbsolutePath());
-            //将市调清单文件复制到导出文件夹
-            fis = new FileInputStream(originFile);
-            fos = new FileOutputStream(exportFile);
             //回写Excel数据
-            Workbook book = ExcelUtil.read(fis);
             Sheet sheet = book.getSheetAt(0);
             //获取总行数
             int rowNum = sheet.getLastRowNum() + 1;
             //去除标题和列名
             int firstRow = sheet.getFirstRowNum() + 2;
+            int number = rowNum - firstRow;
+            int lastNum = rowNum + 1 + number;
+
             //解析市调数据,回写价格数据
-            for (int index = firstRow; index < rowNum; index++) {
+            for (int index = rowNum + 1; index < lastNum; index++, firstRow++) {
+                System.out.println("position=" + position + ",index=" + index);
                 //获取商品信息
-                Row row = sheet.getRow(index);
+                Row row = sheet.createRow(index);
+                Row orgRow = sheet.getRow(firstRow);
                 //获取商品四级分类编码
-                Cell categoryCodeCell = ExcelUtil.getCell(row, 2);
+                Cell categoryCodeCell = ExcelUtil.getCell(orgRow, 2);
                 //获取商品名称
-                Cell codNameCell = ExcelUtil.getCell(row, 6);
+                Cell codNameCell = ExcelUtil.getCell(orgRow, 6);
                 //获取商品条形码
-                Cell barcodeCell = ExcelUtil.getCell(row, 9);
+                Cell barcodeCell = ExcelUtil.getCell(orgRow, 9);
                 //获取竞争门店促销价
-                Cell promptPriceCell = ExcelUtil.getCell(row, 19);
+                Cell promptPriceCell = ExcelUtil.createCell(row, 19);
                 //获取竞争门店零售价
-                Cell retailPriceCell = ExcelUtil.getCell(row, 18);
+                Cell retailPriceCell = ExcelUtil.createCell(row, 18);
+
+                Cell deptName = ExcelUtil.createCell(row, 21);
+
+                ExcelUtil.copyCell(orgRow, row, 20);
 
                 int categoryCode = Integer.parseInt(categoryCodeCell.getStringCellValue());
                 String barcode = barcodeCell.getStringCellValue();
@@ -297,26 +392,12 @@ public class MarketResearchController implements Consts {
                         }
                     }
                 }
+                deptName.setCellValue(department.getName());
             }
-            book.write(fos);
         }
         catch (Exception ex) {
             logger.error("exception occurred when exportExcel: " + ex);
             ex.printStackTrace();
-        }
-        finally {
-            try {
-                fis.close();
-            }
-            catch (Exception ex) {
-                logger.error("exception occurred when exportExcel: " + ex);
-            }
-            try {
-                fos.close();
-            }
-            catch (Exception ex) {
-                logger.error("exception occurred when exportExcel: " + ex);
-            }
         }
     }
 

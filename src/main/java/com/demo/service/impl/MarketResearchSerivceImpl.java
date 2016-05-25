@@ -635,27 +635,46 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
                     Row row = sheet.getRow(index);
                     //获取门店编号
                     Cell deptCodeCell = getCell(row, 1);
+                    //获取门店名称
+                    Cell deptNameCell = getCell(row, 2);
                     //获取市调人员姓名
-                    Cell empNameCell = getCell(row, 3);
+                    //Cell empNameCell = getCell(row, 3);
                     //获取市调人员工号
-                    Cell empCodeCell = getCell(row, 4);
+                    //Cell empCodeCell = getCell(row, 4);
                     //Map<String, Object> param = new HashMap<String, Object>();
-                    if (deptCodeCell != null &&
-                            empNameCell != null &&
-                            empCodeCell != null) {
+                    if (deptCodeCell != null && deptNameCell != null) {
+                            /*&& empNameCell != null
+                            && empCodeCell != null) {*/
                         String deptCode = deptCodeCell.getStringCellValue();
-                        String empName = empNameCell.getStringCellValue();
-                        String empCode = empCodeCell.getStringCellValue();
-                        System.out.println("部门编号:" + deptCode);
-                        System.out.println("员工姓名:" + empName);
-                        System.out.println("员工工号:" + empCode);
-                        EnfordSystemUser user = new EnfordSystemUser();
-                        user.setName(empName);
-                        user.setUsername(empCode);
-                        user.setPassword(EncryptUtil.md5(empCode));
-                        user.setDeptId(Integer.valueOf(deptCode));
-                        user.setOrgId(11);
-                        userMapper.insertSelective(user);
+                        String deptName = deptNameCell.getStringCellValue();
+                        //String empName = empNameCell.getStringCellValue();
+                        //String empCode = empCodeCell.getStringCellValue();
+                        if (deptCode.length() == 3) {
+                            deptCode = "0" + deptCode;
+                        } else if (deptCode.length() == 2) {
+                            deptCode = "00" + deptCode;
+                        } else if (deptCode.length() == 1) {
+                            deptCode = "000" + deptCode;
+                        }
+                        //生成六个工号
+                        for (int j = 1; j <= 6; j++) {
+                            String empName = deptName + "0" + j;
+                            String empCode = deptCode + "0" + j;
+                            System.out.println("部门编号:" + deptCode);
+                            System.out.println("员工姓名:" + empName);
+                            //System.out.println("员工工号:" + empCode);
+                            EnfordSystemUser user = new EnfordSystemUser();
+                            user.setName(empName);
+                            user.setUsername(empCode);
+                            user.setPassword(EncryptUtil.md5(empCode));
+                            user.setDeptId(Integer.valueOf(deptCode));
+                            user.setOrgId(11);
+                            try {
+                                userMapper.insertSelective(user);
+                            } catch (Exception ex) {
+
+                            }
+                        }
                     }
                 }
                 ret = true;
