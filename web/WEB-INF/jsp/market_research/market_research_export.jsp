@@ -30,7 +30,7 @@
 <div class="main_table">
     <table id="dg" title="市调清单列表" class="easyui-datagrid"
            data-options="
-                url: '<%=request.getContextPath()%>/market_research/get',
+                url: '<%=request.getContextPath()%>/market_research/get?status=2',
                 method: 'get',
                 idField: 'id',
                 showFooter: true,

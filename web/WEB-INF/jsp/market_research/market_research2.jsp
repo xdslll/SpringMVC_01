@@ -25,15 +25,13 @@
     市调清单列表
 ==============================!>
 <div id="toolbar">
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_go'" plain="true" onclick="checkPublish()">发布</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-2012080412301'" plain="true" onclick="checkCallback()">撤回</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_form_magnify'" plain="true" onclick="showDeptDetail()">查看市调门店</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_form_magnify'" plain="true" onclick="showCodDetail()">查看市调商品</a>
 </div>
 <div class="main_table">
     <table id="dg" title="市调清单列表" class="easyui-datagrid"
            data-options="
-                url: '<%=request.getContextPath()%>/market_research/get?status=0',
+                url: '<%=request.getContextPath()%>/market_research/get?status=1',
                 method: 'get',
                 idField: 'id',
                 showFooter: true,

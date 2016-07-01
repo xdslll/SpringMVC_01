@@ -24,6 +24,7 @@
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-20130406125647919_easyicon_net_16'" onclick="newDlg()">上传</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-20130406011050744_easyicon_net_16'" onclick="importExcel()">导入</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="removeDlg()">删除</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="downloadModel()">下载模板</a>
 </div>
 <table id="dg" title="导入历史" class="easyui-datagrid" style="width:100%;height:500px;"
        data-options="
@@ -162,6 +163,10 @@
                 }
             }
         });
+    }
+
+    function downloadModel() {
+        window.location.href = "http://mr.sgcs.com.cn/shidiao/area.xlsx";
     }
 
 </script>

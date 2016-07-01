@@ -24,6 +24,8 @@
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-20130406125647919_easyicon_net_16'" onclick="newDlg()">上传</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-20130406011050744_easyicon_net_16'" onclick="importExcel()">导入</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="removeDlg()">删除</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="downloadModel()">下载模板</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="downloadHelp()">下载帮助</a>
     <!--<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="testImport()">测试</a>-->
 </div>
 <table id="dg" title="导入历史" class="easyui-datagrid" style="width:100%;height:500px;"
@@ -113,7 +115,6 @@
                             ajaxLoading();
                         },
                         success: function(data) {
-                            var result = eval('('+data+')');
                             if (data.code != '0') {
                                 $.messager.alert('操作失败', data.msg, 'error');
                             } else {
@@ -175,6 +176,13 @@
             });
     }
 
+    function downloadModel() {
+        window.location.href = "http://mr.sgcs.com.cn/shidiao/template.xls";
+    }
+
+    function downloadHelp() {
+        window.location.href = "http://mr.sgcs.com.cn/shidiao/help.docx";
+    }
 </script>
 </body>
 </html>

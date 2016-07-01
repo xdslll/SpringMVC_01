@@ -51,9 +51,16 @@ public class MarketResearchController implements Consts {
     @Resource
     AreaService areaService;
 
+    //显示进行中的市调清单
     @RequestMapping("/market_research/manage")
     public String marketResearchList() {
         return "/market_research/market_research";
+    }
+
+    //显示已经结束的市调清单
+    @RequestMapping("/market_research/manage2")
+    public String marketResearchList2() {
+        return "/market_research/market_research2";
     }
 
     @RequestMapping("/market_research/export2")
@@ -65,6 +72,8 @@ public class MarketResearchController implements Consts {
     public void getMarketResearch(HttpServletRequest req, HttpServletResponse resp,
                              @RequestParam("page") int page,
                              @RequestParam("rows") int pageSize) {
+        //市调清单的状态
+        int status = Integer.parseInt(req.getParameter("status"));
         List<EnfordMarketResearch> marketResearchList = null;
         int total = 0;
         try {
@@ -72,6 +81,8 @@ public class MarketResearchController implements Consts {
             //设置页数信息
             param.put("page", (page - 1) * pageSize);
             param.put("pageSize", pageSize);
+            //如果status为0,则只显示进行中的市调清单,如果status为1,则只显示已结束的市调清单,如果status为2,则显示全部的市调清单
+            param.put("status", status);
             //查询市调清单信息
             marketResearchList = marketService.getMarketResearchByParam(param);
             //查询总页数

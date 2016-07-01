@@ -202,6 +202,12 @@
     <if test="id != null">
       and id = #{id,jdbcType=INTEGER}
     </if>
+    <if test="status == 0">
+      and state != 2
+    </if>
+    <if test="status == 1">
+      and state = 2
+    </if>
     <if test="page != null and pageSize != null">
       limit #{page,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
     </if>

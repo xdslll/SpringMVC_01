@@ -234,7 +234,8 @@ INSERT INTO `enford_system_menu` (`id`,`text`,`state`,`parent`,`url`) VALUES (1,
 INSERT INTO `enford_system_menu` (`id`,`text`,`state`,`parent`,`url`) VALUES (2,'基础数据导入','open',0,'');
 INSERT INTO `enford_system_menu` (`id`,`text`,`state`,`parent`,`url`) VALUES (3,'基础数据管理','open',0,'');
 INSERT INTO `enford_system_menu` (`id`,`text`,`state`,`parent`,`url`) VALUES (6,'管理员控制台','open',0,'');
-INSERT INTO `enford_system_menu` (`id`,`text`,`state`,`parent`,`url`) VALUES (11,'市调清单管理','open',1,'/market_research/manage');
+INSERT INTO `enford_system_menu` (`id`,`text`,`state`,`parent`,`url`) VALUES (11,'进行中的市调清单','open',1,'/market_research/manage');
+INSERT INTO `enford_system_menu` (`id`,`text`,`state`,`parent`,`url`) VALUES (12,'已结束的市调清单','open',1,'/market_research/manage2');
 INSERT INTO `enford_system_menu` (`id`,`text`,`state`,`parent`,`url`) VALUES (14,'市调清单导出','open',1,'/market_research/export2');
 INSERT INTO `enford_system_menu` (`id`,`text`,`state`,`parent`,`url`) VALUES (21,'市调清单导入','open',2,'/import');
 INSERT INTO `enford_system_menu` (`id`,`text`,`state`,`parent`,`url`) VALUES (22,'门店数据导入','open',2,'/import/dept');
@@ -287,6 +288,7 @@ INSERT INTO `enford_system_user` (`id`,`username`,`password`,`email`,`name`,`org
 INSERT INTO `enford_system_user` (`id`,`username`,`password`,`email`,`name`,`org_id`,`role_id`,`type`,`dept_id`) VALUES (6,'xiads','e10adc3949ba59abbe56e057f20f883e','247765564@qq.com','夏冬珊',1,13,0,-1);
 INSERT INTO `enford_system_user` (`id`,`username`,`password`,`email`,`name`,`org_id`,`role_id`,`type`,`dept_id`) VALUES (7,'0323','098f6bcd4621d373cade4e832627b4f6','247765564@qq.com','测试员工',11,13,1,4);
 INSERT INTO `enford_system_user` (`id`,`username`,`password`,`email`,`name`,`org_id`,`role_id`,`type`,`dept_id`) VALUES (8,'0324','098f6bcd4621d373cade4e832627b4f6','247765564@qq.com','测试员工2',11,13,1,191);
+INSERT INTO `enford_system_user` (`id`,`username`,`password`,`email`,`name`,`org_id`,`role_id`,`type`,`dept_id`) VALUES (15,'888888','21218cca77804d2ba1922c33e0151105','888888@qq.com','通用',11,0,1,191);
 
 /*
 -- Query: SELECT * FROM test.enford_product_organization
