@@ -90,5 +90,7 @@
                enableUpdateByExample="false"/>
         <table tableName="enford_product_area" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
                enableUpdateByExample="false"/>-->
+        <table tableName="enford_market_location" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false"
+               enableUpdateByExample="false"/>
     </context>
 </generatorConfiguration>

@@ -3,6 +3,7 @@ package com.demo.web.sg;
 import com.alibaba.fastjson.JSONObject;
 import com.demo.model.*;
 import com.demo.service.*;
+import com.demo.sync.SyncHandler;
 import com.demo.util.*;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.sql.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -563,4 +565,22 @@ public class MarketResearchController implements Consts {
             }
         }
     }
+
+    @RequestMapping("/market_research/sync")
+    public void syncMarketResearch(HttpServletRequest req, HttpServletResponse resp) {
+        System.out.println("开始同步市调清单...");
+        RespBody respBody = new RespBody();
+        try {
+            SyncHandler syncHandler = new SyncHandler();
+            syncHandler.syncData();
+
+            respBody.setCode(SUCCESS);
+            respBody.setMsg("同步成功!");
+        } catch (Exception ex) {
+            respBody.setCode(FAILED);
+            respBody.setMsg("同步失败!");
+        }
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
+    }
+
 }

@@ -26,6 +26,7 @@
 ==============================!>
 <div id="toolbar">
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_go'" plain="true" onclick="exportReserch()">导出</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_get'" plain="true" onclick="sync()">同步</a>
 </div>
 <div class="main_table">
     <table id="dg" title="市调清单列表" class="easyui-datagrid"
@@ -111,6 +112,29 @@
             dg.treegrid('options').queryParams = queryParams;
             dg.treegrid('reload');
         }
+    }
+
+    function sync() {
+        url = $("#contextpath").val() + '/market_research/sync';
+        $.ajax({
+            type: 'get',
+            url: url,
+            beforeSend: function() {
+                $.messager.progress({
+                    title:'请稍候',
+                    msg:'正在同步市调清单,请稍候...'
+                });
+            },
+            success: function(data) {
+                data = eval('('+data+')');
+                if (data.code != '0') {
+                    $.messager.alert('操作失败', data.msg, 'error');
+                } else {
+                    $.messager.alert('操作成功', data.msg, 'info');
+                }
+                $.messager.progress('close');
+            }
+        });
     }
 
     function exportExcel() {

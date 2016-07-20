@@ -42,6 +42,9 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
     @Resource
     EnfordProductCategoryMapper categoryMapper;
 
+    @Resource
+    EnfordMarketLocationMapper locationMapper;
+
     @Override
     public List<EnfordApiMarketResearch> getMarketResearch(int deptId) {
         Map<String, Object> param = new HashMap<String, Object>();
@@ -162,5 +165,30 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
         param.put("deptId", deptId);
         param.put("barcode", barcode);
         return apiMapper.countCommodityByBarcode(param);
+    }
+
+    @Override
+    public int addLocation(EnfordMarketLocation location) {
+        return locationMapper.insertSelective(location);
+    }
+
+    @Override
+    public List<EnfordMarketLocation> getLocation(int resId, int userId, int page, int pageSize) {
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("resId", resId);
+        param.put("userId", userId);
+        if (page != -1 && pageSize != -1) {
+            param.put("page", page);
+            param.put("pageSize", pageSize);
+        }
+        return locationMapper.selectLocationByParam(param);
+    }
+
+    @Override
+    public int countLocation(int resId, int userId) {
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("resId", resId);
+        param.put("userId", userId);
+        return locationMapper.countLocation(param);
     }
 }

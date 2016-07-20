@@ -3,11 +3,13 @@ package com.demo.service.impl;
 import com.demo.dao.EnfordMarketResearchMapper;
 import com.demo.model.EnfordMarketResearch;
 import com.demo.service.ScheduleService;
+import com.demo.sync.SyncHandler;
 import com.demo.util.Consts;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,12 +26,29 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
     EnfordMarketResearchMapper researchMapper;
 
     /**
+     * 每30分钟触发一次,同步市调清单数据
+     */
+    //@Scheduled(cron = "0 0 2,4,6,8,10,12,14,16,18,20,22 * * ?")
+    @Scheduled(cron = "0 0/30 * * * ?")
+    @Override
+    public void syncMarketResearchData() {
+        System.out.println("==================开始同步市调清单数据");
+        SyncHandler syncHandler = new SyncHandler();
+        try {
+            syncHandler.syncData();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println("==================同步市调清单数据完成");
+    }
+
+    /**
      * 每30分钟触发一次,刷新市调清单状态
      */
     @Scheduled(cron = "0 0/30 * * * ?")
     @Override
     public void checkMarketResearchState() {
-        System.out.println("==================开始刷新市调清单的状态");
+        System.out.println("==================开始刷新市调清单状态");
         int count = researchMapper.countByParam(null);
         System.out.println("==================共:" + count + "条记录");
         //每次刷新10条数据
@@ -65,5 +84,7 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
                 }
             }
         }
+
+        System.out.println("==================刷新市调清单状态成功");
     }
 }

@@ -1,6 +1,7 @@
 package com.demo.service.api;
 
 import com.demo.model.EnfordApiMarketResearch;
+import com.demo.model.EnfordMarketLocation;
 import com.demo.model.EnfordProductCategory;
 import com.demo.model.EnfordProductCommodity;
 
@@ -42,4 +43,10 @@ public interface ApiMarketResearchService {
                                                        int page, int pageSize);
 
     int countCommodityByBarcode(int resId, int deptId, String barcode);
+
+    int addLocation(EnfordMarketLocation location);
+
+    List<EnfordMarketLocation> getLocation(int resId, int userId, int page, int pageSize);
+
+    int countLocation(int resId, int userId);
 }

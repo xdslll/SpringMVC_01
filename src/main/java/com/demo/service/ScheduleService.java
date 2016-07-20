@@ -11,4 +11,9 @@ public interface ScheduleService {
      */
     void checkMarketResearchState();
 
+    /**
+     * 同步市调清单数据
+     */
+    void syncMarketResearchData();
+
 }

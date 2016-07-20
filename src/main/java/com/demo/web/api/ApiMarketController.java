@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
 import java.util.List;
 
 /**
@@ -178,6 +179,65 @@ public class ApiMarketController implements Consts {
         } catch (Exception ex) {
             respBody.setCode(FAILED);
             respBody.setMsg("获取市调商品失败:" + ex.getMessage());
+        }
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
+    }
+
+    @RequestMapping("/api/location/add")
+    public void addResearchLocation(HttpServletRequest req, HttpServletResponse resp,
+                                  @RequestParam("json") String json) {
+        System.out.println("json=" + json);
+        RespBody respBody = new RespBody();
+        try {
+            EnfordMarketLocation location = FastJSONHelper.deserialize(json, EnfordMarketLocation.class);
+            location.setAddress(URLDecoder.decode(location.getAddress(), "utf-8"));
+            int count = apiMarketService.addLocation(location);
+            if (count > 0) {
+                respBody.setCode(SUCCESS);
+                respBody.setMsg("新增签到成功");
+            } else {
+                respBody.setCode(FAILED);
+                respBody.setMsg("新增签到失败");
+            }
+        } catch (Exception ex) {
+            respBody.setCode(FAILED);
+            respBody.setMsg("新增签到失败:" + ex.getMessage());
+        }
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
+    }
+
+    @RequestMapping("/api/location/get")
+    public void getCommodityByBarcode(HttpServletRequest req, HttpServletResponse resp,
+                                      @RequestParam("resId") int resId,
+                                      @RequestParam("userId") int userId) {
+        RespBody<EnfordMarketLocation> respBody = new RespBody<EnfordMarketLocation>();
+        try {
+            String pageStr = req.getParameter("page");
+            String pageSizeStr = req.getParameter("pageSize");
+            int page = -1;
+            int pageSize = -1;
+            if (pageStr != null) {
+                page = Integer.parseInt(pageStr) - 1;
+            }
+            if (pageSizeStr != null) {
+                pageSize = Integer.parseInt(pageSizeStr);
+            }
+            List<EnfordMarketLocation> locationList = apiMarketService
+                    .getLocation(resId, userId, page * pageSize, pageSize);
+            int total = apiMarketService
+                    .countLocation(resId, userId);
+            if (locationList != null) {
+                respBody.setCode(SUCCESS);
+                respBody.setMsg("获取签到数据成功!");
+                respBody.setDatas(locationList);
+                respBody.setTotalnum(total);
+            } else {
+                respBody.setCode(FAILED);
+                respBody.setMsg("获取签到数据失败!");
+            }
+        } catch (Exception ex) {
+            respBody.setCode(FAILED);
+            respBody.setMsg("获取签到数据失败:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }
