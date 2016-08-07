@@ -307,6 +307,10 @@ public class MysqlHandler {
             rs.updateInt(EnfordMarketResearch.colFrequency, mrPlanBill.getMrFrequency());
             rs.updateInt(EnfordMarketResearch.colFrequencyDays, mrPlanBill.getFrenquencyDays());
             rs.updateString(EnfordMarketResearch.colRemark, mrPlanBill.getExplain());
+            //如果状态是已经开始,则直接切换到发布状态
+            if (mrPlanBill.getBillState() == 1) {
+                mrPlanBill.setBillState(4);
+            }
             rs.updateInt(EnfordMarketResearch.colState, mrPlanBill.getBillState());
             rs.updateString(EnfordMarketResearch.colCancelRemark, mrPlanBill.getBlankFinishRemark());
             rs.updateInt(EnfordMarketResearch.colCreateBy, 1);

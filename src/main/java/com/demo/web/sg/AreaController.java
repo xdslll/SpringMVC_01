@@ -2,6 +2,7 @@ package com.demo.web.sg;
 
 import com.demo.model.EnfordProductArea;
 import com.demo.model.EnfordProductDepartment;
+import com.demo.model.EnfordSystemUser;
 import com.demo.model.RespBody;
 import com.demo.service.AreaService;
 import com.demo.util.Consts;
@@ -32,6 +33,7 @@ public class AreaController {
     public void getAreas(HttpServletRequest req, HttpServletResponse resp) {
         List<EnfordProductArea> areaList = null;
         try {
+            EnfordSystemUser user = (EnfordSystemUser) req.getSession().getAttribute("user");
             String resId = req.getParameter("resId");
             areaList = areaService.getAreaTree(Integer.parseInt(resId));
         }

@@ -834,10 +834,20 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
             }
             EnfordProductCommodity commodity = productMapper.selectByPrimaryKey(cod.getCodId());
             if (commodity != null) {
+                cod.setCodId(commodity.getId());
                 cod.setCodName(commodity.getpName());
                 cod.setCodSize(commodity.getpSize());
                 cod.setCodUnit(commodity.getUnit());
                 cod.setCodBarCode(commodity.getBarCode());
+                cod.setCodCategory(String.valueOf(commodity.getCategoryCode()));
+                cod.setCodCode(commodity.getCode());
+                if (research != null && research.getMrBeginDate() != null) {
+                    cod.setMrBeginDate(research.getMrBeginDate());
+                }
+                if (research != null && research.getMrEndDate() != null) {
+                    cod.setMrEndDate(research.getMrEndDate());
+                }
+                cod.setRemark(research.getRemark());
                 int catCode = commodity.getCategoryCode();
                 Map<String, Object> catParam = new HashMap<String, Object>();
                 catParam.put("code", catCode);

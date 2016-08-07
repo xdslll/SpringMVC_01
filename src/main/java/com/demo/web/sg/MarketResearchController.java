@@ -21,6 +21,7 @@ import java.io.*;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -414,10 +415,142 @@ public class MarketResearchController implements Consts {
         }
     }
 
+    /**
+     * 导出百年系统需要的txt文本
+     *
+     * @param request
+     * @param response
+     * @param resId
+     */
     @RequestMapping("/market_research/export")
     public void exportMarketResearch(HttpServletRequest request, HttpServletResponse response,
                                   @RequestParam("resId") int resId) {
         BufferedInputStream in = null;
+        BufferedOutputStream out = null;
+        FileOutputStream fos = null;
+        FileInputStream fis = null;
+        try {
+            //获取市调清单
+            EnfordMarketResearch research = marketService.getMarketResearchById(resId);
+            //获取导出文件夹
+            String exportFilePath = Config.getExportPath();
+            //根据部门id获取部门信息
+            EnfordProductDepartment department;
+            String deptIdStr = request.getParameter("deptId");
+            int deptId;
+            if (!StringUtil.isEmpty(deptIdStr)) {
+                deptId = Integer.parseInt(deptIdStr);
+                department = deptService.getDepartmentByDeptId(deptId);
+            } else {
+                String deptCode = request.getParameter("deptCode");
+                department = deptService.getDepartmentByDeptCode(deptCode);
+                deptId = department.getId();
+            }
+            //根据市调清单名称创建专属的文件夹
+            String researchName = research.getName();
+            File exportDir = new File(exportFilePath + researchName);
+            if (!exportDir.exists()) {
+                exportDir.mkdirs();
+            }
+            SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+            //根据部门id生成唯一的导出文件名
+            String exportFileName = research.getId() + "_" +
+                    df.format(research.getStartDt()) + "_" +
+                    df.format(research.getEndDt()) + ".txt";
+            File exportFile = new File(exportDir, exportFileName);
+            if (exportFile.exists()) {
+                exportFile.delete();
+            }
+            System.out.println(exportFile.getAbsolutePath());
+            fos = new FileOutputStream(exportFile);
+            //获取市调清单下的所有商品信息
+            Map<String, Object> param = new HashMap<String, Object>();
+            param.put("resId", resId);
+            List<EnfordMarketResearchCommodity> commodityList = marketService.getResearchCodByParam(param);
+            if (commodityList != null) {
+                for (int i = 0; i < commodityList.size(); i++) {
+                    EnfordMarketResearchCommodity commodity = commodityList.get(i);
+                    //循环读取所有商品信息,获取商品的价格
+                    //查询价格并插入价格
+                    param.clear();
+                    param.put("comId", commodity.getCodId());
+                    param.put("resId", commodity.getResId());
+                    param.put("deptId", deptId);
+                    List<EnfordProductPrice> priceList = priceService.getPrice(param);
+                    if (priceList != null && priceList.size() > 0) {
+                        EnfordProductPrice price = priceList.get(0);
+                        if (price != null && price.getPromptPrice() != null) {
+                            commodity.setPurchasePrice(price.getPromptPrice());
+                        } else {
+                            commodity.setPurchasePrice(0.0f);
+                        }
+                        if (price != null && price.getRetailPrice() != null) {
+                            commodity.setRetailPrice(price.getRetailPrice());
+                        } else {
+                            commodity.setRetailPrice(0.0f);
+                        }
+                    } else {
+                        commodity.setPurchasePrice(0.0f);
+                        commodity.setRetailPrice(0.0f);
+                    }
+                    //循环写入商品信息
+                    String str = commodity.getCodCode() +
+                            //"," + commodity.getCodName() +
+                            "," + commodity.getRetailPrice() +
+                            "," + commodity.getPurchasePrice() +
+                            "," + df.format(commodity.getMrBeginDate()) +
+                            "," + df.format(commodity.getMrEndDate());
+                    if (!StringUtil.isEmpty(commodity.getRemark())) {
+                        str += "," + commodity.getRemark();
+                    }
+                    str += "\n";
+                    fos.write(str.getBytes());
+                }
+            }
+            fos.flush();
+            response.setContentType("text/html;charset=UTF-8");
+            request.setCharacterEncoding("UTF-8");
+            response.setContentType("text/plain");
+            response.setHeader("Content-Disposition", "attachment; filename=" + exportFileName);
+            response.setHeader("Content-Length", String.valueOf(exportFile.length()));
+            in = new BufferedInputStream(new FileInputStream(exportFile));
+            out = new BufferedOutputStream(response.getOutputStream());
+            byte[] data = new byte[1024];
+            int len = 0;
+            while (-1 != (len = in.read(data, 0, data.length)))
+            {
+                out.write(data, 0, len);
+            }
+            out.flush();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                in.close();
+            }
+            catch (Exception ex) {
+                logger.error("exception occurred when exportMarketResearch: " + ex);
+            }
+            try {
+                out.close();
+            }
+            catch (Exception ex) {
+                logger.error("exception occurred when exportMarketResearch: " + ex);
+            }
+            try {
+                fis.close();
+            }
+            catch (Exception ex) {
+                logger.error("exception occurred when downloadTemplate: " + ex);
+            }
+            try {
+                fos.close();
+            }
+            catch (Exception ex) {
+                logger.error("exception occurred when downloadTemplate: " + ex);
+            }
+        }
+        /*BufferedInputStream in = null;
         BufferedOutputStream out = null;
         FileOutputStream fos = null;
         FileInputStream fis = null;
@@ -460,12 +593,12 @@ public class MarketResearchController implements Consts {
             //将市调清单文件复制到导出文件夹
             fis = new FileInputStream(originFile);
             fos = new FileOutputStream(exportFile);
-            /*byte[] data = new byte[1024];
+            *//*byte[] data = new byte[1024];
             int len = 0;
             while (-1 != (len = fis.read(data, 0, data.length))) {
                 fos.write(data, 0, len);
             }
-            fos.flush();*/
+            fos.flush();*//*
 
             //回写Excel数据
             Workbook book = ExcelUtil.read(fis);
@@ -563,7 +696,7 @@ public class MarketResearchController implements Consts {
             catch (Exception ex) {
                 logger.error("exception occurred when downloadTemplate: " + ex);
             }
-        }
+        }*/
     }
 
     @RequestMapping("/market_research/sync")

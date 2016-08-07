@@ -54,7 +54,8 @@
                 ">
         <thead>
             <tr>
-                <th data-options="field:'name'" width="30%">市调名称</th>
+                <th data-options="field:'name'" width="30%">市调类型</th>
+                <th data-options="field:'remark'" width="15%">备注</th>
                 <th data-options="field:'startDt'" width="15%">开始时间</th>
                 <th data-options="field:'endDt'" width="15%">结束时间</th>
                 <th data-options="field:'createUsername'" width="15%">创建人</th>

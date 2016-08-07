@@ -111,7 +111,9 @@
     <if test="codId != null">
       and cod_id = #{codId,jdbcType=INTEGER}
     </if>
-    limit #{page,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+    <if test="page != null and pageSize != null">
+      limit #{page,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+    </if>
   </select>
   <select id="countByParam" resultType="java.lang.Integer">
     select

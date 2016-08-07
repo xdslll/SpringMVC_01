@@ -68,3 +68,11 @@ ADD COLUMN `base_measure_unit` VARCHAR(20) NULL AFTER `base_bar_code`;
 
 ALTER TABLE `enford_market_research_commodity`
 CHANGE COLUMN `goods_spec` `goods_spec` VARCHAR(255) NULL DEFAULT NULL ;
+
+set SQL_SAFE_UPDATES = 0;
+update
+(select a.dept_id, a.username, b.id, b.name
+from enford_system_user a, enford_product_department b
+where left(a.username, 4)=b.code and a.id > 15) c, enford_system_user d
+set d.dept_id = c.id
+where d.username = c.username;
