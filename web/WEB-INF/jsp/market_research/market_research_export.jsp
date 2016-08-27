@@ -27,11 +27,19 @@
 <div id="toolbar">
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_go'" plain="true" onclick="exportReserch()">导出</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_get'" plain="true" onclick="sync()">同步</a>
+    <span plain="true">状态: </span><select name="state" label="状态:" labelPosition="top" onchange="selectState(this.options[this.options.selectedIndex].value)">
+        <option value="-1" selected>全部</option>
+        <option value="0">未确认</option>
+        <option value="1">已确认</option>
+        <option value="2">已结束</option>
+        <option value="3">已撤销</option>
+        <option value="4">已开始</option>
+    </select>
 </div>
 <div class="main_table">
     <table id="dg" title="市调清单列表" class="easyui-datagrid"
            data-options="
-                url: '<%=request.getContextPath()%>/market_research/get?status=2',
+                url: '<%=request.getContextPath()%>/market_research/get',
                 method: 'get',
                 idField: 'id',
                 showFooter: true,
@@ -52,13 +60,14 @@
                 ">
         <thead>
             <tr>
-                <th data-options="field:'name'" width="30%">市调名称</th>
+                <th data-options="field:'name'" width="10%">市调名称</th>
+                <th data-options="field:'billNumber'" width="10%">市调单号</th>
                 <th data-options="field:'remark'" width="15%">备注</th>
-                <th data-options="field:'startDt'" width="15%">开始时间</th>
-                <th data-options="field:'endDt'" width="15%">结束时间</th>
+                <th data-options="field:'startDt'" width="10%">开始时间</th>
+                <th data-options="field:'endDt'" width="10%">结束时间</th>
                 <th data-options="field:'createUsername'" width="15%">创建人</th>
                 <th data-options="field:'createDt'" width="15%">创建时间</th>
-                <th data-options="field:'stateDesp'" width="10%">状态</th>
+                <th data-options="field:'stateDesp'" width="15%">状态</th>
             </tr>
         </thead>
     </table>
@@ -100,6 +109,15 @@
 <input id="dept_id" type="hidden">
 
 <script>
+    function selectState(v) {
+        //alert(v);
+        var dg = $('#dg');
+        var param = dg.datagrid('options').queryParams;
+        param.status = v;
+        dg.datagrid('options').queryParams = param;
+        dg.datagrid('reload');
+    }
+
     function exportReserch() {
         var row = $('#dg').datagrid('getSelected');
         if (row) {

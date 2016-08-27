@@ -95,6 +95,8 @@ public class EnfordMarketResearch {
 
     private String remark;
 
+    private String billNumber;
+
     @JSONField(format="yyyy-MM-dd")
     private Date mrBeginDate;
 
@@ -386,5 +388,37 @@ public class EnfordMarketResearch {
 
     public void setMrEndDate(Date mrEndDate) {
         this.mrEndDate = mrEndDate;
+    }
+
+    public String getBillNumber() {
+        return billNumber;
+    }
+
+    public void setBillNumber(String billNumber) {
+        this.billNumber = billNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "EnfordMarketResearch{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", createBy=" + createBy +
+                ", createDt=" + createDt +
+                ", startDt=" + startDt +
+                ", endDt=" + endDt +
+                ", exeStoreId=" + exeStoreId +
+                ", resStoreId=" + resStoreId +
+                ", importId=" + importId +
+                ", createUsername='" + createUsername + '\'' +
+                ", cityName='" + cityName + '\'' +
+                ", exeStoreName='" + exeStoreName + '\'' +
+                ", resStoreName='" + resStoreName + '\'' +
+                ", state=" + state +
+                ", stateDesp='" + stateDesp + '\'' +
+                ", remark='" + remark + '\'' +
+                ", mrBeginDate=" + mrBeginDate +
+                ", mrEndDate=" + mrEndDate +
+                '}';
     }
 }

@@ -76,7 +76,10 @@ public class MarketResearchController implements Consts {
                              @RequestParam("page") int page,
                              @RequestParam("rows") int pageSize) {
         //市调清单的状态
-        int status = Integer.parseInt(req.getParameter("status"));
+        int status = -1;
+        if (req.getParameter("status") != null) {
+            status = Integer.parseInt(req.getParameter("status"));
+        }
         List<EnfordMarketResearch> marketResearchList = null;
         int total = 0;
         try {
@@ -467,6 +470,19 @@ public class MarketResearchController implements Consts {
             Map<String, Object> param = new HashMap<String, Object>();
             param.put("resId", resId);
             List<EnfordMarketResearchCommodity> commodityList = marketService.getResearchCodByParam(param);
+            System.out.println(research.toString());
+            String mrBeginDate;
+            String mrEndDate;
+            if (research.getMrBeginDate() == null) {
+                mrBeginDate = df.format(research.getStartDt());
+            } else {
+                mrBeginDate = df.format(research.getMrBeginDate());
+            }
+            if (research.getMrEndDate() == null) {
+                mrEndDate = df.format(research.getEndDt());
+            } else {
+                mrEndDate = df.format(research.getMrEndDate());
+            }
             if (commodityList != null) {
                 for (int i = 0; i < commodityList.size(); i++) {
                     EnfordMarketResearchCommodity commodity = commodityList.get(i);
@@ -493,17 +509,25 @@ public class MarketResearchController implements Consts {
                         commodity.setPurchasePrice(0.0f);
                         commodity.setRetailPrice(0.0f);
                     }
+                    System.out.println("commodity.getCodCode()=" + commodity.getCodCode());
+                    System.out.println("commodity.getRetailPrice()=" + commodity.getRetailPrice());
+                    System.out.println("commodity.getPurchasePrice()=" + commodity.getPurchasePrice());
+                    System.out.println("commodity.getMrBeginDate()=" + commodity.getMrBeginDate());
+                    System.out.println("commodity.getMrEndDate()=" + commodity.getMrEndDate());
+                    System.out.println("commodity.getRemark()=" + commodity.getRemark());
+                    System.out.println("resId=" + resId);
+                    System.out.println("research.toString()=" + research.toString());
                     //循环写入商品信息
                     String str = commodity.getCodCode() +
                             //"," + commodity.getCodName() +
                             "," + commodity.getRetailPrice() +
                             "," + commodity.getPurchasePrice() +
-                            "," + df.format(commodity.getMrBeginDate()) +
-                            "," + df.format(commodity.getMrEndDate());
+                            "," + mrBeginDate +
+                            "," + mrEndDate + ",";
                     if (!StringUtil.isEmpty(commodity.getRemark())) {
-                        str += "," + commodity.getRemark();
+                        str += commodity.getRemark();
                     }
-                    str += "\n";
+                    str += "\r\n";
                     fos.write(str.getBytes());
                 }
             }

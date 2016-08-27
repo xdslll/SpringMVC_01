@@ -31,7 +31,7 @@
 <div class="main_table">
     <table id="dg" title="市调清单列表" class="easyui-datagrid"
            data-options="
-                url: '<%=request.getContextPath()%>/market_research/get?status=1',
+                url: '<%=request.getContextPath()%>/market_research/get?status=2',
                 method: 'get',
                 idField: 'id',
                 showFooter: true,
@@ -52,13 +52,14 @@
                 ">
         <thead>
             <tr>
-                <th data-options="field:'name'" width="30%">市调名称</th>
+                <th data-options="field:'name'" width="10%">市调名称</th>
+                <th data-options="field:'billNumber'" width="10%">市调单号</th>
                 <th data-options="field:'remark'" width="15%">备注</th>
-                <th data-options="field:'startDt'" width="15%">开始时间</th>
-                <th data-options="field:'endDt'" width="15%">结束时间</th>
+                <th data-options="field:'startDt'" width="10%">开始时间</th>
+                <th data-options="field:'endDt'" width="10%">结束时间</th>
                 <th data-options="field:'createUsername'" width="15%">创建人</th>
                 <th data-options="field:'createDt'" width="15%">创建时间</th>
-                <th data-options="field:'stateDesp'" width="10%">状态</th>
+                <th data-options="field:'stateDesp'" width="15%">状态</th>
             </tr>
         </thead>
     </table>
