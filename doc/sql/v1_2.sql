@@ -76,3 +76,7 @@ from enford_system_user a, enford_product_department b
 where left(a.username, 4)=b.code and a.id > 15) c, enford_system_user d
 set d.dept_id = c.id
 where d.username = c.username;
+
+ALTER TABLE `sg`.`enford_market_research_dept`
+ADD COLUMN `bill_num` VARCHAR(12) NULL AFTER `dept_name`,
+ADD COLUMN `state` INT NULL AFTER `bill_num`;

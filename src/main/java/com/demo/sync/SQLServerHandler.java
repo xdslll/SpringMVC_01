@@ -116,6 +116,8 @@ public class SQLServerHandler {
                 mrPlanBillDeptDetail.setInsideId(rs.getInt(MRPlanBillDeptDetail.colInsideId));
                 mrPlanBillDeptDetail.setDeptCode(rs.getString(MRPlanBillDeptDetail.colDeptCode));
                 mrPlanBillDeptDetail.setNodeName(rs.getString(MRPlanBillDeptDetail.colNodeName));
+                mrPlanBillDeptDetail.setXxBillNum(rs.getString(MRPlanBillDeptDetail.colXxBillNum));
+                mrPlanBillDeptDetail.setState(rs.getInt(MRPlanBillDeptDetail.colState));
 
                 System.out.println(mrPlanBillDeptDetail.toString());
                 mrPlanBillDeptDetailList.add(mrPlanBillDeptDetail);

@@ -231,6 +231,8 @@ public class MysqlHandler {
         rs.updateInt(EnfordMarketResearchDept.colInsideId, mrPlanBillDeptDetail.getInsideId());
         rs.updateString(EnfordMarketResearchDept.colDeptCode, mrPlanBillDeptDetail.getDeptCode());
         rs.updateString(EnfordMarketResearchDept.colDeptName, mrPlanBillDeptDetail.getNodeName());
+        rs.updateString(EnfordMarketResearchDept.colBillNum, mrPlanBillDeptDetail.getXxBillNum());
+        rs.updateInt(EnfordMarketResearchDept.colState, mrPlanBillDeptDetail.getState());
 
         rs2.close();
         rs3.close();

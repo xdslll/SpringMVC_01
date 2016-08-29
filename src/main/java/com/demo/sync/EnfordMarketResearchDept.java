@@ -9,6 +9,8 @@ public class EnfordMarketResearchDept {
     public static final String colInsideId = "inside_id";
     public static final String colDeptCode = "dept_code";
     public static final String colDeptName = "dept_name";
+    public static final String colBillNum = "bill_num";
+    public static final String colState = "state";
 
     private Integer resId;
 
@@ -23,6 +25,10 @@ public class EnfordMarketResearchDept {
     private int deptCode;
 
     private int deptName;
+
+    private String billNum;
+
+    private int state;
 
     public Integer getResId() {
         return resId;
@@ -78,5 +84,21 @@ public class EnfordMarketResearchDept {
 
     public void setDeptName(int deptName) {
         this.deptName = deptName;
+    }
+
+    public String getBillNum() {
+        return billNum;
+    }
+
+    public void setBillNum(String billNum) {
+        this.billNum = billNum;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 }

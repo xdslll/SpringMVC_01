@@ -5,11 +5,15 @@ public class MRPlanBillDeptDetail {
         public static final String colInsideId = "InsideId";
         public static final String colDeptCode = "DeptCode";
         public static final String colNodeName = "NodeName";
+        public static final String colXxBillNum = "XxBillNum";
+        public static final String colState = "State";
 
         String billNumber;
         int insideId;
         String deptCode;
         String nodeName;
+        String xxBillNum;
+        int state;
 
         public String getBillNumber() {
             return billNumber;
@@ -50,6 +54,25 @@ public class MRPlanBillDeptDetail {
                     ", insideId=" + insideId +
                     ", deptCode='" + deptCode + '\'' +
                     ", nodeName='" + nodeName + '\'' +
+                    ", xxBillNum='" + xxBillNum + '\'' +
+                    ", state=" + state +
                     '}';
         }
-    }
+
+        public String getXxBillNum() {
+            return xxBillNum;
+        }
+
+        public void setXxBillNum(String xxBillNum) {
+            this.xxBillNum = xxBillNum;
+        }
+
+        public int getState() {
+            return state;
+        }
+
+        public void setState(int state) {
+            this.state = state;
+        }
+
+}
