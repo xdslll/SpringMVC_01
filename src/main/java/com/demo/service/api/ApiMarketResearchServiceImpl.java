@@ -6,10 +6,7 @@ import com.demo.util.Consts;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author xiads
@@ -58,33 +55,42 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
             EnfordMarketResearch research = researchMapper.selectByPrimaryKey(resId);
             //判断市调清单的状态
             int researchState = research.getState();
-            if (researchState == RESEARCH_STATE_CANCELED || researchState == RESEARCH_STATE_HAVE_FINISHED
-                    || researchState == RESEARCH_STATE_NOT_PUBLISH) {
+            Date now = new Date();
+            System.out.println(research.toString());
+            if (researchState == RESEARCH_STATE_CANCELED ||
+                    researchState == RESEARCH_STATE_HAVE_FINISHED ||
+                    researchState == RESEARCH_STATE_NOT_PUBLISH ||
+                    research.getEndDt().getTime() < now.getTime()) {
                 continue;
             } else {
-                EnfordApiMarketResearch apiMarketResearch = new EnfordApiMarketResearch();
-                //查询门店信息
-                EnfordProductDepartment dept = deptMapper.selectByPrimaryKey(deptId);
-                //查询竞争门店信息
-                int compId = researchDept.getCompId();
-                EnfordProductCompetitors comp = competitorsMapper.selectByPrimaryKey(compId);
-                //查询商品总数
-                param.clear();
-                param.put("resId", resId);
-                int codCount = researchCommodityMapper.countByParam(param);
-                //计算完成进度
-                param.clear();
-                param.put("compId", compId);
-                param.put("resId", resId);
-                int finishCount = priceMapper.countByParam(param);
-                float finishPercentFloat = (float) finishCount / codCount;
-                int finishPercent = (int) (finishPercentFloat * 100);
-                apiMarketResearch.setResearch(research);
-                apiMarketResearch.setDept(dept);
-                apiMarketResearch.setComp(comp);
-                apiMarketResearch.setCodCount(codCount);
-                apiMarketResearch.setHaveFinished(finishPercent);
-                list.add(apiMarketResearch);
+                System.out.println(researchDept.toString());
+                if ((researchDept.getState() == 1 ||
+                        researchDept.getState() == 0) &&
+                        researchDept.getEffectiveSign() == 0) {
+                    EnfordApiMarketResearch apiMarketResearch = new EnfordApiMarketResearch();
+                    //查询门店信息
+                    EnfordProductDepartment dept = deptMapper.selectByPrimaryKey(deptId);
+                    //查询竞争门店信息
+                    int compId = researchDept.getCompId();
+                    EnfordProductCompetitors comp = competitorsMapper.selectByPrimaryKey(compId);
+                    //查询商品总数
+                    param.clear();
+                    param.put("resId", resId);
+                    int codCount = researchCommodityMapper.countByParam(param);
+                    //计算完成进度
+                    param.clear();
+                    param.put("compId", compId);
+                    param.put("resId", resId);
+                    int finishCount = priceMapper.countByParam(param);
+                    float finishPercentFloat = (float) finishCount / codCount;
+                    int finishPercent = (int) (finishPercentFloat * 100);
+                    apiMarketResearch.setResearch(research);
+                    apiMarketResearch.setDept(dept);
+                    apiMarketResearch.setComp(comp);
+                    apiMarketResearch.setCodCount(codCount);
+                    apiMarketResearch.setHaveFinished(finishPercent);
+                    list.add(apiMarketResearch);
+                }
             }
         }
         return list;

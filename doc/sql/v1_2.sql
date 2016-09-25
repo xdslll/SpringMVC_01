@@ -80,3 +80,6 @@ where d.username = c.username;
 ALTER TABLE `sg`.`enford_market_research_dept`
 ADD COLUMN `bill_num` VARCHAR(12) NULL AFTER `dept_name`,
 ADD COLUMN `state` INT NULL AFTER `bill_num`;
+
+ALTER TABLE `sg`.`enford_market_research_dept`
+ADD COLUMN `effective_sign` INT NULL AFTER `state`;

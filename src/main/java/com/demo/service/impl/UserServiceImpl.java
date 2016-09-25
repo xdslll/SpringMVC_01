@@ -55,4 +55,9 @@ public class UserServiceImpl implements UserService {
     public int deleteUser(int userId) {
         return userMapper.deleteByPrimaryKey(userId);
     }
+
+    @Override
+    public EnfordSystemUser getUser(int id) {
+        return userMapper.selectByPrimaryKey(id);
+    }
 }

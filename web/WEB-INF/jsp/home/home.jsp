@@ -31,6 +31,7 @@
                 <div id="north_username_div">
                     <span>${user.name}</span>
                     <% if(request.getSession().getAttribute("user") != null) { %>
+                        <a id="change_pwd" style="text-decoration:underline;cursor:pointer;">修改密码</a>
                         <a href='<%=request.getContextPath()%>/logout'>退出登录</a>
                     <% } %>
                 </div>
@@ -59,6 +60,31 @@
         </div>
     </div>
 </div>
+<div id="dlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
+     closed="true" buttons="#dlg-buttons">
+    <div class="ftitle">修改密码</div>
+    <form id="fm" method="post" novalidate>
+        <div class="fitem">
+            <label>原密码:</label>
+            <input name="origin_pwd" class="easyui-textbox" required="true" type="password">
+        </div>
+        <div class="fitem">
+            <label>新密码:</label>
+            <input name="new_pwd" class="easyui-textbox" required="true" type="password">
+        </div>
+        <div class="fitem">
+            <label>确认密码:</label>
+            <input name="confirm_pwd" class="easyui-textbox" required="true" type="password">
+        </div>
+        <div class="fitem">
+            <input type="password" style="display:none">
+        </div>
+    </form>
+</div>
+<div id="dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="save()" style="width:90px">保存</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">取消</a>
+</div>
 <script>
     $('#menu').tree({
         onClick: function(node) {
@@ -71,6 +97,30 @@
             }
         }
     });
+    $('#change_pwd').click(function(){
+        $('#dlg').dialog('open').dialog('center').dialog('setTitle','修改密码');
+        $('#fm').form('clear');
+        url = '<%=request.getContextPath()%>/user/changePwd?userId=' + ${user.id};
+    })
+
+    function save() {
+        $('#fm').form('submit',{
+            url: url,
+            onSubmit: function(){
+                return $(this).form('validate');
+            },
+            success: function(result){
+                var result = eval('('+result+')');
+                if (result.code != '0'){
+                    $.messager.alert('修改失败', result.msg, 'error');
+                } else {
+                    $.messager.alert('修改成功', result.msg, 'info');
+                    $('#dlg').dialog('close');        // close the dialog
+                }
+            }
+        });
+        //alert($("input[name='origin_pwd']").val() + "," + $("input[name='new_pwd']").val() + "," + $("input[name='confirm_pwd']").val());
+    }
 </script>
 </body>
 </html>

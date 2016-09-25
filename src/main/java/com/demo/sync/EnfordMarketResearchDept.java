@@ -11,6 +11,7 @@ public class EnfordMarketResearchDept {
     public static final String colDeptName = "dept_name";
     public static final String colBillNum = "bill_num";
     public static final String colState = "state";
+    public static final String colEffectiveSign = "effective_sign";
 
     private Integer resId;
 
@@ -29,6 +30,8 @@ public class EnfordMarketResearchDept {
     private String billNum;
 
     private int state;
+
+    private int effectiveSign;
 
     public Integer getResId() {
         return resId;
@@ -100,5 +103,13 @@ public class EnfordMarketResearchDept {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    public int getEffectiveSign() {
+        return effectiveSign;
+    }
+
+    public void setEffectiveSign(int effectiveSign) {
+        this.effectiveSign = effectiveSign;
     }
 }

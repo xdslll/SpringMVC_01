@@ -118,6 +118,7 @@ public class SQLServerHandler {
                 mrPlanBillDeptDetail.setNodeName(rs.getString(MRPlanBillDeptDetail.colNodeName));
                 mrPlanBillDeptDetail.setXxBillNum(rs.getString(MRPlanBillDeptDetail.colXxBillNum));
                 mrPlanBillDeptDetail.setState(rs.getInt(MRPlanBillDeptDetail.colState));
+                mrPlanBillDeptDetail.setEffectiveSign(rs.getInt(MRPlanBillDeptDetail.colEffectiveSign));
 
                 System.out.println(mrPlanBillDeptDetail.toString());
                 mrPlanBillDeptDetailList.add(mrPlanBillDeptDetail);

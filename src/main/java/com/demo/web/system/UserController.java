@@ -4,6 +4,7 @@ import com.demo.model.RespBody;
 import com.demo.model.EnfordSystemUser;
 import com.demo.service.UserService;
 import com.demo.util.*;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -154,5 +155,42 @@ public class UserController {
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }
-    
+
+    @RequestMapping("/user/changePwd")
+    public void changePwd(HttpServletRequest req, HttpServletResponse resp, int userId) {
+        RespBody<String> respBody = new RespBody<String>();
+        try {
+            String orgPwd = req.getParameter("origin_pwd");
+            String newPwd = req.getParameter("new_pwd");
+            String confirmPwd = req.getParameter("confirm_pwd");
+            EnfordSystemUser user = userService.getUser(userId);
+            System.out.println("原密码:" + orgPwd + ",新密码:" + newPwd + ",新密码2:" + confirmPwd + ",真实密码:" + user.getPassword());
+            if (user != null) {
+                String realPwd = user.getPassword();
+                if (!EncryptUtil.md5(orgPwd).equals(realPwd)) {
+                    respBody.setCode(Consts.FAILED);
+                    respBody.setMsg("原密码输入错误!");
+                } else {
+                    if (!newPwd.equals(confirmPwd)) {
+                        respBody.setCode(Consts.FAILED);
+                        respBody.setMsg("两次输入的新密码不符!");
+                    } else {
+                        user.setPassword(EncryptUtil.md5(newPwd));
+                        userService.updateUser(user);
+                        respBody.setCode(Consts.SUCCESS);
+                        respBody.setMsg("修改密码成功！");
+                    }
+                }
+            } else {
+                respBody.setCode(Consts.FAILED);
+                respBody.setMsg("用户不存在!");
+            }
+        }
+        catch (Exception ex) {
+            logger.error("exception occured when changePwd:" + ex);
+            respBody.setCode(Consts.FAILED);
+            respBody.setMsg("修改密码失败:" + ex.getMessage());
+        }
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
+    }
 }

@@ -19,4 +19,6 @@ public interface UserService {
     int updateUser(EnfordSystemUser user);
 
     int deleteUser(int userId);
+
+    EnfordSystemUser getUser(int id);
 }

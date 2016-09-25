@@ -233,6 +233,7 @@ public class MysqlHandler {
         rs.updateString(EnfordMarketResearchDept.colDeptName, mrPlanBillDeptDetail.getNodeName());
         rs.updateString(EnfordMarketResearchDept.colBillNum, mrPlanBillDeptDetail.getXxBillNum());
         rs.updateInt(EnfordMarketResearchDept.colState, mrPlanBillDeptDetail.getState());
+        rs.updateInt(EnfordMarketResearchDept.colEffectiveSign, mrPlanBillDeptDetail.getEffectiveSign());
 
         rs2.close();
         rs3.close();

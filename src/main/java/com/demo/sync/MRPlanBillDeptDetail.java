@@ -7,6 +7,7 @@ public class MRPlanBillDeptDetail {
         public static final String colNodeName = "NodeName";
         public static final String colXxBillNum = "XxBillNum";
         public static final String colState = "State";
+        public static final String colEffectiveSign = "EffectiveSign";
 
         String billNumber;
         int insideId;
@@ -14,6 +15,7 @@ public class MRPlanBillDeptDetail {
         String nodeName;
         String xxBillNum;
         int state;
+        int effectiveSign;
 
         public String getBillNumber() {
             return billNumber;
@@ -47,19 +49,28 @@ public class MRPlanBillDeptDetail {
             this.nodeName = nodeName;
         }
 
-        @Override
-        public String toString() {
-            return "MRPlanBillDeptDetail{" +
-                    "billNumber='" + billNumber + '\'' +
-                    ", insideId=" + insideId +
-                    ", deptCode='" + deptCode + '\'' +
-                    ", nodeName='" + nodeName + '\'' +
-                    ", xxBillNum='" + xxBillNum + '\'' +
-                    ", state=" + state +
-                    '}';
+        public int getEffectiveSign() {
+            return effectiveSign;
         }
 
-        public String getXxBillNum() {
+        public void setEffectiveSign(int effectiveSign) {
+            this.effectiveSign = effectiveSign;
+        }
+
+    @Override
+    public String toString() {
+        return "MRPlanBillDeptDetail{" +
+                "billNumber='" + billNumber + '\'' +
+                ", insideId=" + insideId +
+                ", deptCode='" + deptCode + '\'' +
+                ", nodeName='" + nodeName + '\'' +
+                ", xxBillNum='" + xxBillNum + '\'' +
+                ", state=" + state +
+                ", effectiveSign=" + effectiveSign +
+                '}';
+    }
+
+    public String getXxBillNum() {
             return xxBillNum;
         }
 
@@ -74,5 +85,6 @@ public class MRPlanBillDeptDetail {
         public void setState(int state) {
             this.state = state;
         }
+
 
 }
