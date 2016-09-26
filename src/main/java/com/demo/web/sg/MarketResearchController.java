@@ -441,6 +441,7 @@ public class MarketResearchController implements Consts {
             EnfordProductDepartment department;
             String deptIdStr = request.getParameter("deptId");
             int deptId;
+            Integer compId = null;
             if (!StringUtil.isEmpty(deptIdStr)) {
                 deptId = Integer.parseInt(deptIdStr);
                 department = deptService.getDepartmentByDeptId(deptId);
@@ -448,6 +449,9 @@ public class MarketResearchController implements Consts {
                 String deptCode = request.getParameter("deptCode");
                 department = deptService.getDepartmentByDeptCode(deptCode);
                 deptId = department.getId();
+            }
+            if (department != null) {
+                compId = department.getCompId();
             }
             //根据市调清单名称创建专属的文件夹
             String researchName = research.getName();
@@ -491,7 +495,13 @@ public class MarketResearchController implements Consts {
                     param.clear();
                     param.put("comId", commodity.getCodId());
                     param.put("resId", commodity.getResId());
-                    param.put("deptId", deptId);
+                    //根据竞争对手ID查询价格信息
+                    if (compId != null) {
+                        param.put("compId", compId);
+                    } else {
+                        //如果没有竞争对手信息,则根据部门ID查询价格信息
+                        param.put("deptId", deptId);
+                    }
                     List<EnfordProductPrice> priceList = priceService.getPrice(param);
                     if (priceList != null && priceList.size() > 0) {
                         EnfordProductPrice price = priceList.get(0);

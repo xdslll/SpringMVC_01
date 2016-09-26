@@ -26,7 +26,7 @@
 ==============================!>
 <div id="toolbar">
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_go'" plain="true" onclick="exportReserch()">导出</a>
-    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_get'" plain="true" onclick="sync()">同步</a>
+    <%--<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-application_get'" plain="true" onclick="sync()">同步</a>--%>
     <span plain="true">状态: </span><select name="state" label="状态:" labelPosition="top" onchange="selectState(this.options[this.options.selectedIndex].value)">
         <option value="-1" selected>全部</option>
         <option value="0">未确认</option>
