@@ -83,3 +83,20 @@ ADD COLUMN `state` INT NULL AFTER `bill_num`;
 
 ALTER TABLE `sg`.`enford_market_research_dept`
 ADD COLUMN `effective_sign` INT NULL AFTER `state`;
+
+INSERT INTO `sg`.`enford_product_competitors` (`id`, `name`, `city_id`) VALUES ('227', '大丰大润发店', '32');
+UPDATE `sg`.`enford_product_department` SET `comp_id`='227' WHERE `id`='276';
+UPDATE `sg`.`enford_market_research_dept` SET `comp_id`='227' WHERE `res_id`='178' and`exe_id`='276';
+
+INSERT INTO `sg`.`enford_product_competitors` (`id`, `name`, `city_id`) VALUES ('228', '射阳大润发店', '32');
+UPDATE `sg`.`enford_product_department` SET `comp_id`='228' WHERE `id`='275';
+UPDATE `sg`.`enford_market_research_dept` SET `comp_id`='228' WHERE `res_id`='185' and`exe_id`='275';
+
+INSERT INTO `sg`.`enford_product_competitors` (`id`, `name`, `city_id`) VALUES ('229', '合肥大润发', '38');
+INSERT INTO `sg`.`enford_product_competitors` (`id`, `name`, `city_id`) VALUES ('230', '马鞍山大润发', '42');
+INSERT INTO `sg`.`enford_product_competitors` (`id`, `name`, `city_id`) VALUES ('231', '淮北大润发', '44');
+UPDATE `sg`.`enford_product_department` SET `comp_id`='229' WHERE `id`='313';
+UPDATE `sg`.`enford_product_department` SET `comp_id`='229' WHERE `id`='316';
+UPDATE `sg`.`enford_product_department` SET `comp_id`='230' WHERE `id`='362';
+UPDATE `sg`.`enford_product_department` SET `comp_id`='230' WHERE `id`='363';
+UPDATE `sg`.`enford_product_department` SET `comp_id`='231' WHERE `id`='385';
