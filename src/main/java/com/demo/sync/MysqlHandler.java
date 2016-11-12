@@ -348,4 +348,37 @@ public class MysqlHandler {
     private boolean isEmpty(String s) {
         return s == null || s.equals("");
     }
+
+    /**
+     * 三期,根据新的数据结构同步市调清单
+     *
+     * @param mysqlStatement
+     * @param mrPlanBillList
+     * @throws SQLException
+     */
+    public void syncEnfordMarketResearch2(Statement mysqlStatement, List<MarketResearchBill> mrPlanBillList) throws SQLException {
+
+    }
+
+    /**
+     * 三期,根据新的数据结构同步市调部门
+     *
+     * @param conn2
+     * @param mysqlStatement
+     * @param marketResearchBillList
+     */
+    public void syncEnfordMarketResearchDept2(Connection conn2, Statement mysqlStatement, List<MarketResearchBill> marketResearchBillList) {
+
+    }
+
+    /**
+     * 三期,根据新的数据结构同步市调商品
+     *
+     * @param conn2
+     * @param mysqlStatement
+     * @param mrCompetitorPriceList
+     */
+    public void syncEnfordMarketResearchGoods2(Connection conn2, Statement mysqlStatement, List<MRCompetitorPrice> mrCompetitorPriceList) {
+
+    }
 }

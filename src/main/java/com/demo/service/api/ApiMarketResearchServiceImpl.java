@@ -6,6 +6,8 @@ import com.demo.util.Consts;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -60,12 +62,12 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
             if (researchState == RESEARCH_STATE_CANCELED ||
                     researchState == RESEARCH_STATE_HAVE_FINISHED ||
                     researchState == RESEARCH_STATE_NOT_PUBLISH ||
-                    research.getEndDt().getTime() < now.getTime()) {
+                    checkConfirmDate(research.getConfirmDate())) {
+                    //research.getConfirmDate().getTime() < now.getTime()
                 continue;
             } else {
                 System.out.println(researchDept.toString());
-                if ((researchDept.getState() == 1 ||
-                        researchDept.getState() == 0) &&
+                if (researchDept.getState() == 0 &&
                         researchDept.getEffectiveSign() == 0) {
                     EnfordApiMarketResearch apiMarketResearch = new EnfordApiMarketResearch();
                     //查询门店信息
@@ -94,6 +96,34 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
             }
         }
         return list;
+    }
+
+    /**
+     * 判断市调清单的确认时间是否已经在当前时间后面
+     *
+     * @param confirmDate
+     * @return
+     */
+    private boolean checkConfirmDate(Date confirmDate) {
+        //将当天日期增加1
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 1);
+        Date now = calendar.getTime();
+        //将日期变成年月日后进行对比
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            now = sdf.parse(sdf.format(now));
+            System.out.println(now.toString());
+            confirmDate = sdf.parse(sdf.format(confirmDate));
+            System.out.println(confirmDate.toString());
+            System.out.println(confirmDate.after(now));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return true;
+        }
+        //如果确认时间在当前日期后面,则返回true
+        return confirmDate.after(now);
     }
 
     /**

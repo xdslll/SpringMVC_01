@@ -162,4 +162,83 @@ public class SQLServerHandler {
         return mrPlanBillGoodsDetailList;
     }
 
+    /**
+     * 三期,根据新的数据结构,同步市调清单和部门信息
+     *
+     * @param sqlServerStatement
+     * @return
+     */
+    public List<MarketResearchBill> syncMarketResearchBill(Statement sqlServerStatement) {
+        List<MarketResearchBill> marketResearchBillList = new ArrayList<MarketResearchBill>();
+        try {
+            String sql = "SELECT * FROM tbMarketResearchBill";
+            ResultSet rs = sqlServerStatement.executeQuery(sql);
+            int index = 0;
+            while (rs.next()) {
+                MarketResearchBill marketResearchBill = new MarketResearchBill();
+
+                marketResearchBill.setBillNumber(rs.getString(MarketResearchBill.colBillNumber));
+                marketResearchBill.setConfirmDate(rs.getString(MarketResearchBill.colConfirmDate));
+                marketResearchBill.setConfirmManCode(rs.getString(MarketResearchBill.colConfirmManCode));
+                marketResearchBill.setCpModifyManName(rs.getString(MarketResearchBill.colCPModifyManName));
+                marketResearchBill.setDeptCode(rs.getString(MarketResearchBill.colDeptCode));
+                marketResearchBill.setMrDate(rs.getString(MarketResearchBill.colMRDate));
+                marketResearchBill.setMrTypeName(rs.getString(MarketResearchBill.colMRTypeName));
+                marketResearchBill.setMrUnit(rs.getInt(MarketResearchBill.colMRUnit));
+                marketResearchBill.setNodeName(rs.getString(MarketResearchBill.colNodeName));
+                marketResearchBill.setState(rs.getInt(MarketResearchBill.colState));
+
+                System.out.println(marketResearchBill.toString());
+                marketResearchBillList.add(marketResearchBill);
+                index++;
+                System.out.println("完成同步第" + index + "条数据");
+            }
+
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return marketResearchBillList;
+    }
+
+
+    /**
+     * 三期,根据新的数据结构,同步商品信息
+     *
+     * @param sqlServerStatement
+     * @return
+     */
+    public List<MRCompetitorPrice> syncMrCompetitorPrice(Statement sqlServerStatement) {
+        List<MRCompetitorPrice> mrCompetitorPriceList = new ArrayList<MRCompetitorPrice>();
+        try {
+            String sql = "SELECT * FROM tbMRCompetitorPrice";
+            ResultSet rs = sqlServerStatement.executeQuery(sql);
+            int index = 0;
+            while (rs.next()) {
+                MRCompetitorPrice mrCompetitorPrice = new MRCompetitorPrice();
+
+                mrCompetitorPrice.setBaseBarCode(rs.getString(MRCompetitorPrice.colBaseBarCode));
+                mrCompetitorPrice.setBaseMeasureUnit(rs.getString(MRCompetitorPrice.colBaseMeasureUnit));
+                mrCompetitorPrice.setBillNumber(rs.getString(MRCompetitorPrice.colBillNumber));
+                mrCompetitorPrice.setCompetitorCode(rs.getString(MRCompetitorPrice.colCompetitorCode));
+                mrCompetitorPrice.setCompetitorName(rs.getString(MRCompetitorPrice.colCompetitorName));
+                mrCompetitorPrice.setCompetitorRetailPrice(rs.getString(MRCompetitorPrice.colCompetitorRetailPrice));
+                mrCompetitorPrice.setCompetitorSpecialOfferPrice(rs.getString(MRCompetitorPrice.colCompetitorSpecialOfferPrice));
+                mrCompetitorPrice.setGoodsCode(rs.getString(MRCompetitorPrice.colGoodsCode));
+                mrCompetitorPrice.setGoodsName(rs.getString(MRCompetitorPrice.colGoodsName));
+                mrCompetitorPrice.setGoodsSpec(rs.getString(MRCompetitorPrice.colGoodsSpec));
+                mrCompetitorPrice.setInsideId(rs.getString(MRCompetitorPrice.colInsideCode));
+
+                System.out.println(mrCompetitorPrice.toString());
+                mrCompetitorPriceList.add(mrCompetitorPrice);
+                index++;
+                System.out.println("完成同步第" + index + "条数据");
+            }
+
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return mrCompetitorPriceList;
+    }
 }

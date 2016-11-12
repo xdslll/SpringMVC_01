@@ -59,9 +59,10 @@
                 <th data-options="field:'remark'" width="15%">备注</th>
                 <th data-options="field:'startDt'" width="10%">开始时间</th>
                 <th data-options="field:'endDt'" width="10%">结束时间</th>
-                <th data-options="field:'createUsername'" width="15%">创建人</th>
-                <th data-options="field:'createDt'" width="15%">创建时间</th>
-                <th data-options="field:'stateDesp'" width="15%">状态</th>
+                <th data-options="field:'confirmDate'" width="10%">确认时间</th>
+                <th data-options="field:'createUsername'" width="10%">创建人</th>
+                <th data-options="field:'createDt'" width="10%">创建时间</th>
+                <th data-options="field:'stateDesp'" width="10%">状态</th>
             </tr>
         </thead>
     </table>

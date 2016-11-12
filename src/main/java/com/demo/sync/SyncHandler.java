@@ -67,11 +67,15 @@ public class SyncHandler {
         Connection conn = sqlServerHandler.connectToSQLServer();
         if (conn != null) {
             Statement sqlServerStatement = conn.createStatement();
-            List<MRPlanBill> mrPlanBillList = sqlServerHandler.syncMRPlanBill(sqlServerStatement);
+            /*List<MRPlanBill> mrPlanBillList = sqlServerHandler.syncMRPlanBill(sqlServerStatement);
             List<MRPlanBillDeptDetail> mrPlanBillDeptDetailList =
                     sqlServerHandler.syncMRPlanBillDeptDetail(sqlServerStatement);
             List<MRPlanBillGoodsDetail> mrPlanBillGoodsDetailList =
-                    sqlServerHandler.syncMRPlanBillGoodsDetail(sqlServerStatement);
+                    sqlServerHandler.syncMRPlanBillGoodsDetail(sqlServerStatement);*/
+
+            //获取同步数据
+            List<MarketResearchBill> marketResearchBillList = sqlServerHandler.syncMarketResearchBill(sqlServerStatement);
+            List<MRCompetitorPrice> mrCompetitorPriceList = sqlServerHandler.syncMrCompetitorPrice(sqlServerStatement);
             conn.close();
 
             MysqlHandler mysqlHandler = new MysqlHandler();
@@ -80,9 +84,9 @@ public class SyncHandler {
                 Statement mysqlStatement = conn2.createStatement(
                         ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
                 try {
-                    mysqlHandler.syncEnfordMarketResearch(mysqlStatement, mrPlanBillList);
-                    mysqlHandler.syncEnfordMarketResearchDept(conn2, mysqlStatement, mrPlanBillDeptDetailList);
-                    mysqlHandler.syncEnfordMarketResearchGoods(conn2, mysqlStatement, mrPlanBillGoodsDetailList);
+                    mysqlHandler.syncEnfordMarketResearch2(mysqlStatement, marketResearchBillList);
+                    mysqlHandler.syncEnfordMarketResearchDept2(conn2, mysqlStatement, marketResearchBillList);
+                    mysqlHandler.syncEnfordMarketResearchGoods2(conn2, mysqlStatement, mrCompetitorPriceList);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
