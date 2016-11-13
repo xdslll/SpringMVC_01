@@ -4,26 +4,28 @@ public class MarketResearchBill {
     public static final String colBillNumber = "BillNumber";
     public static final String colDeptCode = "DeptCode";
     public static final String colNodeName = "NodeName";
+    public static final String colMRTypeCode = "MRTypeCode";
     public static final String colMRTypeName = "MRTypeName";
     public static final String colMRUnit = "MRUnit";
     public static final String colState = "State";
     public static final String colConfirmDate = "ConfirmDate";
     public static final String colConfirmManCode = "ConfirmManCode";
-    public static final String colCPModifyManName = "CPModifyManName";
+    public static final String colConfirmManName = "ConfirmManName";
     public static final String colMRDate = "MRDate";
-    public static final String colLastConfirmDate = "LastConfirmDate";
+    public static final String colLastConfirmDate = "LastConfimDate";
     public static final String colMRBeginTime = "MRBeginTime";
     public static final String colMREndTime = "MREndTime";
 
     String billNumber;
     String deptCode;
     String nodeName;
+    String mrTypeCode;
     String mrTypeName;
     int mrUnit;
     int state;
     String confirmDate;
     String confirmManCode;
-    String cpModifyManName;
+    String confirmManName;
     String mrDate;
     String lastConfirmDate;
     String mrBeginTime;
@@ -93,12 +95,12 @@ public class MarketResearchBill {
         this.confirmManCode = confirmManCode;
     }
 
-    public String getCpModifyManName() {
-        return cpModifyManName;
+    public String getConfirmManName() {
+        return confirmManName;
     }
 
-    public void setCpModifyManName(String cpModifyManName) {
-        this.cpModifyManName = cpModifyManName;
+    public void setConfirmManName(String confirmManName) {
+        this.confirmManName = confirmManName;
     }
 
     public String getMrDate() {
@@ -109,19 +111,55 @@ public class MarketResearchBill {
         this.mrDate = mrDate;
     }
 
+    public String getLastConfirmDate() {
+        return lastConfirmDate;
+    }
+
+    public void setLastConfirmDate(String lastConfirmDate) {
+        this.lastConfirmDate = lastConfirmDate;
+    }
+
+    public String getMrBeginTime() {
+        return mrBeginTime;
+    }
+
+    public void setMrBeginTime(String mrBeginTime) {
+        this.mrBeginTime = mrBeginTime;
+    }
+
+    public String getMrEndTime() {
+        return mrEndTime;
+    }
+
+    public void setMrEndTime(String mrEndTime) {
+        this.mrEndTime = mrEndTime;
+    }
+
+    public String getMrTypeCode() {
+        return mrTypeCode;
+    }
+
+    public void setMrTypeCode(String mrTypeCode) {
+        this.mrTypeCode = mrTypeCode;
+    }
+
     @Override
     public String toString() {
         return "MarketResearchBill{" +
                 "billNumber='" + billNumber + '\'' +
                 ", deptCode='" + deptCode + '\'' +
                 ", nodeName='" + nodeName + '\'' +
+                ", mrTypeCode='" + mrTypeCode + '\'' +
                 ", mrTypeName='" + mrTypeName + '\'' +
                 ", mrUnit=" + mrUnit +
                 ", state=" + state +
                 ", confirmDate='" + confirmDate + '\'' +
                 ", confirmManCode='" + confirmManCode + '\'' +
-                ", cpModifyManName='" + cpModifyManName + '\'' +
+                ", confirmManName='" + confirmManName + '\'' +
                 ", mrDate='" + mrDate + '\'' +
+                ", lastConfirmDate='" + lastConfirmDate + '\'' +
+                ", mrBeginTime='" + mrBeginTime + '\'' +
+                ", mrEndTime='" + mrEndTime + '\'' +
                 '}';
     }
 }

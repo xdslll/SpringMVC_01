@@ -180,13 +180,17 @@ public class SQLServerHandler {
                 marketResearchBill.setBillNumber(rs.getString(MarketResearchBill.colBillNumber));
                 marketResearchBill.setConfirmDate(rs.getString(MarketResearchBill.colConfirmDate));
                 marketResearchBill.setConfirmManCode(rs.getString(MarketResearchBill.colConfirmManCode));
-                marketResearchBill.setCpModifyManName(rs.getString(MarketResearchBill.colCPModifyManName));
+                marketResearchBill.setConfirmManName(rs.getString(MarketResearchBill.colConfirmManName));
                 marketResearchBill.setDeptCode(rs.getString(MarketResearchBill.colDeptCode));
                 marketResearchBill.setMrDate(rs.getString(MarketResearchBill.colMRDate));
+                marketResearchBill.setMrTypeCode(rs.getString(MarketResearchBill.colMRTypeCode));
                 marketResearchBill.setMrTypeName(rs.getString(MarketResearchBill.colMRTypeName));
                 marketResearchBill.setMrUnit(rs.getInt(MarketResearchBill.colMRUnit));
                 marketResearchBill.setNodeName(rs.getString(MarketResearchBill.colNodeName));
                 marketResearchBill.setState(rs.getInt(MarketResearchBill.colState));
+                marketResearchBill.setLastConfirmDate(rs.getString(MarketResearchBill.colLastConfirmDate));
+                marketResearchBill.setMrBeginTime(rs.getString(MarketResearchBill.colMRBeginTime));
+                marketResearchBill.setMrEndTime(rs.getString(MarketResearchBill.colMREndTime));
 
                 System.out.println(marketResearchBill.toString());
                 marketResearchBillList.add(marketResearchBill);
@@ -228,6 +232,10 @@ public class SQLServerHandler {
                 mrCompetitorPrice.setGoodsName(rs.getString(MRCompetitorPrice.colGoodsName));
                 mrCompetitorPrice.setGoodsSpec(rs.getString(MRCompetitorPrice.colGoodsSpec));
                 mrCompetitorPrice.setInsideId(rs.getString(MRCompetitorPrice.colInsideCode));
+                mrCompetitorPrice.setCategoryCode2(rs.getString(MRCompetitorPrice.colCategoryCode2));
+                mrCompetitorPrice.setCategoryCode4(rs.getString(MRCompetitorPrice.colCategoryCode4));
+                mrCompetitorPrice.setCategoryName2(rs.getString(MRCompetitorPrice.colCategoryName2));
+                mrCompetitorPrice.setCategoryName4(rs.getString(MRCompetitorPrice.colCategoryName4));
 
                 System.out.println(mrCompetitorPrice.toString());
                 mrCompetitorPriceList.add(mrCompetitorPrice);

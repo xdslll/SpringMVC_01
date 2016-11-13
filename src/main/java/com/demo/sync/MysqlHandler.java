@@ -357,7 +357,34 @@ public class MysqlHandler {
      * @throws SQLException
      */
     public void syncEnfordMarketResearch2(Statement mysqlStatement, List<MarketResearchBill> mrPlanBillList) throws SQLException {
-
+        for (int i = 0; i < mrPlanBillList.size(); i++) {
+            MarketResearchBill mrPlanBill = mrPlanBillList.get(i);
+            String sql = "SELECT * FROM enford_market_research WHERE bill_number='" + mrPlanBill.getBillNumber() + "'";
+            ResultSet rs = mysqlStatement.executeQuery(sql);
+            if (rs.first()) {
+                System.out.println("开始更新第" + (i + 1) + "条数据");
+                updateEnfordMarketResearch2(mrPlanBill, rs);
+                try {
+                    rs.updateRow();
+                    System.out.println("完成更新第" + (i + 1) + "条数据");
+                } catch (Exception ex) {
+                    System.out.println("更新第" + (i + 1) + "条数据出错!");
+                    ex.printStackTrace();
+                }
+            } else {
+                System.out.println("开始插入第" + (i + 1) + "条数据");
+                rs.moveToInsertRow();
+                updateEnfordMarketResearch2(mrPlanBill, rs);
+                try {
+                    rs.insertRow();
+                    System.out.println("完成插入第" + (i + 1) + "条数据");
+                } catch (Exception ex) {
+                    System.out.println("插入第" + (i + 1) + "条数据出错!");
+                    ex.printStackTrace();
+                }
+            }
+            rs.close();
+        }
     }
 
     /**
@@ -380,5 +407,51 @@ public class MysqlHandler {
      */
     public void syncEnfordMarketResearchGoods2(Connection conn2, Statement mysqlStatement, List<MRCompetitorPrice> mrCompetitorPriceList) {
 
+    }
+
+    public void updateEnfordMarketResearch2(MarketResearchBill mrPlanBill, ResultSet rs) {
+        try {
+            String createDtStr = mrPlanBill.getMrDate();
+            if (!isEmpty(createDtStr)) {
+                Date createDt = new Date(new SimpleDateFormat("yyyyMMdd").parse(createDtStr).getTime());
+                rs.updateDate(EnfordMarketResearch.colCreateDt, createDt);
+            }
+            String beginDateStr = mrPlanBill.getMrDate();
+            if (!isEmpty(beginDateStr)) {
+                Date beginDate = new Date(new SimpleDateFormat("yyyyMMdd").parse(beginDateStr).getTime());
+                rs.updateDate(EnfordMarketResearch.colStartDt, beginDate);
+            }
+            String endDateStr = mrPlanBill.getLastConfirmDate();
+            if (!isEmpty(endDateStr)) {
+                Date endDate = new Date(new SimpleDateFormat("yyyyMMdd").parse(endDateStr).getTime());
+                rs.updateDate(EnfordMarketResearch.colEndDt, endDate);
+            }
+            String mrBeginDateStr = beginDateStr + mrPlanBill.getMrBeginTime();
+            System.out.println("mrBeginDateStr=" + mrBeginDateStr);
+            if (!isEmpty(mrBeginDateStr)) {
+                Date mrBeginDate = new Date(new SimpleDateFormat("yyyyMMddHHmmss").parse(mrBeginDateStr).getTime());
+                rs.updateDate(EnfordMarketResearch.colMrBeginDate, mrBeginDate);
+            }
+            String mrEndDateStr = endDateStr + mrPlanBill.getMrEndTime();
+            System.out.println("mrEndDateStr=" + mrEndDateStr);
+            if (!isEmpty(mrEndDateStr)) {
+                Date mrEndDate = new Date(new SimpleDateFormat("yyyyMMddHHmmss").parse(mrEndDateStr).getTime());
+                rs.updateDate(EnfordMarketResearch.colMrEndDate, mrEndDate);
+            }
+            rs.updateString(EnfordMarketResearch.colBillNumber, mrPlanBill.getBillNumber());
+            rs.updateString(EnfordMarketResearch.colType, mrPlanBill.getMrTypeCode());
+            rs.updateString(EnfordMarketResearch.colName, mrPlanBill.getMrTypeName());
+            rs.updateInt(EnfordMarketResearch.colUnitArea, mrPlanBill.getMrUnit());
+            //如果状态是已经开始,则直接切换到发布状态
+            if (mrPlanBill.getState() == 0) {
+                mrPlanBill.setState(4);
+            }
+            rs.updateInt(EnfordMarketResearch.colState, mrPlanBill.getState());
+            rs.updateInt(EnfordMarketResearch.colCreateBy, 1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }

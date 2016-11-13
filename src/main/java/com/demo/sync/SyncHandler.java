@@ -74,8 +74,14 @@ public class SyncHandler {
                     sqlServerHandler.syncMRPlanBillGoodsDetail(sqlServerStatement);*/
 
             //获取同步数据
+            System.out.println("开始同步市调清单");
             List<MarketResearchBill> marketResearchBillList = sqlServerHandler.syncMarketResearchBill(sqlServerStatement);
+            System.out.println("市调清单同步成功");
+
+            System.out.println("开始同步市调清单下的商品");
             List<MRCompetitorPrice> mrCompetitorPriceList = sqlServerHandler.syncMrCompetitorPrice(sqlServerStatement);
+            System.out.println("市调清单下的商品同步成功");
+
             conn.close();
 
             MysqlHandler mysqlHandler = new MysqlHandler();
