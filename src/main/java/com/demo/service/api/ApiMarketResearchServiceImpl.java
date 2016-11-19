@@ -62,40 +62,72 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
             if (researchState == RESEARCH_STATE_CANCELED ||
                     researchState == RESEARCH_STATE_HAVE_FINISHED ||
                     researchState == RESEARCH_STATE_NOT_PUBLISH ||
-                    checkConfirmDate(research.getConfirmDate())) {
-                    //research.getConfirmDate().getTime() < now.getTime()
+                    //!checkConfirmDate(research.getEndDt())) {
+                    //research.getEndDt().getTime() < now.getTime()) {
+                    checkEndDate(research.getEndDt()) ||
+                    checkEndDate(research.getMrEndDate())) {
                 continue;
             } else {
                 System.out.println(researchDept.toString());
-                if (researchDept.getState() == 0 &&
+                /*if (researchDept.getState() == 0 &&
                         researchDept.getEffectiveSign() == 0) {
-                    EnfordApiMarketResearch apiMarketResearch = new EnfordApiMarketResearch();
-                    //查询门店信息
-                    EnfordProductDepartment dept = deptMapper.selectByPrimaryKey(deptId);
-                    //查询竞争门店信息
-                    int compId = researchDept.getCompId();
-                    EnfordProductCompetitors comp = competitorsMapper.selectByPrimaryKey(compId);
-                    //查询商品总数
-                    param.clear();
-                    param.put("resId", resId);
-                    int codCount = researchCommodityMapper.countByParam(param);
-                    //计算完成进度
-                    param.clear();
-                    param.put("compId", compId);
-                    param.put("resId", resId);
-                    int finishCount = priceMapper.countByParam(param);
-                    float finishPercentFloat = (float) finishCount / codCount;
-                    int finishPercent = (int) (finishPercentFloat * 100);
-                    apiMarketResearch.setResearch(research);
-                    apiMarketResearch.setDept(dept);
-                    apiMarketResearch.setComp(comp);
-                    apiMarketResearch.setCodCount(codCount);
-                    apiMarketResearch.setHaveFinished(finishPercent);
-                    list.add(apiMarketResearch);
-                }
+
+                }*/
+                /*if (researchDept.getState() == 0 || research.getState() == 4) {
+
+                }*/
+                EnfordApiMarketResearch apiMarketResearch = new EnfordApiMarketResearch();
+                //查询门店信息
+                EnfordProductDepartment dept = deptMapper.selectByPrimaryKey(deptId);
+                //查询竞争门店信息
+                int compId = researchDept.getCompId();
+                EnfordProductCompetitors comp = competitorsMapper.selectByPrimaryKey(compId);
+                //查询商品总数
+                param.clear();
+                param.put("resId", resId);
+                int codCount = researchCommodityMapper.countByParam(param);
+                //计算完成进度
+                param.clear();
+                param.put("compId", compId);
+                param.put("resId", resId);
+                int finishCount = priceMapper.countByParam(param);
+                float finishPercentFloat = (float) finishCount / codCount;
+                int finishPercent = (int) (finishPercentFloat * 100);
+                apiMarketResearch.setResearch(research);
+                apiMarketResearch.setDept(dept);
+                apiMarketResearch.setComp(comp);
+                apiMarketResearch.setCodCount(codCount);
+                apiMarketResearch.setHaveFinished(finishPercent);
+                list.add(apiMarketResearch);
             }
         }
         return list;
+    }
+
+    /**
+     * 判断当前时间是否超出了最后时间
+     *
+     * @param endDate
+     * @return
+     */
+    public static boolean checkEndDate(Date endDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date now = new Date();
+        try {
+            now = sdf.parse(sdf.format(now));
+            System.out.println("当前时间:" + now);
+            endDate = sdf.parse(sdf.format(endDate));
+            System.out.println("结束时间:" + now);
+            System.out.println("判断结果:" + (!endDate.equals(now) || endDate.before(now)));
+            if (endDate.equals(now) || endDate.after(now)) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return true;
+        }
     }
 
     /**
@@ -114,9 +146,9 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
             now = sdf.parse(sdf.format(now));
-            System.out.println(now.toString());
+            System.out.println("当前时间:" + now.toString());
             confirmDate = sdf.parse(sdf.format(confirmDate));
-            System.out.println(confirmDate.toString());
+            System.out.println("过期时间:" + confirmDate.toString());
             System.out.println(confirmDate.after(now));
         } catch (ParseException e) {
             e.printStackTrace();

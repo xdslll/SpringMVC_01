@@ -7,10 +7,12 @@ import com.demo.model.EnfordProductCompetitors;
 import com.demo.model.EnfordProductPrice;
 import com.demo.model.EnfordSystemUser;
 import com.demo.service.CommodityPriceService;
+import com.demo.sync.SQLServerHandler;
 import com.demo.util.Consts;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,4 +114,24 @@ public class CommodityPriceServiceImpl implements CommodityPriceService, Consts 
     public int updatePrice(EnfordProductPrice price) {
         return priceMapper.updateByPrimaryKeySelective(price);
     }
+
+    @Override
+    public int addPriceToSQLServer(EnfordProductPrice price) {
+        try {
+            System.out.println("开始新增价格到同步服务器");
+            //获取商品编码
+            EnfordProductCommodity commodity = commodityMapper.selectByPrimaryKey(price.getComId());
+            price.setCode(commodity.getCode());
+            //获取市调清单编号
+            EnfordMarketResearch research = researchMapper.selectByPrimaryKey(price.getResId());
+            price.setBillNumber(research.getBillNumber());
+            //添加价格到同步服务器
+            SQLServerHandler sqlServerHandler = new SQLServerHandler();
+            sqlServerHandler.addPrice(price);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 }

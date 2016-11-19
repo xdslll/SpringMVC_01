@@ -1,5 +1,7 @@
 package com.demo.sync;
 
+import com.demo.model.EnfordProductPrice;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -248,5 +250,23 @@ public class SQLServerHandler {
             e.printStackTrace();
         }
         return mrCompetitorPriceList;
+    }
+
+    public void addPrice(EnfordProductPrice price) throws SQLException {
+        System.out.println("===================开始更新价格");
+        Connection conn = connectToSQLServer();
+        if (conn != null) {
+            //插入价格信息
+            Statement sqlServerStatement = conn.createStatement();
+            String sql = "SELECT * FROM tbMRCompetitorPrice WHERE BillNumber="
+                    + price.getBillNumber() + " and GoodsCode=" + price.getCode();
+            ResultSet rs = sqlServerStatement.executeQuery(sql);
+            if (rs.first()) {
+                rs.updateFloat(MRCompetitorPrice.colCompetitorRetailPrice, price.getPurchasePrice());
+                rs.updateFloat(MRCompetitorPrice.colCompetitorSpecialOfferPrice, price.getPromptPrice());
+                rs.updateRow();
+            }
+        }
+        System.out.println("===================更新价格成功");
     }
 }

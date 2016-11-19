@@ -114,6 +114,7 @@ public class ApiMarketController implements Consts {
             if (count > 0) {
                 respBody.setCode(SUCCESS);
                 respBody.setMsg("新增价格成功");
+                priceService.addPriceToSQLServer(price);
             } else {
                 respBody.setCode(FAILED);
                 respBody.setMsg("新增价格失败");
@@ -135,6 +136,7 @@ public class ApiMarketController implements Consts {
             if (count > 0) {
                 respBody.setCode(SUCCESS);
                 respBody.setMsg("修改价格成功");
+                priceService.addPriceToSQLServer(price);
             } else {
                 respBody.setCode(FAILED);
                 respBody.setMsg("修改价格失败");

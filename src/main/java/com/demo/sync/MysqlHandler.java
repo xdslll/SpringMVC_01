@@ -1,5 +1,7 @@
 package com.demo.sync;
 
+import com.demo.service.api.ApiMarketResearchServiceImpl;
+
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -356,7 +358,8 @@ public class MysqlHandler {
      * @param mrPlanBillList
      * @throws SQLException
      */
-    public void syncEnfordMarketResearch2(Statement mysqlStatement, List<MarketResearchBill> mrPlanBillList) throws SQLException {
+    public void syncEnfordMarketResearch2(Statement mysqlStatement,
+                                          List<MarketResearchBill> mrPlanBillList) throws SQLException {
         for (int i = 0; i < mrPlanBillList.size(); i++) {
             MarketResearchBill mrPlanBill = mrPlanBillList.get(i);
             String sql = "SELECT * FROM enford_market_research WHERE bill_number='" + mrPlanBill.getBillNumber() + "'";
@@ -394,19 +397,38 @@ public class MysqlHandler {
      * @param mysqlStatement
      * @param marketResearchBillList
      */
-    public void syncEnfordMarketResearchDept2(Connection conn2, Statement mysqlStatement, List<MarketResearchBill> marketResearchBillList) {
-
-    }
-
-    /**
-     * 三期,根据新的数据结构同步市调商品
-     *
-     * @param conn2
-     * @param mysqlStatement
-     * @param mrCompetitorPriceList
-     */
-    public void syncEnfordMarketResearchGoods2(Connection conn2, Statement mysqlStatement, List<MRCompetitorPrice> mrCompetitorPriceList) {
-
+    public void syncEnfordMarketResearchDept2(Connection conn2, Statement mysqlStatement,
+                                              List<MarketResearchBill> marketResearchBillList) throws SQLException {
+        for (int i = 0; i < marketResearchBillList.size(); i++) {
+            MarketResearchBill mrPlanBillDeptDetail = marketResearchBillList.get(i);
+            String sql = "SELECT * FROM enford_market_research_dept WHERE bill_number="
+                    + mrPlanBillDeptDetail.getBillNumber() + " and dept_code="
+                    + mrPlanBillDeptDetail.getDeptCode();
+            ResultSet rs = mysqlStatement.executeQuery(sql);
+            if (rs.first()) {
+                System.out.println("开始更新第" + (i + 1) + "条数据");
+                updateEnfordMarketResearchDept2(conn2, mrPlanBillDeptDetail, rs);
+                try {
+                    rs.updateRow();
+                    System.out.println("完成更新第" + (i + 1) + "条数据");
+                } catch (Exception ex) {
+                    System.out.println("更新第" + (i + 1) + "条数据出错!");
+                    ex.printStackTrace();
+                }
+            } else {
+                System.out.println("开始插入第" + (i + 1) + "条数据");
+                rs.moveToInsertRow();
+                updateEnfordMarketResearchDept2(conn2, mrPlanBillDeptDetail, rs);
+                System.out.println("完成插入第" + (i + 1) + "条数据");
+                try {
+                    rs.insertRow();
+                } catch (Exception ex) {
+                    System.out.println("插入第" + (i + 1) + "条数据出错!");
+                    ex.printStackTrace();
+                }
+            }
+            rs.close();
+        }
     }
 
     public void updateEnfordMarketResearch2(MarketResearchBill mrPlanBill, ResultSet rs) {
@@ -443,8 +465,11 @@ public class MysqlHandler {
             rs.updateString(EnfordMarketResearch.colName, mrPlanBill.getMrTypeName());
             rs.updateInt(EnfordMarketResearch.colUnitArea, mrPlanBill.getMrUnit());
             //如果状态是已经开始,则直接切换到发布状态
-            if (mrPlanBill.getState() == 0) {
+            Date endDate = new Date(new SimpleDateFormat("yyyyMMdd").parse(endDateStr).getTime());
+            if (mrPlanBill.getState() == 0 && !ApiMarketResearchServiceImpl.checkEndDate(endDate)) {
                 mrPlanBill.setState(4);
+            } else {
+                mrPlanBill.setState(2);
             }
             rs.updateInt(EnfordMarketResearch.colState, mrPlanBill.getState());
             rs.updateInt(EnfordMarketResearch.colCreateBy, 1);
@@ -453,5 +478,185 @@ public class MysqlHandler {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateEnfordMarketResearchDept2(Connection conn, MarketResearchBill mrPlanBillDeptDetail, ResultSet rs) throws SQLException {
+        String sql2 = "SELECT * FROM enford_market_research WHERE bill_number='" + mrPlanBillDeptDetail.getBillNumber() + "'";
+        Statement s2 = conn.createStatement();
+        ResultSet rs2 = s2.executeQuery(sql2);
+        String sql3 = "SELECT * FROM enford_product_department WHERE code='" + mrPlanBillDeptDetail.getDeptCode() + "'";
+        Statement s3 = conn.createStatement();
+        ResultSet rs3 = s3.executeQuery(sql3);
+        if (rs2.first()) {
+            rs.updateInt(EnfordMarketResearchDept.colResId, rs2.getInt(EnfordMarketResearch.colId));
+        } else {
+            System.out.println("未查询到市调清单信息!");
+        }
+        if (rs3.first()) {
+            rs.updateInt(EnfordMarketResearchDept.colExeId, rs3.getInt(EnfordMarketResearch.colId));
+            rs.updateInt(EnfordMarketResearchDept.colCompId, rs3.getInt(EnfordMarketResearchDept.colCompId));
+        } else {
+            System.out.println("未查询到门店信息!");
+        }
+        rs.updateString(EnfordMarketResearchDept.colBillNumber, mrPlanBillDeptDetail.getBillNumber());
+        //rs.updateInt(EnfordMarketResearchDept.colInsideId, mrPlanBillDeptDetail.getInsideId());
+        rs.updateString(EnfordMarketResearchDept.colDeptCode, mrPlanBillDeptDetail.getDeptCode());
+        rs.updateString(EnfordMarketResearchDept.colDeptName, mrPlanBillDeptDetail.getNodeName());
+        //rs.updateString(EnfordMarketResearchDept.colBillNum, mrPlanBillDeptDetail.getXxBillNum());
+        rs.updateInt(EnfordMarketResearchDept.colState, mrPlanBillDeptDetail.getState());
+        //rs.updateInt(EnfordMarketResearchDept.colEffectiveSign, mrPlanBillDeptDetail.getEffectiveSign());
+
+        rs2.close();
+        rs3.close();
+    }
+
+    /**
+     * 三期,根据新的数据结构同步市调商品
+     *
+     * @param conn2
+     * @param mysqlStatement
+     * @param mrCompetitorPriceList
+     */
+    public void syncEnfordMarketResearchGoods2(Connection conn2, Statement mysqlStatement,
+                                               List<MRCompetitorPrice> mrCompetitorPriceList) throws SQLException {
+        for (int i = 0; i < mrCompetitorPriceList.size(); i++) {
+            MRCompetitorPrice mrPlanBillGoodsDetail = mrCompetitorPriceList.get(i);
+            //根据货物编码查询货物是否存在
+            String sqlGoodsDetail = "SELECT * FROM enford_product_commodity where code='"
+                    + mrPlanBillGoodsDetail.getGoodsCode() + "'";
+            ResultSet rsGoodsDetail = mysqlStatement.executeQuery(sqlGoodsDetail);
+            //如果货物存在则获取货物ID,如果货物不存在,则新增货物信息
+            int goodsId = -1;
+            if (rsGoodsDetail.first()) {
+                goodsId = rsGoodsDetail.getInt(EnfordProductCommodity.colId);goodsId = rsGoodsDetail.getInt(EnfordProductCommodity.colId);
+            } else {
+                String sqlGetGoodsMaxId = "SELECT max(id) AS id FROM enford_product_commodity";
+                ResultSet rsGoodsMaxId = mysqlStatement.executeQuery(sqlGetGoodsMaxId);
+                if (rsGoodsMaxId.first()) {
+                    goodsId = rsGoodsMaxId.getInt(EnfordProductCommodity.colId) + 1;
+                    rsGoodsMaxId.close();
+                    String sqlGoodsDetail2 = "SELECT * FROM enford_product_commodity";
+                    ResultSet rsGoodsDetail2 = mysqlStatement.executeQuery(sqlGoodsDetail2);
+                    //开始新增货物信息
+                    System.out.println("第" + (i + 1) + "条数据中的商品不存在,开始插入新商品");
+                    rsGoodsDetail2.moveToInsertRow();
+                    insertGoods2(mrPlanBillGoodsDetail, rsGoodsDetail2);
+                    try {
+                        rsGoodsDetail2.insertRow();
+                        System.out.println("第" + (i + 1) + "条数据中的商品插入新商品成功");
+                    } catch (Exception ex) {
+                        System.out.println("第" + (i + 1) + "条数据中的商品插入新商品失败");
+                        ex.printStackTrace();
+                    }
+                    rsGoodsDetail2.close();
+                }
+            }
+            rsGoodsDetail.close();
+            System.out.println("货品ID:" + goodsId);
+            if (goodsId != -1) {
+                String sqlCheckGoods = "SELECT * FROM enford_market_research_commodity WHERE bill_number="
+                        + mrPlanBillGoodsDetail.getBillNumber() + " and cod_id=" + goodsId;
+                ResultSet rsCheckGoods = mysqlStatement.executeQuery(sqlCheckGoods);
+                if (rsCheckGoods.first()) {
+                    //System.out.println("第" + (i + 1) + "条数据中的商品存在,开始更新");
+                    //updateEnfordMarketResearchGoods2(conn2, mrPlanBillGoodsDetail, rsCheckGoods, goodsId);
+                    //System.out.println("第" + (i + 1) + "条数据中的商品存在,更新成功");
+                    System.out.println("第" + (i + 1) + "条数据中的商品存在,无需更新");
+                } else {
+                    System.out.println("第" + (i + 1) + "条数据中的商品不存在,开始插入");
+                    rsCheckGoods.moveToInsertRow();
+                    updateEnfordMarketResearchGoods2(conn2, mrPlanBillGoodsDetail, rsCheckGoods, goodsId);
+                    try {
+                        rsCheckGoods.insertRow();
+                        System.out.println("第" + (i + 1) + "条数据中的商品不存在,插入成功");
+                    } catch (Exception ex) {
+                        System.out.println("第" + (i + 1) + "条数据中的商品不存在,插入失败");
+                        ex.printStackTrace();
+                    }
+                }
+                rsCheckGoods.close();
+            }
+        }
+    }
+
+    public void insertGoods2(MRCompetitorPrice mrPlanBillGoodsDetail, ResultSet rs) throws SQLException {
+        rs.updateString(EnfordProductCommodity.colCode, mrPlanBillGoodsDetail.getGoodsCode());
+        rs.updateString(EnfordProductCommodity.colPName, mrPlanBillGoodsDetail.getGoodsName());
+        rs.updateString(EnfordProductCommodity.colPSize, mrPlanBillGoodsDetail.getGoodsSpec());
+        rs.updateString(EnfordProductCommodity.colUnit, mrPlanBillGoodsDetail.getBaseMeasureUnit());
+        rs.updateString(EnfordProductCommodity.colBarCode, mrPlanBillGoodsDetail.getBaseBarCode());
+        if (mrPlanBillGoodsDetail.getCategoryCode4() != null &&
+                !mrPlanBillGoodsDetail.getCategoryCode4().equals("")) {
+            rs.updateInt(EnfordProductCommodity.colCategoryCode, Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode4()));
+        } else {
+            rs.updateInt(EnfordProductCommodity.colCategoryCode, 999999);
+        }
+    }
+
+    public void updateEnfordMarketResearchGoods2(Connection conn, MRCompetitorPrice mrPlanBillGoodsDetail,
+                                                 ResultSet rsCheckGoods, int goodsId) throws SQLException {
+        String sql2 = "SELECT * FROM enford_market_research WHERE bill_number='" + mrPlanBillGoodsDetail.getBillNumber() + "'";
+        Statement s2 = conn.createStatement();
+        ResultSet rs2 = s2.executeQuery(sql2);
+        if (rs2.first()) {
+            rsCheckGoods.updateInt(EnfordMarketResearchCommodity.colResId, rs2.getInt(EnfordMarketResearchCommodity.colId));
+        }
+
+        if (!isEmpty(mrPlanBillGoodsDetail.getCategoryCode2()) &&
+                !isEmpty(mrPlanBillGoodsDetail.getCategoryName2())) {
+            //查询分类是否存在
+            String sql3 = "SELECT * FROM enford_product_category WHERE code='" + Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode2()) + "'";
+            System.out.println(sql3);
+            Statement s3 = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs3 = s3.executeQuery(sql3);
+            //插入新的父分类
+            if (!rs3.first()) {
+                rs3.moveToInsertRow();
+                rs3.updateInt("code", Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode2()));
+                rs3.updateString("name", mrPlanBillGoodsDetail.getCategoryName2());
+                rs3.updateInt("parent", 0);
+                try {
+                    rs3.insertRow();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            rs3.close();
+        }
+
+        if (!isEmpty(mrPlanBillGoodsDetail.getCategoryCode2()) &&
+                !isEmpty(mrPlanBillGoodsDetail.getCategoryName2()) &&
+                !isEmpty(mrPlanBillGoodsDetail.getCategoryCode4()) &&
+                !isEmpty(mrPlanBillGoodsDetail.getCategoryName4())) {
+            //查询子分类是否存在
+            String sql4 = "SELECT * FROM enford_product_category WHERE code='"
+                    + Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode4()) + "' and parent='"
+                    + Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode2()) + "'";
+            System.out.println(sql4);
+            Statement s4 = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs4 = s4.executeQuery(sql4);
+            //插入新的子分类
+            if (!rs4.first()) {
+                rs4.moveToInsertRow();
+                rs4.updateInt("code", Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode4()));
+                rs4.updateString("name", mrPlanBillGoodsDetail.getCategoryName4());
+                rs4.updateInt("parent", Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode2()));
+                try {
+                    rs4.insertRow();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            rs4.close();
+        }
+
+        rsCheckGoods.updateInt(EnfordMarketResearchCommodity.colCodId, goodsId);
+        rsCheckGoods.updateString(EnfordMarketResearchCommodity.colBillNumber, mrPlanBillGoodsDetail.getBillNumber());
+        //rsCheckGoods.updateInt(EnfordMarketResearchCommodity.colInsideId, mrPlanBillGoodsDetail.getInsideId());
+        rsCheckGoods.updateString(EnfordMarketResearchCommodity.colGoodsSpec, mrPlanBillGoodsDetail.getGoodsSpec());
+        rsCheckGoods.updateString(EnfordMarketResearchCommodity.colGoodsName, mrPlanBillGoodsDetail.getGoodsName());
+        rsCheckGoods.updateString(EnfordMarketResearchCommodity.colBaseBarCode, mrPlanBillGoodsDetail.getBaseBarCode());
+        rsCheckGoods.updateString(EnfordMarketResearchCommodity.colBaseMeasureUnit, mrPlanBillGoodsDetail.getBaseMeasureUnit());
+        rs2.close();
     }
 }

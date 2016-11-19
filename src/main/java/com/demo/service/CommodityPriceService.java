@@ -18,4 +18,13 @@ public interface CommodityPriceService {
     int addPrice(EnfordProductPrice price);
 
     int updatePrice(EnfordProductPrice price);
+
+    /**
+     * 三期功能,将价格数据添加到同步服务器
+     *
+     * @param price
+     * @return
+     */
+    int addPriceToSQLServer(EnfordProductPrice price);
+
 }

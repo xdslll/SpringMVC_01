@@ -29,7 +29,7 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
      * 每30分钟触发一次,同步市调清单数据
      */
     //@Scheduled(cron = "0 0 2,4,6,8,10,12,14,16,18,20,22 * * ?")
-    @Scheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(cron = "0 0/60 * * * ?")
     @Override
     public void syncMarketResearchData() {
         System.out.println("==================开始同步市调清单数据");
@@ -45,46 +45,14 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
     /**
      * 每30分钟触发一次,刷新市调清单状态
      */
-    @Scheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(cron = "0 0/1 * * * ?")
     @Override
     public void checkMarketResearchState() {
-        System.out.println("==================开始刷新市调清单状态");
-        int count = researchMapper.countByParam(null);
-        System.out.println("==================共:" + count + "条记录");
-        //每次刷新10条数据
-        int pageSize = 10;
-        int loop = 0;
-        if (count % pageSize == 0) {
-            loop = count / pageSize;
-        } else {
-            loop = count / pageSize + 1;
+        SyncHandler syncHandler = new SyncHandler();
+        try {
+            syncHandler.refreshData(researchMapper);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        Map<String, Object> param = new HashMap<String, Object>();
-        Date now = new Date();
-        for (int page = 0; page < loop; page++) {
-            param.put("page", page * pageSize);
-            param.put("pageSize", pageSize);
-            List<EnfordMarketResearch> researchList = researchMapper.selectByParam(param);
-            for (EnfordMarketResearch research : researchList) {
-                int state = research.getState();
-                Date startDt = research.getStartDt();
-                Date endDt = research.getEndDt();
-                if (state == RESEARCH_STATE_HAVE_PUBLISHED) {
-                    //市调已经开始,但未结束
-                    if (now.compareTo(startDt) >= 0 && now.compareTo(endDt) <= 0) {
-                        research.setState(RESEARCH_STATE_HAVE_STARTED);
-                        researchMapper.updateByPrimaryKeySelective(research);
-                    }
-                } else if (state == RESEARCH_STATE_HAVE_STARTED) {
-                    //市调已经结束
-                    if (now.compareTo(endDt) > 0) {
-                        research.setState(RESEARCH_STATE_HAVE_FINISHED);
-                        researchMapper.updateByPrimaryKeySelective(research);
-                    }
-                }
-            }
-        }
-
-        System.out.println("==================刷新市调清单状态成功");
     }
 }
