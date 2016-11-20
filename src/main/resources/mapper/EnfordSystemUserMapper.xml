@@ -183,4 +183,13 @@
     where username=#{username,jdbcType=VARCHAR} and
     password=#{password,jdbcType=VARCHAR}
   </select>
+  <select id="selectByParam" resultType="com.demo.model.EnfordSystemUser">
+    select
+    <include refid="Base_Column_List" />
+    from enford_system_user
+    where 1=1 and
+    <if test="deptId != null">
+      dept_id = #{deptId,jdbcType=INTEGER}
+    </if>
+  </select>
 </mapper>

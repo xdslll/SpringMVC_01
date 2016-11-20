@@ -1,7 +1,10 @@
 package com.demo.sync;
 
+import com.demo.dao.EnfordMarketResearchDeptMapper;
 import com.demo.dao.EnfordMarketResearchMapper;
-import com.demo.model.*;
+import com.demo.dao.EnfordSystemUserMapper;
+import com.demo.model.EnfordMarketResearchDept;
+import com.demo.model.EnfordSystemUser;
 import com.demo.util.Consts;
 import org.apache.log4j.Logger;
 
@@ -113,9 +116,14 @@ public class SyncHandler implements Consts {
         }
     }
 
-    public void refreshData(EnfordMarketResearchMapper researchMapper) {
+    public void refreshData(EnfordMarketResearchMapper researchMapper,
+                            EnfordMarketResearchDeptMapper researchDeptMapper,
+                            EnfordSystemUserMapper userMapper) {
         System.out.println("==================开始刷新市调清单状态");
-        int count = researchMapper.countByParam(null);
+        /*
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("status", -1);
+        int count = researchMapper.countByParam(param);
         System.out.println("==================共:" + count + "条记录");
         //每次刷新10条数据
         int pageSize = 10;
@@ -125,7 +133,7 @@ public class SyncHandler implements Consts {
         } else {
             loop = count / pageSize + 1;
         }
-        Map<String, Object> param = new HashMap<String, Object>();
+        param.clear();
         Date now = new Date();
         for (int page = 0; page < loop; page++) {
             param.put("page", page * pageSize);
@@ -149,9 +157,96 @@ public class SyncHandler implements Consts {
                     }
                 }
             }
-        }
-
+        }*/
+        refreshData2(researchMapper, researchDeptMapper, userMapper);
         System.out.println("==================刷新市调清单状态成功");
+    }
+
+    /**
+     * 三期,刷新状态功能
+     *  @param researchMapper
+     * @param researchDeptMapper
+     * @param userMapper
+     */
+    private void refreshData2(EnfordMarketResearchMapper researchMapper,
+                              EnfordMarketResearchDeptMapper researchDeptMapper,
+                              EnfordSystemUserMapper userMapper) {
+        try {
+            Map<String, Object> param = new HashMap<String, Object>();
+            param.put("status", -1);
+            List<com.demo.model.EnfordMarketResearch> researchList = researchMapper.selectByParam(param);
+
+            Date now = new Date();
+            //只比较年月日
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            now = sdf.parse(sdf.format(now));
+            long nowLong = now.getTime();
+            System.out.println("当前时间:" + now);
+
+            for (com.demo.model.EnfordMarketResearch research : researchList) {
+                int state = research.getState();
+                Date startDt = research.getStartDt();
+                Date endDt = research.getEndDt();
+                if (startDt != null && endDt != null) {
+                    startDt = sdf.parse(sdf.format(startDt));
+                    endDt = sdf.parse(sdf.format(endDt));
+                    long startLong = startDt.getTime();
+                    long endLong = endDt.getTime();
+                    if (state == RESEARCH_STATE_HAVE_PUBLISHED) {
+                        //市调已经开始,但未结束,则将状态置为已开始
+                        if (startLong <= nowLong && nowLong <= endLong) {
+                            research.setState(RESEARCH_STATE_HAVE_STARTED);
+                            researchMapper.updateByPrimaryKeySelective(research);
+                        } else if (nowLong > endLong) {
+                            research.setState(RESEARCH_STATE_HAVE_FINISHED);
+                            researchMapper.updateByPrimaryKeySelective(research);
+                        }
+                    } else if (state == RESEARCH_STATE_HAVE_STARTED) {
+                        //判断市调是否结束
+                        if (nowLong > endLong) {
+                            research.setState(RESEARCH_STATE_HAVE_FINISHED);
+                            researchMapper.updateByPrimaryKeySelective(research);
+                        }
+                    } else if (state == RESEARCH_STATE_HAVE_FINISHED) {
+                        //如果市调已经结束,则写入服务器
+                        System.out.println("开始回写市调信息数据到同步服务器");
+                        //获取市调部门
+                        int resId = research.getId();
+                        param.clear();
+                        param.put("resId", resId);
+                        List<EnfordMarketResearchDept> marketResearchDeptList =
+                                researchDeptMapper.selectByParam(param);
+                        for (EnfordMarketResearchDept researchDept : marketResearchDeptList) {
+                            param.clear();
+                            param.put("deptId", researchDept.getExeId());
+                            List<EnfordSystemUser> userList = userMapper.selectByParam(param);
+                            MarketResearchBill researchBill = new MarketResearchBill();
+                            if (userList != null && userList.size() > 0) {
+                                researchBill.setConfirmManCode(userList.get(0).getUsername());
+                                String name = userList.get(0).getName();
+                                if (name == null || name.equals("")) {
+                                    researchBill.setConfirmManName(userList.get(0).getUsername());
+                                } else {
+                                    researchBill.setConfirmManName(name);
+                                }
+                            } else {
+                                researchBill.setConfirmManCode("888888");
+                                researchBill.setConfirmManName("管理员");
+                            }
+                            researchBill.setConfirmDate(sdf.format(now));
+                            researchBill.setState(1);
+                            researchBill.setBillNumber(research.getBillNumber());
+                            System.out.println(researchBill.toString());
+                            //将数据回写到SQLServer服务器
+                            SQLServerHandler sqlServerHandler = new SQLServerHandler();
+                            sqlServerHandler.setResearchConfirmed(researchBill);
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
 }

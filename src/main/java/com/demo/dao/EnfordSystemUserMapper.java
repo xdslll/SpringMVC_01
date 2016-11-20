@@ -57,4 +57,6 @@ public interface EnfordSystemUserMapper {
     EnfordSystemUser selectByUsernameAndPassword(Map<String, Object> param);
 
     List<EnfordSystemUser> select();
+
+    List<EnfordSystemUser> selectByParam(Map<String, Object> param);
 }

@@ -1,6 +1,8 @@
 package com.demo.service.impl;
 
+import com.demo.dao.EnfordMarketResearchDeptMapper;
 import com.demo.dao.EnfordMarketResearchMapper;
+import com.demo.dao.EnfordSystemUserMapper;
 import com.demo.model.EnfordMarketResearch;
 import com.demo.service.ScheduleService;
 import com.demo.sync.SyncHandler;
@@ -25,6 +27,12 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
     @Resource
     EnfordMarketResearchMapper researchMapper;
 
+    @Resource
+    EnfordMarketResearchDeptMapper researchDeptMapper;
+
+    @Resource
+    EnfordSystemUserMapper userMapper;
+
     /**
      * 每30分钟触发一次,同步市调清单数据
      */
@@ -36,7 +44,7 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
         SyncHandler syncHandler = new SyncHandler();
         try {
             syncHandler.syncData();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("==================同步市调清单数据完成");
@@ -45,12 +53,12 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
     /**
      * 每30分钟触发一次,刷新市调清单状态
      */
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0/30 * * * ?")
     @Override
     public void checkMarketResearchState() {
         SyncHandler syncHandler = new SyncHandler();
         try {
-            syncHandler.refreshData(researchMapper);
+            syncHandler.refreshData(researchMapper, researchDeptMapper, userMapper);
         } catch (Exception e) {
             e.printStackTrace();
         }

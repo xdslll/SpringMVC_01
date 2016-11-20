@@ -287,4 +287,23 @@ public class SQLServerHandler {
         BigDecimal bd = new BigDecimal(Double.parseDouble(strData));
         return bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
+
+    public void setResearchConfirmed(MarketResearchBill researchBill) throws SQLException {
+        String updateSql = "UPDATE tbMarketResearchBill SET " +
+                MarketResearchBill.colConfirmManCode + "='" + researchBill.getConfirmManCode() + "'," +
+                MarketResearchBill.colConfirmManName + "='" + researchBill.getConfirmManName() + "'," +
+                MarketResearchBill.colState + "='" + researchBill.getState() + "'," +
+                MarketResearchBill.colConfirmDate + "='" + researchBill.getConfirmDate() + "'" +
+                " WHERE " + MarketResearchBill.colBillNumber + "='" + researchBill.getBillNumber() + "'";
+        System.out.println("updateSql=" + updateSql);
+        Connection conn = connectToSQLServer();
+        if (conn != null) {
+            //插入价格信息
+            Statement sqlServerStatement = conn.createStatement();
+            System.out.println("准备更新市调清单数据");
+
+            sqlServerStatement.executeUpdate(updateSql);
+            System.out.println("更新市调清单数据完成");
+        }
+    }
 }
