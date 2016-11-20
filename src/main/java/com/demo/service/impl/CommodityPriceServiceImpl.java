@@ -9,6 +9,7 @@ import com.demo.model.EnfordSystemUser;
 import com.demo.service.CommodityPriceService;
 import com.demo.sync.SQLServerHandler;
 import com.demo.util.Consts;
+import org.apache.poi.util.SystemOutLogger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -119,15 +120,24 @@ public class CommodityPriceServiceImpl implements CommodityPriceService, Consts 
     public int addPriceToSQLServer(EnfordProductPrice price) {
         try {
             System.out.println("开始新增价格到同步服务器");
+            System.out.println(price.toString());
             //获取商品编码
+            System.out.println("商品ID:" + price.getComId());
+            System.out.println("市调ID:" + price.getResId());
+
             EnfordProductCommodity commodity = commodityMapper.selectByPrimaryKey(price.getComId());
+            System.out.println(commodity.toString());
             price.setCode(commodity.getCode());
+
             //获取市调清单编号
             EnfordMarketResearch research = researchMapper.selectByPrimaryKey(price.getResId());
+            System.out.println(research.toString());
             price.setBillNumber(research.getBillNumber());
+
+            System.out.println(price.toString());
             //添加价格到同步服务器
             SQLServerHandler sqlServerHandler = new SQLServerHandler();
-            sqlServerHandler.addPrice(price);
+            return sqlServerHandler.addPrice(price);
         } catch (SQLException e) {
             e.printStackTrace();
         }

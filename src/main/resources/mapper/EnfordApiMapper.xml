@@ -15,7 +15,7 @@
         order by a.code asc
     </select>
     <select id="selectCommodityPriceByParam" resultType="com.demo.model.EnfordProductPrice">
-        select b.id, b.prompt_price, b.retail_price, b.miss, b.upload_by, b.upload_dt, b.remark
+        select b.id, b.prompt_price, b.retail_price, b.miss, b.upload_by, b.upload_dt, b.remark, b.com_id, b.res_id
         from enford_product_commodity a, enford_product_price b
         where a.id = b.com_id
         <if test="resId != null">

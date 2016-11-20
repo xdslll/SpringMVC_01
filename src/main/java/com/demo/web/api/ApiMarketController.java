@@ -120,6 +120,7 @@ public class ApiMarketController implements Consts {
                 respBody.setMsg("新增价格失败");
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             respBody.setCode(FAILED);
             respBody.setMsg("新增价格失败:" + ex.getMessage());
         }
@@ -142,6 +143,7 @@ public class ApiMarketController implements Consts {
                 respBody.setMsg("修改价格失败");
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             respBody.setCode(FAILED);
             respBody.setMsg("修改价格失败:" + ex.getMessage());
         }

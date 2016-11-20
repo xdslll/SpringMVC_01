@@ -415,4 +415,29 @@ public class EnfordProductPrice {
     public void setBillNumber(String billNumber) {
         this.billNumber = billNumber;
     }
+
+    @Override
+    public String toString() {
+        return "EnfordProductPrice{" +
+                "id=" + id +
+                ", purchasePrice=" + purchasePrice +
+                ", retailPrice=" + retailPrice +
+                ", comId=" + comId +
+                ", miss=" + miss +
+                ", resId=" + resId +
+                ", compId=" + compId +
+                ", uploadBy=" + uploadBy +
+                ", uploadDt=" + uploadDt +
+                ", deptId=" + deptId +
+                ", resName='" + resName + '\'' +
+                ", comName='" + comName + '\'' +
+                ", compName='" + compName + '\'' +
+                ", missDesp='" + missDesp + '\'' +
+                ", uploadName='" + uploadName + '\'' +
+                ", promptPrice=" + promptPrice +
+                ", remark='" + remark + '\'' +
+                ", code='" + code + '\'' +
+                ", billNumber='" + billNumber + '\'' +
+                '}';
+    }
 }

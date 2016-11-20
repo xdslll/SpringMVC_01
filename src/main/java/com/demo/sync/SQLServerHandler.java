@@ -2,6 +2,7 @@ package com.demo.sync;
 
 import com.demo.model.EnfordProductPrice;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -252,21 +253,38 @@ public class SQLServerHandler {
         return mrCompetitorPriceList;
     }
 
-    public void addPrice(EnfordProductPrice price) throws SQLException {
-        System.out.println("===================开始更新价格");
+    public int addPrice(EnfordProductPrice price) throws SQLException {
         Connection conn = connectToSQLServer();
         if (conn != null) {
             //插入价格信息
             Statement sqlServerStatement = conn.createStatement();
-            String sql = "SELECT * FROM tbMRCompetitorPrice WHERE BillNumber="
-                    + price.getBillNumber() + " and GoodsCode=" + price.getCode();
+            /*
+            String sql = "SELECT * FROM tbMRCompetitorPrice WHERE BillNumber='"
+                    + price.getBillNumber() + "' and GoodsCode='" + price.getCode() + "'";
+            System.out.println("sql=" + sql);
             ResultSet rs = sqlServerStatement.executeQuery(sql);
             if (rs.first()) {
                 rs.updateFloat(MRCompetitorPrice.colCompetitorRetailPrice, price.getPurchasePrice());
                 rs.updateFloat(MRCompetitorPrice.colCompetitorSpecialOfferPrice, price.getPromptPrice());
                 rs.updateRow();
             }
+            */
+            System.out.println("准备更新价格数据");
+            System.out.println(price);
+            String updateSql = "UPDATE tbMRCompetitorPrice SET " +
+                    MRCompetitorPrice.colCompetitorRetailPrice + "=" + parse(price.getRetailPrice()) + "," +
+                    MRCompetitorPrice.colCompetitorSpecialOfferPrice + "=" + parse(price.getPromptPrice()) +
+                    " WHERE " + MRCompetitorPrice.colBillNumber + "='" + price.getBillNumber() + "' and " +
+                    MRCompetitorPrice.colGoodsCode + "='" + price.getCode() + "'";
+            System.out.println("udpateSql=" + updateSql);
+            return sqlServerStatement.executeUpdate(updateSql);
         }
-        System.out.println("===================更新价格成功");
+        return 0;
+    }
+
+    private double parse(Float data) {
+        String strData = String.valueOf(data == null ? 0.0 : data);
+        BigDecimal bd = new BigDecimal(Double.parseDouble(strData));
+        return bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 }

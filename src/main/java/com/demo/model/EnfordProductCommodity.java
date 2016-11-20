@@ -452,4 +452,26 @@ public class EnfordProductCommodity {
     public void setPrice(EnfordProductPrice price) {
         this.price = price;
     }
+
+    @Override
+    public String toString() {
+        return "EnfordProductCommodity{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", artNo='" + artNo + '\'' +
+                ", pName='" + pName + '\'' +
+                ", pSize='" + pSize + '\'' +
+                ", unit='" + unit + '\'' +
+                ", barCode='" + barCode + '\'' +
+                ", supplierCode='" + supplierCode + '\'' +
+                ", categoryCode=" + categoryCode +
+                ", categoryName='" + categoryName + '\'' +
+                ", createDt=" + createDt +
+                ", updateDt=" + updateDt +
+                ", createBy=" + createBy +
+                ", createUsername='" + createUsername + '\'' +
+                ", updateBy=" + updateBy +
+                ", price=" + price +
+                '}';
+    }
 }

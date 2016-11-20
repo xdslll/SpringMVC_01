@@ -192,6 +192,7 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
                 param.put("pageSize", 1);
                 List<EnfordProductPrice> price = apiMapper.selectCommodityPriceByParam(param);
                 if (price != null && price.size() > 0) {
+                    System.out.println(price.get(0).toString());
                     commodityList.get(j).setPrice(price.get(0));
                 }
             }
