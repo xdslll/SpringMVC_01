@@ -1,12 +1,18 @@
 package com.demo.web.api;
 
+import com.demo.dao.EnfordMarketResearchMapper;
+import com.demo.dao.EnfordSystemUserMapper;
+import com.demo.dao.EnfordUserMapper;
 import com.demo.model.*;
 import com.demo.model.EnfordApiMarketResearch;
 import com.demo.model.EnfordProductCategory;
 import com.demo.model.EnfordProductCommodity;
 import com.demo.model.EnfordProductPrice;
 import com.demo.service.CommodityPriceService;
+import com.demo.service.EnfordUserService;
 import com.demo.service.api.ApiMarketResearchService;
+import com.demo.sync.MarketResearchBill;
+import com.demo.sync.SQLServerHandler;
 import com.demo.util.Consts;
 import com.demo.util.FastJSONHelper;
 import com.demo.util.ResponseUtil;
@@ -19,6 +25,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,6 +43,12 @@ public class ApiMarketController implements Consts {
 
     @Resource
     CommodityPriceService priceService;
+
+    @Resource
+    EnfordSystemUserMapper userService;
+
+    @Resource
+    EnfordMarketResearchMapper researchMapper;
 
     /**
      * 获取门店对应的竞争对手和市调清单信息
@@ -242,6 +256,56 @@ public class ApiMarketController implements Consts {
         } catch (Exception ex) {
             respBody.setCode(FAILED);
             respBody.setMsg("获取签到数据失败:" + ex.getMessage());
+        }
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
+    }
+
+    @RequestMapping("/api/research/confirm")
+    public void confirmResearch(HttpServletRequest req, HttpServletResponse resp,
+                                @RequestParam("resId") int resId,
+                                @RequestParam("userId") int userId) {
+        RespBody respBody = new RespBody();
+        try {
+            EnfordSystemUser user = userService.selectByPrimaryKey(userId);
+            EnfordMarketResearch research = researchMapper.selectByPrimaryKey(resId);
+            MarketResearchBill researchBill = new MarketResearchBill();
+
+            if (user != null) {
+                researchBill.setConfirmManCode(user.getUsername());
+                String name = user.getName();
+                if (name == null || name.equals("")) {
+                    researchBill.setConfirmManName(user.getUsername());
+                } else {
+                    researchBill.setConfirmManName(name);
+                }
+            } else {
+                researchBill.setConfirmManCode("888888");
+                researchBill.setConfirmManName("管理员");
+            }
+
+            Date now = new Date();
+            //只比较年月日
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            now = sdf.parse(sdf.format(now));
+
+            researchBill.setConfirmDate(sdf.format(now));
+            researchBill.setState(1);
+            researchBill.setBillNumber(research.getBillNumber());
+            System.out.println(researchBill.toString());
+
+            //将数据回写到SQLServer服务器
+            SQLServerHandler sqlServerHandler = new SQLServerHandler();
+            int ret = sqlServerHandler.setResearchConfirmed(researchBill);
+            if (ret > 0) {
+                respBody.setCode(SUCCESS);
+                respBody.setMsg("确认市调清单成功");
+            } else {
+                respBody.setCode(FAILED);
+                respBody.setMsg("确认市调清单失败");
+            }
+        } catch (Exception ex) {
+            respBody.setCode(FAILED);
+            respBody.setMsg("确认市调清单失败:" + ex.getMessage());
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }

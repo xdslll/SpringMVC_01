@@ -288,7 +288,7 @@ public class SQLServerHandler {
         return bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
-    public void setResearchConfirmed(MarketResearchBill researchBill) throws SQLException {
+    public int setResearchConfirmed(MarketResearchBill researchBill) throws SQLException {
         String updateSql = "UPDATE tbMarketResearchBill SET " +
                 MarketResearchBill.colConfirmManCode + "='" + researchBill.getConfirmManCode() + "'," +
                 MarketResearchBill.colConfirmManName + "='" + researchBill.getConfirmManName() + "'," +
@@ -302,8 +302,11 @@ public class SQLServerHandler {
             Statement sqlServerStatement = conn.createStatement();
             System.out.println("准备更新市调清单数据");
 
-            sqlServerStatement.executeUpdate(updateSql);
+            int ret = sqlServerStatement.executeUpdate(updateSql);
             System.out.println("更新市调清单数据完成");
+            return ret;
+        } else {
+            return 0;
         }
     }
 }
