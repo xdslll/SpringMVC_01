@@ -100,3 +100,6 @@ UPDATE `sg`.`enford_product_department` SET `comp_id`='229' WHERE `id`='316';
 UPDATE `sg`.`enford_product_department` SET `comp_id`='230' WHERE `id`='362';
 UPDATE `sg`.`enford_product_department` SET `comp_id`='230' WHERE `id`='363';
 UPDATE `sg`.`enford_product_department` SET `comp_id`='231' WHERE `id`='385';
+
+ALTER TABLE `sg`.`enford_market_research`
+ADD COLUMN `confirm_type` INT NULL DEFAULT 0 AFTER `cancel_remark`;

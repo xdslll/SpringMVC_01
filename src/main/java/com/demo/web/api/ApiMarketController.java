@@ -1,15 +1,11 @@
 package com.demo.web.api;
 
-import com.demo.dao.EnfordMarketResearchMapper;
-import com.demo.dao.EnfordSystemUserMapper;
-import com.demo.dao.EnfordUserMapper;
 import com.demo.model.*;
 import com.demo.model.EnfordApiMarketResearch;
 import com.demo.model.EnfordProductCategory;
 import com.demo.model.EnfordProductCommodity;
 import com.demo.model.EnfordProductPrice;
 import com.demo.service.CommodityPriceService;
-import com.demo.service.EnfordUserService;
 import com.demo.service.MarketResearchSerivce;
 import com.demo.service.UserService;
 import com.demo.service.api.ApiMarketResearchService;
@@ -50,7 +46,7 @@ public class ApiMarketController implements Consts {
     UserService userService;
 
     @Resource
-    MarketResearchSerivce researchMapper;
+    MarketResearchSerivce researchService;
 
     /**
      * 获取门店对应的竞争对手和市调清单信息
@@ -269,7 +265,7 @@ public class ApiMarketController implements Consts {
         RespBody respBody = new RespBody();
         try {
             EnfordSystemUser user = userService.getUser(userId);
-            EnfordMarketResearch research = researchMapper.getMarketResearchById(resId);
+            EnfordMarketResearch research = researchService.getMarketResearchById(resId);
             MarketResearchBill researchBill = new MarketResearchBill();
 
             if (user != null) {
@@ -302,6 +298,11 @@ public class ApiMarketController implements Consts {
             if (ret > 0) {
                 respBody.setCode(SUCCESS);
                 respBody.setMsg("确认市调清单成功");
+                //关闭市调清单
+                research.setState(RESEARCH_STATE_HAVE_FINISHED);
+                //设置确认类型为app上传
+                research.setConfirmType(2);
+                researchService.updateResearch(research);
             } else {
                 respBody.setCode(FAILED);
                 respBody.setMsg("确认市调清单失败");

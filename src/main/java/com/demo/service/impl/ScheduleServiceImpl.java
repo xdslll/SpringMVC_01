@@ -53,7 +53,7 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
     /**
      * 每30分钟触发一次,刷新市调清单状态
      */
-    @Scheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(cron = "0 0/1 * * * ?")
     @Override
     public void checkMarketResearchState() {
         SyncHandler syncHandler = new SyncHandler();
