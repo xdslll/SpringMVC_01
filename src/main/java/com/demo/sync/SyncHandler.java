@@ -3,9 +3,10 @@ package com.demo.sync;
 import com.demo.dao.EnfordMarketResearchDeptMapper;
 import com.demo.dao.EnfordMarketResearchMapper;
 import com.demo.dao.EnfordSystemUserMapper;
+import com.demo.model.*;
 import com.demo.model.EnfordMarketResearchDept;
-import com.demo.model.EnfordSystemUser;
 import com.demo.util.Consts;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -87,7 +88,7 @@ public class SyncHandler implements Consts {
             System.out.println("市调清单同步成功");
 
             System.out.println("开始同步市调清单下的商品");
-            List<MRCompetitorPrice> mrCompetitorPriceList = sqlServerHandler.syncMrCompetitorPrice(sqlServerStatement);
+            List<MRCompetitorPrice> mrCompetitorPriceList = sqlServerHandler.syncMrCompetitorPrice(sqlServerStatement, marketResearchBillList);
             System.out.println("市调清单下的商品同步成功");
 
             conn.close();
@@ -216,7 +217,8 @@ public class SyncHandler implements Consts {
                         param.put("resId", resId);
                         List<EnfordMarketResearchDept> marketResearchDeptList =
                                 researchDeptMapper.selectByParam(param);
-                        for (EnfordMarketResearchDept researchDept : marketResearchDeptList) {
+                        if (marketResearchDeptList != null && marketResearchDeptList.size() > 0) {
+                            EnfordMarketResearchDept researchDept = marketResearchDeptList.get(0);
                             param.clear();
                             param.put("deptId", researchDept.getExeId());
                             List<EnfordSystemUser> userList = userMapper.selectByParam(param);
@@ -235,14 +237,36 @@ public class SyncHandler implements Consts {
                                 researchBill.setConfirmManName("管理员");
                             }
                             researchBill.setConfirmDate(sdf.format(now));
-                            researchBill.setState(1);
+                            researchBill.setState(BILL_RESEARCH_FINISHED);
                             researchBill.setBillNumber(research.getBillNumber());
                             System.out.println(researchBill.toString());
                             //将数据回写到SQLServer服务器
-                            SQLServerHandler sqlServerHandler = new SQLServerHandler();
-                            sqlServerHandler.setResearchConfirmed(researchBill);
+                            try {
+                                SQLServerHandler sqlServerHandler = new SQLServerHandler();
+                                sqlServerHandler.setResearchConfirmed(researchBill);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+
+                            //更新确认状态为系统确认
+                            research.setConfirmType(RESEARCH_CONFIRM_TYPE_SYSTEM);
+                            researchMapper.updateByPrimaryKey(research);
+                        } else {
+                            research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
+                            researchMapper.updateByPrimaryKeySelective(research);
                         }
+                    } else if (state == RESEARCH_STATE_CANCELED){
+                        research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
+                        researchMapper.updateByPrimaryKeySelective(research);
+                    } else {
+                        research.setState(RESEARCH_STATE_CANCELED);
+                        research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
+                        researchMapper.updateByPrimaryKeySelective(research);
                     }
+                } else {
+                    research.setState(RESEARCH_STATE_CANCELED);
+                    research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
+                    researchMapper.updateByPrimaryKeySelective(research);
                 }
             }
         } catch (Exception ex) {

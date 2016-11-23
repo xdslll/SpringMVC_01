@@ -288,7 +288,7 @@ public class ApiMarketController implements Consts {
             now = sdf.parse(sdf.format(now));
 
             researchBill.setConfirmDate(sdf.format(now));
-            researchBill.setState(1);
+            researchBill.setState(BILL_RESEARCH_FINISHED);
             researchBill.setBillNumber(research.getBillNumber());
             System.out.println(researchBill.toString());
 
@@ -301,7 +301,7 @@ public class ApiMarketController implements Consts {
                 //关闭市调清单
                 research.setState(RESEARCH_STATE_HAVE_FINISHED);
                 //设置确认类型为app上传
-                research.setConfirmType(2);
+                research.setConfirmType(RESEARCH_CONFIRM_TYPE_APP);
                 researchService.updateResearch(research);
             } else {
                 respBody.setCode(FAILED);

@@ -31,6 +31,14 @@ public interface Consts {
     public static final int RESEARCH_STATE_CANCELED = 3;
     public static final int RESEARCH_STATE_HAVE_STARTED = 4;
 
+    public static final int RESEARCH_CONFIRM_TYPE_SYSTEM = 1;
+    public static final int RESEARCH_CONFIRM_TYPE_APP = 2;
+    public static final int RESEARCH_CONFIRM_TYPE_ERROR = -1;
+
+    public static final int BILL_RESEARCH_STARTED = 0;
+    public static final int BILL_RESEARCH_FINISHED = 1;
+    public static final int BILL_RESEARCH_CONFIRMED = 3;
+
     public static final int MISS_TAG_NOT_MISS = 0;
     public static final int MISS_TAG_MISS = 1;
 

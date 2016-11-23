@@ -1,6 +1,7 @@
 package com.demo.sync;
 
 import com.demo.model.EnfordProductPrice;
+import com.demo.util.Consts;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -12,7 +13,7 @@ import java.util.List;
  * @author xiads
  * @date 16/7/13
  */
-public class SQLServerHandler {
+public class SQLServerHandler implements Consts {
 
     /**
      * SQLServer IP
@@ -214,9 +215,10 @@ public class SQLServerHandler {
      * 三期,根据新的数据结构,同步商品信息
      *
      * @param sqlServerStatement
+     * @param marketResearchBillList
      * @return
      */
-    public List<MRCompetitorPrice> syncMrCompetitorPrice(Statement sqlServerStatement) {
+    public List<MRCompetitorPrice> syncMrCompetitorPrice(Statement sqlServerStatement, List<MarketResearchBill> marketResearchBillList) {
         List<MRCompetitorPrice> mrCompetitorPriceList = new ArrayList<MRCompetitorPrice>();
         try {
             String sql = "SELECT * FROM tbMRCompetitorPrice";
@@ -224,27 +226,42 @@ public class SQLServerHandler {
             int index = 0;
             while (rs.next()) {
                 MRCompetitorPrice mrCompetitorPrice = new MRCompetitorPrice();
-
-                mrCompetitorPrice.setBaseBarCode(rs.getString(MRCompetitorPrice.colBaseBarCode));
-                mrCompetitorPrice.setBaseMeasureUnit(rs.getString(MRCompetitorPrice.colBaseMeasureUnit));
                 mrCompetitorPrice.setBillNumber(rs.getString(MRCompetitorPrice.colBillNumber));
-                mrCompetitorPrice.setCompetitorCode(rs.getString(MRCompetitorPrice.colCompetitorCode));
-                mrCompetitorPrice.setCompetitorName(rs.getString(MRCompetitorPrice.colCompetitorName));
-                mrCompetitorPrice.setCompetitorRetailPrice(rs.getString(MRCompetitorPrice.colCompetitorRetailPrice));
-                mrCompetitorPrice.setCompetitorSpecialOfferPrice(rs.getString(MRCompetitorPrice.colCompetitorSpecialOfferPrice));
-                mrCompetitorPrice.setGoodsCode(rs.getString(MRCompetitorPrice.colGoodsCode));
-                mrCompetitorPrice.setGoodsName(rs.getString(MRCompetitorPrice.colGoodsName));
-                mrCompetitorPrice.setGoodsSpec(rs.getString(MRCompetitorPrice.colGoodsSpec));
-                mrCompetitorPrice.setInsideId(rs.getString(MRCompetitorPrice.colInsideCode));
-                mrCompetitorPrice.setCategoryCode2(rs.getString(MRCompetitorPrice.colCategoryCode2));
-                mrCompetitorPrice.setCategoryCode4(rs.getString(MRCompetitorPrice.colCategoryCode4));
-                mrCompetitorPrice.setCategoryName2(rs.getString(MRCompetitorPrice.colCategoryName2));
-                mrCompetitorPrice.setCategoryName4(rs.getString(MRCompetitorPrice.colCategoryName4));
 
-                System.out.println(mrCompetitorPrice.toString());
-                mrCompetitorPriceList.add(mrCompetitorPrice);
+                System.out.println("开始比对BillNumber...");
+                boolean ifContinue = true;
+                for (int i = 0; i < marketResearchBillList.size(); i++) {
+                    MarketResearchBill researchBill = marketResearchBillList.get(i);
+                    if (researchBill.getState() == BILL_RESEARCH_FINISHED
+                            || researchBill.getState() == BILL_RESEARCH_CONFIRMED) {
+                        ifContinue = false;
+                    }
+                }
+
                 index++;
-                System.out.println("完成同步第" + index + "条数据");
+                if (ifContinue) {
+                    System.out.println("开始同步第" + index + "条商品数据");
+                    mrCompetitorPrice.setBaseBarCode(rs.getString(MRCompetitorPrice.colBaseBarCode));
+                    mrCompetitorPrice.setBaseMeasureUnit(rs.getString(MRCompetitorPrice.colBaseMeasureUnit));
+                    mrCompetitorPrice.setCompetitorCode(rs.getString(MRCompetitorPrice.colCompetitorCode));
+                    mrCompetitorPrice.setCompetitorName(rs.getString(MRCompetitorPrice.colCompetitorName));
+                    mrCompetitorPrice.setCompetitorRetailPrice(rs.getString(MRCompetitorPrice.colCompetitorRetailPrice));
+                    mrCompetitorPrice.setCompetitorSpecialOfferPrice(rs.getString(MRCompetitorPrice.colCompetitorSpecialOfferPrice));
+                    mrCompetitorPrice.setGoodsCode(rs.getString(MRCompetitorPrice.colGoodsCode));
+                    mrCompetitorPrice.setGoodsName(rs.getString(MRCompetitorPrice.colGoodsName));
+                    mrCompetitorPrice.setGoodsSpec(rs.getString(MRCompetitorPrice.colGoodsSpec));
+                    mrCompetitorPrice.setInsideId(rs.getString(MRCompetitorPrice.colInsideCode));
+                    mrCompetitorPrice.setCategoryCode2(rs.getString(MRCompetitorPrice.colCategoryCode2));
+                    mrCompetitorPrice.setCategoryCode4(rs.getString(MRCompetitorPrice.colCategoryCode4));
+                    mrCompetitorPrice.setCategoryName2(rs.getString(MRCompetitorPrice.colCategoryName2));
+                    mrCompetitorPrice.setCategoryName4(rs.getString(MRCompetitorPrice.colCategoryName4));
+
+                    System.out.println(mrCompetitorPrice.toString());
+                    mrCompetitorPriceList.add(mrCompetitorPrice);
+                    System.out.println("完成同步第" + index + "条商品数据");
+                } else {
+                    System.out.println("调研已完成,跳过同步第" + index + "条商品数据");
+                }
             }
 
             rs.close();

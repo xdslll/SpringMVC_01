@@ -180,6 +180,9 @@
       <if test="state != null">
         state = #{state,jdbcType=INTEGER},
       </if>
+      <if test="confirmType != null">
+        confirm_type = #{confirmType, jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -197,7 +200,8 @@
       exe_store_id = #{exeStoreId,jdbcType=INTEGER},
       res_store_id = #{resStoreId,jdbcType=INTEGER},
       import_id = #{importId,jdbcType=INTEGER},
-      state = #{state,jdbcType=INTEGER}
+      state = #{state,jdbcType=INTEGER},
+      confirm_type = #{confirmType, jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="selectByParam" resultType="com.demo.model.EnfordMarketResearch">
