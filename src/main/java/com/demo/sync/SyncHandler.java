@@ -178,7 +178,7 @@ public class SyncHandler implements Consts {
 
             Date now = new Date();
             //只比较年月日
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             now = sdf.parse(sdf.format(now));
             long nowLong = now.getTime();
             System.out.println("当前时间:" + now);
@@ -223,12 +223,13 @@ public class SyncHandler implements Consts {
                             MarketResearchBill researchBill = new MarketResearchBill();
                             if (userList != null && userList.size() > 0) {
                                 researchBill.setConfirmManCode(userList.get(0).getUsername());
-                                String name = userList.get(0).getName();
+                                researchBill.setConfirmManName(userList.get(0).getUsername());
+                                /*String name = userList.get(0).getName();
                                 if (name == null || name.equals("")) {
                                     researchBill.setConfirmManName(userList.get(0).getUsername());
                                 } else {
                                     researchBill.setConfirmManName(name);
-                                }
+                                }*/
                             } else {
                                 researchBill.setConfirmManCode("888888");
                                 researchBill.setConfirmManName("管理员");

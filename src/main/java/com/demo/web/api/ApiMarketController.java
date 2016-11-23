@@ -10,6 +10,8 @@ import com.demo.model.EnfordProductCommodity;
 import com.demo.model.EnfordProductPrice;
 import com.demo.service.CommodityPriceService;
 import com.demo.service.EnfordUserService;
+import com.demo.service.MarketResearchSerivce;
+import com.demo.service.UserService;
 import com.demo.service.api.ApiMarketResearchService;
 import com.demo.sync.MarketResearchBill;
 import com.demo.sync.SQLServerHandler;
@@ -45,10 +47,10 @@ public class ApiMarketController implements Consts {
     CommodityPriceService priceService;
 
     @Resource
-    EnfordSystemUserMapper userService;
+    UserService userService;
 
     @Resource
-    EnfordMarketResearchMapper researchMapper;
+    MarketResearchSerivce researchMapper;
 
     /**
      * 获取门店对应的竞争对手和市调清单信息
@@ -266,18 +268,19 @@ public class ApiMarketController implements Consts {
                                 @RequestParam("userId") int userId) {
         RespBody respBody = new RespBody();
         try {
-            EnfordSystemUser user = userService.selectByPrimaryKey(userId);
-            EnfordMarketResearch research = researchMapper.selectByPrimaryKey(resId);
+            EnfordSystemUser user = userService.getUser(userId);
+            EnfordMarketResearch research = researchMapper.getMarketResearchById(resId);
             MarketResearchBill researchBill = new MarketResearchBill();
 
             if (user != null) {
                 researchBill.setConfirmManCode(user.getUsername());
-                String name = user.getName();
+                /*String name = user.getName();
                 if (name == null || name.equals("")) {
                     researchBill.setConfirmManName(user.getUsername());
                 } else {
                     researchBill.setConfirmManName(name);
-                }
+                }*/
+                researchBill.setConfirmManName(user.getUsername());
             } else {
                 researchBill.setConfirmManCode("888888");
                 researchBill.setConfirmManName("管理员");
@@ -285,7 +288,7 @@ public class ApiMarketController implements Consts {
 
             Date now = new Date();
             //只比较年月日
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             now = sdf.parse(sdf.format(now));
 
             researchBill.setConfirmDate(sdf.format(now));
