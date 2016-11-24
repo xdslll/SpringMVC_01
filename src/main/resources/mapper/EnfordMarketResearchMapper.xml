@@ -221,6 +221,7 @@
     <if test="status != -1">
       and state = #{status,jdbcType=INTEGER}
     </if>
+    order by id desc
     <if test="page != null and pageSize != null">
       limit #{page,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
     </if>

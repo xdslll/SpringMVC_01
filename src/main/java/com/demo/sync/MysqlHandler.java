@@ -473,6 +473,9 @@ public class MysqlHandler {
             }
             rs.updateInt(EnfordMarketResearch.colState, mrPlanBill.getState());
             rs.updateInt(EnfordMarketResearch.colCreateBy, 1);
+            if (mrPlanBill.getRemark() != null) {
+                rs.updateString(EnfordMarketResearch.colRemark, mrPlanBill.getRemark());
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ParseException e) {

@@ -15,6 +15,7 @@ public class MarketResearchBill {
     public static final String colLastConfirmDate = "LastConfimDate";
     public static final String colMRBeginTime = "MRBeginTime";
     public static final String colMREndTime = "MREndTime";
+    public static final String colRemark = "Remark";
 
     String billNumber;
     String deptCode;
@@ -30,6 +31,7 @@ public class MarketResearchBill {
     String lastConfirmDate;
     String mrBeginTime;
     String mrEndTime;
+    String remark;
 
     public String getBillNumber() {
         return billNumber;
@@ -143,6 +145,14 @@ public class MarketResearchBill {
         this.mrTypeCode = mrTypeCode;
     }
 
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
     @Override
     public String toString() {
         return "MarketResearchBill{" +
@@ -160,6 +170,7 @@ public class MarketResearchBill {
                 ", lastConfirmDate='" + lastConfirmDate + '\'' +
                 ", mrBeginTime='" + mrBeginTime + '\'' +
                 ", mrEndTime='" + mrEndTime + '\'' +
+                ", remark='" + remark + '\'' +
                 '}';
     }
 }

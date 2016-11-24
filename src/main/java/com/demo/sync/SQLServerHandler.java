@@ -196,6 +196,7 @@ public class SQLServerHandler implements Consts {
                 marketResearchBill.setLastConfirmDate(rs.getString(MarketResearchBill.colLastConfirmDate));
                 marketResearchBill.setMrBeginTime(rs.getString(MarketResearchBill.colMRBeginTime));
                 marketResearchBill.setMrEndTime(rs.getString(MarketResearchBill.colMREndTime));
+                marketResearchBill.setRemark(rs.getString(MarketResearchBill.colRemark));
 
                 System.out.println(marketResearchBill.toString());
                 marketResearchBillList.add(marketResearchBill);
@@ -232,9 +233,13 @@ public class SQLServerHandler implements Consts {
                 boolean ifContinue = true;
                 for (int i = 0; i < marketResearchBillList.size(); i++) {
                     MarketResearchBill researchBill = marketResearchBillList.get(i);
-                    if (researchBill.getState() == BILL_RESEARCH_FINISHED
-                            || researchBill.getState() == BILL_RESEARCH_CONFIRMED) {
-                        ifContinue = false;
+                    //System.out.println(researchBill.toString());
+                    if (researchBill.getBillNumber().equals(mrCompetitorPrice.getBillNumber())) {
+                        if (researchBill.getState() == BILL_RESEARCH_FINISHED
+                                || researchBill.getState() == BILL_RESEARCH_CONFIRMED) {
+                            ifContinue = false;
+                            break;
+                        }
                     }
                 }
 
