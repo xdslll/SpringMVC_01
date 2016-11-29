@@ -35,6 +35,8 @@
         <option value="3">已撤销</option>
         <option value="4">已开始</option>
     </select>
+    <input class="easyui-textbox" data-options="prompt:'请输入市调清单号'" style="width:25%;height:28px;" id="search_name">
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="searchMarketResearch()">搜索</a>
 </div>
 <div class="main_table">
     <table id="dg" title="市调清单列表" class="easyui-datagrid"
@@ -109,6 +111,18 @@
 <input id="dept_id" type="hidden">
 
 <script>
+    function searchMarketResearch() {
+        var dg = $('#dg');
+        //设置关键字
+        var queryParams = dg.datagrid('options').queryParams;
+        queryParams.billNumber = $("#search_name").val();
+        dg.datagrid('options').queryParams = queryParams;
+        //设置起始页数
+        var options = dg.datagrid('getPager').data("pagination").options;
+        options.pageNumber = 1;
+        dg.datagrid('reload');
+    }
+
     function selectState(v) {
         //alert(v);
         var dg = $('#dg');

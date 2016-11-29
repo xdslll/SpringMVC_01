@@ -80,6 +80,10 @@ public class MarketResearchController implements Consts {
         if (req.getParameter("status") != null) {
             status = Integer.parseInt(req.getParameter("status"));
         }
+        String billNumber = null;
+        if (req.getParameter("billNumber") != null) {
+            billNumber = req.getParameter("billNumber");
+        }
         List<EnfordMarketResearch> marketResearchList = null;
         int total = 0;
         try {
@@ -89,6 +93,9 @@ public class MarketResearchController implements Consts {
             param.put("pageSize", pageSize);
             //如果status为0,则只显示进行中的市调清单,如果status为1,则只显示已结束的市调清单,如果status为2,则显示全部的市调清单
             param.put("status", status);
+            if (billNumber != null && !billNumber.trim().equals("")) {
+                param.put("billNumber", billNumber);
+            }
             //查询市调清单信息
             marketResearchList = marketService.getMarketResearchByParam(param);
             //查询总页数
