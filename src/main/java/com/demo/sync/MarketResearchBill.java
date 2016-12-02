@@ -32,6 +32,8 @@ public class MarketResearchBill {
     String mrBeginTime;
     String mrEndTime;
     String remark;
+    String mrBeginDate;
+    String mrEndDate;
 
     public String getBillNumber() {
         return billNumber;
@@ -153,6 +155,22 @@ public class MarketResearchBill {
         this.remark = remark;
     }
 
+    public String getMrBeginDate() {
+        return mrBeginDate;
+    }
+
+    public void setMrBeginDate(String mrBeginDate) {
+        this.mrBeginDate = mrBeginDate;
+    }
+
+    public String getMrEndDate() {
+        return mrEndDate;
+    }
+
+    public void setMrEndDate(String mrEndDate) {
+        this.mrEndDate = mrEndDate;
+    }
+
     @Override
     public String toString() {
         return "MarketResearchBill{" +
@@ -171,6 +189,8 @@ public class MarketResearchBill {
                 ", mrBeginTime='" + mrBeginTime + '\'' +
                 ", mrEndTime='" + mrEndTime + '\'' +
                 ", remark='" + remark + '\'' +
+                ", mrBeginDate='" + mrBeginDate + '\'' +
+                ", mrEndDate='" + mrEndDate + '\'' +
                 '}';
     }
 }

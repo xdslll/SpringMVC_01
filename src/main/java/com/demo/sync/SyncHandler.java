@@ -103,33 +103,34 @@ public class SyncHandler implements Consts {
             List<MarketResearchBill> marketResearchBillList = sqlServerHandler.syncMarketResearchBill(sqlServerStatement);
             System.out.println("市调清单同步成功");
 
-            System.out.println("开始同步市调清单下的商品");
-            List<MRCompetitorPrice> mrCompetitorPriceList = sqlServerHandler.syncMrCompetitorPrice(sqlServerStatement, marketResearchBillList);
-            System.out.println("市调清单下的商品同步成功");
-
-            conn.close();
-
             MysqlHandler mysqlHandler = new MysqlHandler();
             Connection conn2 = mysqlHandler.connectToMySQL();
             if (conn2 != null) {
                 Statement mysqlStatement = conn2.createStatement(
                         ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
                 try {
-                    System.out.println("开始同步市调清单");
-                    mysqlHandler.syncEnfordMarketResearch2(mysqlStatement, marketResearchBillList, mrCompetitorPriceList);
-                    System.out.println("完成同步市调清单");
+                    System.out.println("开始写入市调清单");
+                    mysqlHandler.syncEnfordMarketResearch2(mysqlStatement, marketResearchBillList);
+                    System.out.println("完成写入市调清单");
 
-                    System.out.println("开始同步市调清单部门");
+                    System.out.println("开始写入市调清单部门");
                     mysqlHandler.syncEnfordMarketResearchDept2(conn2, mysqlStatement, marketResearchBillList);
-                    System.out.println("完成同步市调清单部门");
+                    System.out.println("完成写入市调清单部门");
 
-                    System.out.println("开始同步市调清单商品");
-                    mysqlHandler.syncEnfordMarketResearchGoods2(conn2, mysqlStatement, mrCompetitorPriceList);
-                    System.out.println("完成同步市调清单商品");
+                    //System.out.println("开始同步市调清单商品");
+                    //mysqlHandler.syncEnfordMarketResearchGoods2(conn2, mysqlStatement, mrCompetitorPriceList);
+                    //System.out.println("完成同步市调清单商品");
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
+
+            System.out.println("开始同步市调清单下的商品");
+            //List<MRCompetitorPrice> mrCompetitorPriceList =
+                    sqlServerHandler.syncMrCompetitorPrice(sqlServerStatement, marketResearchBillList);
+            System.out.println("市调清单下的商品同步成功");
+
+            conn.close();
         }
     }
 

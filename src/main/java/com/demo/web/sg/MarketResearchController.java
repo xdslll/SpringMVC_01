@@ -526,6 +526,12 @@ public class MarketResearchController implements Consts {
                         commodity.setPurchasePrice(0.0f);
                         commodity.setRetailPrice(0.0f);
                     }
+                    if (commodity.getMrBeginDate() != null) {
+                        mrBeginDate = df.format(commodity.getMrBeginDate());
+                    }
+                    if (commodity.getMrEndDate() != null) {
+                        mrEndDate = df.format(commodity.getMrEndDate());
+                    }
                     System.out.println("commodity.getCodCode()=" + commodity.getCodCode());
                     System.out.println("commodity.getRetailPrice()=" + commodity.getRetailPrice());
                     System.out.println("commodity.getPurchasePrice()=" + commodity.getPurchasePrice());
@@ -558,8 +564,7 @@ public class MarketResearchController implements Consts {
             out = new BufferedOutputStream(response.getOutputStream());
             byte[] data = new byte[1024];
             int len = 0;
-            while (-1 != (len = in.read(data, 0, data.length)))
-            {
+            while (-1 != (len = in.read(data, 0, data.length))) {
                 out.write(data, 0, len);
             }
             out.flush();
