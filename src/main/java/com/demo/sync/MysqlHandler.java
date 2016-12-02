@@ -356,17 +356,19 @@ public class MysqlHandler {
      *
      * @param mysqlStatement
      * @param mrPlanBillList
+     * @param mrCompetitorPriceList
      * @throws SQLException
      */
     public void syncEnfordMarketResearch2(Statement mysqlStatement,
-                                          List<MarketResearchBill> mrPlanBillList) throws SQLException {
+                                          List<MarketResearchBill> mrPlanBillList,
+                                          List<MRCompetitorPrice> mrCompetitorPriceList) throws SQLException {
         for (int i = 0; i < mrPlanBillList.size(); i++) {
             MarketResearchBill mrPlanBill = mrPlanBillList.get(i);
             String sql = "SELECT * FROM enford_market_research WHERE bill_number='" + mrPlanBill.getBillNumber() + "'";
             ResultSet rs = mysqlStatement.executeQuery(sql);
             if (rs.first()) {
                 System.out.println("开始更新第" + (i + 1) + "条数据");
-                updateEnfordMarketResearch2(mrPlanBill, rs);
+                updateEnfordMarketResearch2(mrPlanBill, rs, mrCompetitorPriceList);
                 try {
                     rs.updateRow();
                     System.out.println("完成更新第" + (i + 1) + "条数据");
@@ -377,7 +379,7 @@ public class MysqlHandler {
             } else {
                 System.out.println("开始插入第" + (i + 1) + "条数据");
                 rs.moveToInsertRow();
-                updateEnfordMarketResearch2(mrPlanBill, rs);
+                updateEnfordMarketResearch2(mrPlanBill, rs, mrCompetitorPriceList);
                 try {
                     rs.insertRow();
                     System.out.println("完成插入第" + (i + 1) + "条数据");
@@ -431,7 +433,9 @@ public class MysqlHandler {
         }
     }
 
-    public void updateEnfordMarketResearch2(MarketResearchBill mrPlanBill, ResultSet rs) {
+    public void updateEnfordMarketResearch2(MarketResearchBill mrPlanBill,
+                                            ResultSet rs,
+                                            List<MRCompetitorPrice> mrCompetitorPriceList) {
         try {
             String createDtStr = mrPlanBill.getMrDate();
             if (!isEmpty(createDtStr)) {
@@ -448,13 +452,23 @@ public class MysqlHandler {
                 Date endDate = new Date(new SimpleDateFormat("yyyyMMdd").parse(endDateStr).getTime());
                 rs.updateDate(EnfordMarketResearch.colEndDt, endDate);
             }
-            String mrBeginDateStr = beginDateStr + mrPlanBill.getMrBeginTime();
+            String mrBeginDateStr;
+            if (mrCompetitorPriceList != null && mrCompetitorPriceList.size() > 0) {
+                mrBeginDateStr = mrCompetitorPriceList.get(0).getCompetitorSOPStartDate();
+            } else {
+                mrBeginDateStr = beginDateStr + mrPlanBill.getMrBeginTime();
+            }
             System.out.println("mrBeginDateStr=" + mrBeginDateStr);
             if (!isEmpty(mrBeginDateStr)) {
                 Date mrBeginDate = new Date(new SimpleDateFormat("yyyyMMddHHmmss").parse(mrBeginDateStr).getTime());
                 rs.updateDate(EnfordMarketResearch.colMrBeginDate, mrBeginDate);
             }
-            String mrEndDateStr = endDateStr + mrPlanBill.getMrEndTime();
+            String mrEndDateStr;
+            if (mrCompetitorPriceList != null && mrCompetitorPriceList.size() > 0) {
+                mrEndDateStr = mrCompetitorPriceList.get(0).getCompetitorSOPEndDate();
+            } else {
+                mrEndDateStr = endDateStr + mrPlanBill.getMrEndTime();
+            }
             System.out.println("mrEndDateStr=" + mrEndDateStr);
             if (!isEmpty(mrEndDateStr)) {
                 Date mrEndDate = new Date(new SimpleDateFormat("yyyyMMddHHmmss").parse(mrEndDateStr).getTime());

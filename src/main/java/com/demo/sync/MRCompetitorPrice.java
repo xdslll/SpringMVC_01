@@ -16,6 +16,8 @@ public class MRCompetitorPrice {
     public static final String colCategoryName2 = "CategoryName2";
     public static final String colCategoryCode4 = "CategoryCode4";
     public static final String colCategoryName4 = "CategoryName4";
+    public static final String colCompetitorSOPStartDate = "CompetitorSOPStartDate";
+    public static final String colCompetitorSOPEndDate = "CompetitorSOPEndDate";
 
     String billNumber;
     String insideId;
@@ -32,6 +34,8 @@ public class MRCompetitorPrice {
     String categoryName2;
     String categoryCode4;
     String categoryName4;
+    String competitorSOPStartDate;
+    String competitorSOPEndDate;
 
     public String getBillNumber() {
         return billNumber;
@@ -153,6 +157,22 @@ public class MRCompetitorPrice {
         this.categoryName4 = categoryName4;
     }
 
+    public String getCompetitorSOPStartDate() {
+        return competitorSOPStartDate;
+    }
+
+    public void setCompetitorSOPStartDate(String competitorSOPStartDate) {
+        this.competitorSOPStartDate = competitorSOPStartDate;
+    }
+
+    public String getCompetitorSOPEndDate() {
+        return competitorSOPEndDate;
+    }
+
+    public void setCompetitorSOPEndDate(String competitorSOPEndDate) {
+        this.competitorSOPEndDate = competitorSOPEndDate;
+    }
+
     @Override
     public String toString() {
         return "MRCompetitorPrice{" +
@@ -171,6 +191,8 @@ public class MRCompetitorPrice {
                 ", categoryName2='" + categoryName2 + '\'' +
                 ", categoryCode4='" + categoryCode4 + '\'' +
                 ", categoryName4='" + categoryName4 + '\'' +
+                ", competitorSOPStartDate='" + competitorSOPStartDate + '\'' +
+                ", competitorSOPEndDate='" + competitorSOPEndDate + '\'' +
                 '}';
     }
 }

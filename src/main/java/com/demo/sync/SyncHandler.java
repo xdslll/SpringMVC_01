@@ -100,7 +100,7 @@ public class SyncHandler implements Consts {
                         ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
                 try {
                     System.out.println("开始同步市调清单");
-                    mysqlHandler.syncEnfordMarketResearch2(mysqlStatement, marketResearchBillList);
+                    mysqlHandler.syncEnfordMarketResearch2(mysqlStatement, marketResearchBillList, mrCompetitorPriceList);
                     System.out.println("完成同步市调清单");
 
                     System.out.println("开始同步市调清单部门");
