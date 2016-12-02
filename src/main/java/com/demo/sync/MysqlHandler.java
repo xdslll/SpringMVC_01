@@ -449,7 +449,7 @@ public class MysqlHandler {
                 Date endDate = new Date(new SimpleDateFormat("yyyyMMdd").parse(endDateStr).getTime());
                 rs.updateDate(EnfordMarketResearch.colEndDt, endDate);
             }
-            String mrBeginDateStr = mrPlanBill.getMrBeginDate();
+            String mrBeginDateStr = mrPlanBill.getMrBeginDate() != null ? mrPlanBill.getMrBeginDate() : mrPlanBill.getMrDate();
             /*if (mrCompetitorPriceList != null && mrCompetitorPriceList.size() > 0) {
                 mrBeginDateStr = mrCompetitorPriceList.get(0).getCompetitorSOPStartDate();
             } else {
@@ -457,10 +457,10 @@ public class MysqlHandler {
             }*/
             System.out.println("mrBeginDateStr=" + mrBeginDateStr);
             if (!isEmpty(mrBeginDateStr)) {
-                Date mrBeginDate = new Date(new SimpleDateFormat("yyyyMMddHHmmss").parse(mrBeginDateStr).getTime());
+                Date mrBeginDate = new Date(new SimpleDateFormat("yyyyMMdd").parse(mrBeginDateStr).getTime());
                 rs.updateDate(EnfordMarketResearch.colMrBeginDate, mrBeginDate);
             }
-            String mrEndDateStr = mrPlanBill.getMrEndDate();
+            String mrEndDateStr = mrPlanBill.getMrEndDate() != null ? mrPlanBill.getMrEndDate() : mrPlanBill.getLastConfirmDate();
             /*if (mrCompetitorPriceList != null && mrCompetitorPriceList.size() > 0) {
                 mrEndDateStr = mrCompetitorPriceList.get(0).getCompetitorSOPEndDate();
             } else {
@@ -468,7 +468,7 @@ public class MysqlHandler {
             }*/
             System.out.println("mrEndDateStr=" + mrEndDateStr);
             if (!isEmpty(mrEndDateStr)) {
-                Date mrEndDate = new Date(new SimpleDateFormat("yyyyMMddHHmmss").parse(mrEndDateStr).getTime());
+                Date mrEndDate = new Date(new SimpleDateFormat("yyyyMMdd").parse(mrEndDateStr).getTime());
                 rs.updateDate(EnfordMarketResearch.colMrEndDate, mrEndDate);
             }
             rs.updateString(EnfordMarketResearch.colBillNumber, mrPlanBill.getBillNumber());
@@ -532,7 +532,18 @@ public class MysqlHandler {
      * @param mrCompetitorPriceList
      */
     public void syncEnfordMarketResearchGoods2(Connection conn2, Statement mysqlStatement,
-                                               List<MRCompetitorPrice> mrCompetitorPriceList) throws SQLException {
+                                               List<MRCompetitorPrice> mrCompetitorPriceList) throws SQLException, ParseException {
+        //判断商品是否已经同步过了,如果同步过了,则无需再同步
+        String sqlCount = "select count(*) from enford_market_research_commodity where bill_number='" +
+                mrCompetitorPriceList.get(0).getBillNumber() + "'";
+        ResultSet rsCount = mysqlStatement.executeQuery(sqlCount);
+        if (rsCount.first()) {
+            int count = rsCount.getInt("count(*)");
+            if (count == mrCompetitorPriceList.size()) {
+                System.out.println("市调[" + mrCompetitorPriceList.get(0).getBillNumber() + "]下的商品已经同步,无需更新!");
+                return;
+            }
+        }
         for (int i = 0; i < mrCompetitorPriceList.size(); i++) {
             MRCompetitorPrice mrPlanBillGoodsDetail = mrCompetitorPriceList.get(i);
             //根据货物编码查询货物是否存在
@@ -608,7 +619,7 @@ public class MysqlHandler {
     }
 
     public void updateEnfordMarketResearchGoods2(Connection conn, MRCompetitorPrice mrPlanBillGoodsDetail,
-                                                 ResultSet rsCheckGoods, int goodsId) throws SQLException {
+                                                 ResultSet rsCheckGoods, int goodsId) throws SQLException, ParseException {
         String sql2 = "SELECT * FROM enford_market_research WHERE bill_number='" + mrPlanBillGoodsDetail.getBillNumber() + "'";
         Statement s2 = conn.createStatement();
         ResultSet rs2 = s2.executeQuery(sql2);
@@ -671,8 +682,15 @@ public class MysqlHandler {
         rsCheckGoods.updateString(EnfordMarketResearchCommodity.colGoodsName, mrPlanBillGoodsDetail.getGoodsName());
         rsCheckGoods.updateString(EnfordMarketResearchCommodity.colBaseBarCode, mrPlanBillGoodsDetail.getBaseBarCode());
         rsCheckGoods.updateString(EnfordMarketResearchCommodity.colBaseMeasureUnit, mrPlanBillGoodsDetail.getBaseMeasureUnit());
-        rsCheckGoods.updateString(EnfordMarketResearchCommodity.colMrBeginDate, mrPlanBillGoodsDetail.getCompetitorSOPStartDate());
-        rsCheckGoods.updateString(EnfordMarketResearchCommodity.colMrEndDate, mrPlanBillGoodsDetail.getCompetitorSOPEndDate());
+        System.out.println("mrBeginDate=" + mrPlanBillGoodsDetail.getCompetitorSOPStartDate() + ",mrEndDate=" + mrPlanBillGoodsDetail.getCompetitorSOPEndDate());
+        if (mrPlanBillGoodsDetail.getCompetitorSOPStartDate() != null) {
+            Date mrBeginDate = new Date(new SimpleDateFormat("yyyyMMdd").parse(mrPlanBillGoodsDetail.getCompetitorSOPStartDate()).getTime());
+            rsCheckGoods.updateDate(EnfordMarketResearchCommodity.colMrBeginDate, mrBeginDate);
+        }
+        if (mrPlanBillGoodsDetail.getCompetitorSOPEndDate() != null) {
+            Date mrEndDate = new Date(new SimpleDateFormat("yyyyMMdd").parse(mrPlanBillGoodsDetail.getCompetitorSOPEndDate()).getTime());
+            rsCheckGoods.updateDate(EnfordMarketResearchCommodity.colMrEndDate, mrEndDate);
+        }
         rs2.close();
     }
 }

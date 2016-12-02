@@ -258,7 +258,7 @@
     order by #{sort} #{order}
   </if>
   limit #{page,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
-  </select>
+</select>
   <select id="count" resultType="java.lang.Integer">
     select
     count(*)

@@ -224,7 +224,8 @@ public class SQLServerHandler implements Consts {
         try {
             //循环读取市调清单,仅需读取状态为0的市调清单
             for (MarketResearchBill marketResearchBill : marketResearchBillList) {
-                if (marketResearchBill.getState() == 0) {
+                System.out.println("市调[" + marketResearchBill.getBillNumber() + "]状态为" + marketResearchBill.getState());
+                if (marketResearchBill.getState() == RESEARCH_STATE_HAVE_STARTED) {
                     String sql = "SELECT * FROM tbMRCompetitorPrice WHERE BillNumber='" + marketResearchBill.getBillNumber() + "'";
                     ResultSet rs = sqlServerStatement.executeQuery(sql);
                     int index = 0;
@@ -250,6 +251,8 @@ public class SQLServerHandler implements Consts {
                         mrCompetitorPrice.setCategoryCode4(rs.getString(MRCompetitorPrice.colCategoryCode4));
                         mrCompetitorPrice.setCategoryName2(rs.getString(MRCompetitorPrice.colCategoryName2));
                         mrCompetitorPrice.setCategoryName4(rs.getString(MRCompetitorPrice.colCategoryName4));
+                        mrCompetitorPrice.setCompetitorSOPStartDate(rs.getString(MRCompetitorPrice.colCompetitorSOPStartDate));
+                        mrCompetitorPrice.setCompetitorSOPEndDate(rs.getString(MRCompetitorPrice.colCompetitorSOPEndDate));
 
                         //System.out.println(mrCompetitorPrice.toString());
                         mrCompetitorPriceList.add(mrCompetitorPrice);

@@ -426,6 +426,7 @@ public class MarketResearchController implements Consts {
     }
 
     /**
+     * 二期新增功能
      * 导出百年系统需要的txt文本
      *
      * @param request

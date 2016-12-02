@@ -37,7 +37,7 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
      * 每30分钟触发一次,同步市调清单数据
      */
     //@Scheduled(cron = "0 0 2,4,6,8,10,12,14,16,18,20,22 * * ?")
-    @Scheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(cron = "0 0/60 * * * ?")
     @Override
     public void syncMarketResearchData() {
         System.out.println("==================开始同步市调清单数据");
