@@ -198,7 +198,7 @@ public class SQLServerHandler implements Consts {
                 marketResearchBill.setMrEndTime(rs.getString(MarketResearchBill.colMREndTime));
                 marketResearchBill.setRemark(rs.getString(MarketResearchBill.colRemark));
 
-                System.out.println(marketResearchBill.toString());
+                //System.out.println(marketResearchBill.toString());
                 marketResearchBillList.add(marketResearchBill);
                 index++;
                 System.out.println("完成同步第" + index + "条数据");
@@ -261,7 +261,7 @@ public class SQLServerHandler implements Consts {
                     mrCompetitorPrice.setCategoryName2(rs.getString(MRCompetitorPrice.colCategoryName2));
                     mrCompetitorPrice.setCategoryName4(rs.getString(MRCompetitorPrice.colCategoryName4));
 
-                    System.out.println(mrCompetitorPrice.toString());
+                    //System.out.println(mrCompetitorPrice.toString());
                     mrCompetitorPriceList.add(mrCompetitorPrice);
                     System.out.println("完成同步第" + index + "条商品数据");
                 } else {
@@ -293,7 +293,7 @@ public class SQLServerHandler implements Consts {
             }
             */
             System.out.println("准备更新价格数据");
-            System.out.println(price);
+            //System.out.println(price);
             String updateSql = "UPDATE tbMRCompetitorPrice SET " +
                     MRCompetitorPrice.colCompetitorRetailPrice + "=" + parse(price.getRetailPrice()) + "," +
                     MRCompetitorPrice.colCompetitorSpecialOfferPrice + "=" + parse(price.getPromptPrice()) +

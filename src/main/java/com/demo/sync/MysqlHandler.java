@@ -674,6 +674,8 @@ public class MysqlHandler {
         rsCheckGoods.updateString(EnfordMarketResearchCommodity.colGoodsName, mrPlanBillGoodsDetail.getGoodsName());
         rsCheckGoods.updateString(EnfordMarketResearchCommodity.colBaseBarCode, mrPlanBillGoodsDetail.getBaseBarCode());
         rsCheckGoods.updateString(EnfordMarketResearchCommodity.colBaseMeasureUnit, mrPlanBillGoodsDetail.getBaseMeasureUnit());
+        rsCheckGoods.updateString(EnfordMarketResearchCommodity.colMrBeginDate, mrPlanBillGoodsDetail.getCompetitorSOPStartDate());
+        rsCheckGoods.updateString(EnfordMarketResearchCommodity.colMrEndDate, mrPlanBillGoodsDetail.getCompetitorSOPEndDate());
         rs2.close();
     }
 }

@@ -11,6 +11,8 @@ public class EnfordMarketResearchCommodity {
     public static final String colGoodsName = "goods_name";
     public static final String colBaseBarCode = "base_bar_code";
     public static final String colBaseMeasureUnit = "base_measure_unit";
+    public static final String colMrBeginDate = "mr_begin_date";
+    public static final String colMrEndDate = "mr_end_date";
 
     private Integer id;
 
@@ -29,6 +31,10 @@ public class EnfordMarketResearchCommodity {
     private String base_bar_code;
 
     private String base_measure_unit;
+
+    private String mr_begin_date;
+
+    private String mr_end_date;
 
     public Integer getId() {
         return id;
@@ -100,5 +106,21 @@ public class EnfordMarketResearchCommodity {
 
     public void setBase_measure_unit(String base_measure_unit) {
         this.base_measure_unit = base_measure_unit;
+    }
+
+    public String getMr_begin_date() {
+        return mr_begin_date;
+    }
+
+    public void setMr_begin_date(String mr_begin_date) {
+        this.mr_begin_date = mr_begin_date;
+    }
+
+    public String getMr_end_date() {
+        return mr_end_date;
+    }
+
+    public void setMr_end_date(String mr_end_date) {
+        this.mr_end_date = mr_end_date;
     }
 }

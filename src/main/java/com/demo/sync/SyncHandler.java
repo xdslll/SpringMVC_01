@@ -5,6 +5,7 @@ import com.demo.dao.EnfordMarketResearchMapper;
 import com.demo.dao.EnfordSystemUserMapper;
 import com.demo.model.*;
 import com.demo.model.EnfordMarketResearchDept;
+import com.demo.service.impl.ScheduleServiceImpl;
 import com.demo.util.Consts;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.apache.log4j.Logger;
@@ -26,6 +27,10 @@ import java.util.Map;
  * @date 16/7/3
  */
 public class SyncHandler implements Consts {
+
+
+    //全局变量,判断是否可以同步
+    public static boolean CAN_SYNC = true;
 
     private static final Logger logger = Logger.getLogger(SyncHandler.class);
 
@@ -68,7 +73,18 @@ public class SyncHandler implements Consts {
         } catch (Exception e){
             e.printStackTrace();
         }*/
-        sync();
+        try {
+            if (CAN_SYNC) {
+                CAN_SYNC = false;
+                sync();
+                CAN_SYNC = true;
+            } else {
+                System.out.println("==================同步中,请耐心等候!");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            CAN_SYNC = true;
+        }
     }
 
     private void sync() throws SQLException {
