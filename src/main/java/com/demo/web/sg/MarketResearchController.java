@@ -498,6 +498,8 @@ public class MarketResearchController implements Consts {
             if (commodityList != null) {
                 for (int i = 0; i < commodityList.size(); i++) {
                     EnfordMarketResearchCommodity commodity = commodityList.get(i);
+                    System.out.println("commodity_mr_begin_date=" + commodity.getMrBeginDate());
+                    System.out.println("commodity_mr_end_date=" + commodity.getMrEndDate());
                     //循环读取所有商品信息,获取商品的价格
                     //查询价格并插入价格
                     param.clear();
