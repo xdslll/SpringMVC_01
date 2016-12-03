@@ -221,4 +221,25 @@ public class EnfordMarketResearchCommodity {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+    @Override
+    public String toString() {
+        return "EnfordMarketResearchCommodity{" +
+                "id=" + id +
+                ", resId=" + resId +
+                ", codId=" + codId +
+                ", resName='" + resName + '\'' +
+                ", codName='" + codName + '\'' +
+                ", codSize='" + codSize + '\'' +
+                ", codUnit='" + codUnit + '\'' +
+                ", codBarCode='" + codBarCode + '\'' +
+                ", codCategory='" + codCategory + '\'' +
+                ", codCode='" + codCode + '\'' +
+                ", purchasePrice=" + purchasePrice +
+                ", retailPrice=" + retailPrice +
+                ", mrBeginDate=" + mrBeginDate +
+                ", mrEndDate=" + mrEndDate +
+                ", remark='" + remark + '\'' +
+                '}';
+    }
 }

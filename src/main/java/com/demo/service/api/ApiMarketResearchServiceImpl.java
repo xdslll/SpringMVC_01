@@ -82,6 +82,20 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
                 //查询竞争门店信息
                 int compId = researchDept.getCompId();
                 EnfordProductCompetitors comp = competitorsMapper.selectByPrimaryKey(compId);
+                param.clear();
+                param.put("resId", resId);
+                param.put("page", 0);
+                param.put("pageSize", 1);
+                List<EnfordMarketResearchCommodity> researchCommodity = researchCommodityMapper.selectByParam(param);
+                if (researchCommodity != null && researchCommodity.size() > 0) {
+                    EnfordMarketResearchCommodity rc = researchCommodity.get(0);
+                    if (rc.getMrBeginDate() != null) {
+                        research.setMrBeginDate(rc.getMrBeginDate());
+                    }
+                    if (rc.getMrEndDate() != null) {
+                        research.setMrEndDate(rc.getMrEndDate());
+                    }
+                }
                 //查询商品总数
                 param.clear();
                 param.put("resId", resId);
