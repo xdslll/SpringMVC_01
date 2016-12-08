@@ -2,16 +2,14 @@ package com.demo.sync;
 
 import com.demo.dao.EnfordMarketResearchDeptMapper;
 import com.demo.dao.EnfordMarketResearchMapper;
+import com.demo.dao.EnfordProductPriceMapper;
 import com.demo.dao.EnfordSystemUserMapper;
 import com.demo.model.*;
+import com.demo.model.EnfordMarketResearch;
 import com.demo.model.EnfordMarketResearchDept;
-import com.demo.service.impl.ScheduleServiceImpl;
 import com.demo.util.Consts;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -136,7 +134,8 @@ public class SyncHandler implements Consts {
 
     public void refreshData(EnfordMarketResearchMapper researchMapper,
                             EnfordMarketResearchDeptMapper researchDeptMapper,
-                            EnfordSystemUserMapper userMapper) {
+                            EnfordSystemUserMapper userMapper,
+                            EnfordProductPriceMapper priceMapper) {
         System.out.println("==================开始刷新市调清单状态");
         /*
         Map<String, Object> param = new HashMap<String, Object>();
@@ -176,7 +175,7 @@ public class SyncHandler implements Consts {
                 }
             }
         }*/
-        refreshData2(researchMapper, researchDeptMapper, userMapper);
+        refreshData2(researchMapper, researchDeptMapper, userMapper, priceMapper);
         System.out.println("==================刷新市调清单状态成功");
     }
 
@@ -188,7 +187,8 @@ public class SyncHandler implements Consts {
      */
     private void refreshData2(EnfordMarketResearchMapper researchMapper,
                               EnfordMarketResearchDeptMapper researchDeptMapper,
-                              EnfordSystemUserMapper userMapper) {
+                              EnfordSystemUserMapper userMapper,
+                              EnfordProductPriceMapper priceMapper) {
         try {
             Map<String, Object> param = new HashMap<String, Object>();
             param.put("status", -1);
@@ -226,8 +226,15 @@ public class SyncHandler implements Consts {
                             researchMapper.updateByPrimaryKeySelective(research);
                         }
                     } else if (state == RESEARCH_STATE_HAVE_FINISHED) {
+                        int confirmType = research.getConfirmType();
+                        /*if (confirmType == RESEARCH_CONFIRM_TYPE_SYSTEM ||
+                                confirmType == RESEARCH_CONFIRM_TYPE_ERROR ||
+                                confirmType == RESEARCH_CONFIRM_TYPE_APP ||
+                                confirmType == RESEARCH_CONFIRM_TYPE_APP_MISTAKE) {
+                            System.out.println("市调[" + research.getBillNumber() + "]数据已经回传");
+                        } else {*/
                         //如果市调已经结束,则写入服务器
-                        System.out.println("开始回写市调信息数据到同步服务器");
+                        System.out.println("市调[" + research.getBillNumber() + "]开始执行回传程序");
                         //获取市调部门
                         int resId = research.getId();
                         param.clear();
@@ -243,19 +250,33 @@ public class SyncHandler implements Consts {
                             if (userList != null && userList.size() > 0) {
                                 researchBill.setConfirmManCode(userList.get(0).getUsername());
                                 researchBill.setConfirmManName(userList.get(0).getUsername());
-                                /*String name = userList.get(0).getName();
-                                if (name == null || name.equals("")) {
-                                    researchBill.setConfirmManName(userList.get(0).getUsername());
-                                } else {
-                                    researchBill.setConfirmManName(name);
-                                }*/
+                            /*String name = userList.get(0).getName();
+                            if (name == null || name.equals("")) {
+                                researchBill.setConfirmManName(userList.get(0).getUsername());
+                            } else {
+                                researchBill.setConfirmManName(name);
+                            }*/
                             } else {
                                 researchBill.setConfirmManCode("888888");
                                 researchBill.setConfirmManName("管理员");
                             }
                             researchBill.setConfirmDate(sdf.format(now));
-                            researchBill.setState(BILL_RESEARCH_FINISHED);
+
+                            //判断市调状态,如果为APP上传
+                            if (confirmType == RESEARCH_CONFIRM_TYPE_APP) {
+                                if(checkPriceEmpty(research, priceMapper)) {
+                                    researchBill.setState(BILL_RESEARCH_PHONE_MISTAKE);
+                                    research.setConfirmType(RESEARCH_CONFIRM_TYPE_APP_MISTAKE);
+                                } else {
+                                    researchBill.setState(BILL_RESEARCH_PHONE);
+                                }
+                            } else {
+                                researchBill.setState(BILL_RESEARCH_SYSTEM);
+                                research.setConfirmType(RESEARCH_CONFIRM_TYPE_SYSTEM);
+                            }
+
                             researchBill.setBillNumber(research.getBillNumber());
+                            System.out.println(research.toString());
                             System.out.println(researchBill.toString());
                             //将数据回写到SQLServer服务器
                             try {
@@ -264,14 +285,13 @@ public class SyncHandler implements Consts {
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
-
                             //更新确认状态为系统确认
-                            research.setConfirmType(RESEARCH_CONFIRM_TYPE_SYSTEM);
                             researchMapper.updateByPrimaryKey(research);
                         } else {
                             research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
                             researchMapper.updateByPrimaryKeySelective(research);
                         }
+                        //}
                     } else if (state == RESEARCH_STATE_CANCELED){
                         research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
                         researchMapper.updateByPrimaryKeySelective(research);
@@ -289,6 +309,29 @@ public class SyncHandler implements Consts {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * 三期功能,检查市调清单下的价格是否为空
+     *
+     * @param research
+     * @param priceMapper
+     * @return
+     * true - 价格全部为空
+     * false - 价格不为空
+     */
+    private boolean checkPriceEmpty(EnfordMarketResearch research, EnfordProductPriceMapper priceMapper) {
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("resId", research.getId());
+        List<EnfordProductPrice> priceList = priceMapper.selectByParam(param);
+        for (EnfordProductPrice price : priceList) {
+            float promptPrice = price.getPromptPrice();
+            float retailPrice = price.getRetailPrice();
+            if (promptPrice > 0.0f || retailPrice > 0.0f) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

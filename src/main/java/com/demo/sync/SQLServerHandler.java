@@ -290,7 +290,7 @@ public class SQLServerHandler implements Consts {
                     MarketResearchBill researchBill = marketResearchBillList.get(i);
                     //System.out.println(researchBill.toString());
                     if (researchBill.getBillNumber().equals(mrCompetitorPrice.getBillNumber())) {
-                        if (researchBill.getState() == BILL_RESEARCH_FINISHED
+                        if (researchBill.getState() == BILL_RESEARCH_PHONE
                                 || researchBill.getState() == BILL_RESEARCH_CONFIRMED) {
                             ifContinue = false;
                             break;

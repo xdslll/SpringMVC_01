@@ -34,10 +34,37 @@ public interface Consts {
     public static final int RESEARCH_CONFIRM_TYPE_SYSTEM = 1;
     public static final int RESEARCH_CONFIRM_TYPE_APP = 2;
     public static final int RESEARCH_CONFIRM_TYPE_ERROR = -1;
+    public static final int RESEARCH_CONFIRM_TYPE_APP_MISTAKE = 3;
 
+    /**
+     * 市调执行中
+     */
     public static final int BILL_RESEARCH_STARTED = 0;
-    public static final int BILL_RESEARCH_FINISHED = 1;
-    public static final int BILL_RESEARCH_CONFIRMED = 3;
+
+    /**
+     * 市调被手机app确认
+     */
+    public static final int BILL_RESEARCH_PHONE = 1;
+
+    /**
+     * 市调被ERP取消
+     */
+    public static final int BILL_RESEARCH_CANCEL_BY_ERP = 2;
+
+    /**
+     * 市调被ERP回传
+     */
+    public static final int BILL_RESEARCH_CONFIRMED_BY_ERP = 3;
+
+    /**
+     * 市调被系统自动确认
+     */
+    public static final int BILL_RESEARCH_SYSTEM = 4;
+
+    /**
+     * 市调被手机app误确认
+     */
+    public static final int BILL_RESEARCH_PHONE_MISTAKE = 5;
 
     public static final int MISS_TAG_NOT_MISS = 0;
     public static final int MISS_TAG_MISS = 1;
