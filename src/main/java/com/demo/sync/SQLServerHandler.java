@@ -217,10 +217,14 @@ public class SQLServerHandler implements Consts {
      *
      * @param sqlServerStatement
      * @param marketResearchBillList
+     * @param conn2
+     * @param mysqlHandler
      * @return
      */
     public void syncMrCompetitorPrice(Statement sqlServerStatement,
-                                                         List<MarketResearchBill> marketResearchBillList) {
+                                      List<MarketResearchBill> marketResearchBillList,
+                                      Connection conn2,
+                                      MysqlHandler mysqlHandler) {
         try {
             //循环读取市调清单,仅需读取状态为0的市调清单
             for (MarketResearchBill marketResearchBill : marketResearchBillList) {
@@ -260,8 +264,6 @@ public class SQLServerHandler implements Consts {
                     }
                     rs.close();
 
-                    MysqlHandler mysqlHandler = new MysqlHandler();
-                    Connection conn2 = mysqlHandler.connectToMySQL();
                     if (conn2 != null) {
                         Statement mysqlStatement = conn2.createStatement(
                                 ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);

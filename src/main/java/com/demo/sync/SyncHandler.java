@@ -118,16 +118,17 @@ public class SyncHandler implements Consts {
                     //System.out.println("开始同步市调清单商品");
                     //mysqlHandler.syncEnfordMarketResearchGoods2(conn2, mysqlStatement, mrCompetitorPriceList);
                     //System.out.println("完成同步市调清单商品");
+
+                    System.out.println("开始同步市调清单下的商品");
+                    //List<MRCompetitorPrice> mrCompetitorPriceList =
+                    sqlServerHandler.syncMrCompetitorPrice(sqlServerStatement, marketResearchBillList, conn2, mysqlHandler);
+                    System.out.println("市调清单下的商品同步成功");
+                    conn2.close();
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                    conn2.close();
                 }
             }
-
-            System.out.println("开始同步市调清单下的商品");
-            //List<MRCompetitorPrice> mrCompetitorPriceList =
-                    sqlServerHandler.syncMrCompetitorPrice(sqlServerStatement, marketResearchBillList);
-            System.out.println("市调清单下的商品同步成功");
-
             conn.close();
         }
     }
