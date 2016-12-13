@@ -5,6 +5,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.demo.model.RespBody;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -54,5 +55,25 @@ public class ResponseUtil {
         {
         	logger.error("writeStringResponse error:"+ex);
         }
+    }
+
+    public static void checkResult(int ret, String msg, RespBody<String> respBody) {
+        if (ret > 0) {
+            respBody.setCode(Consts.SUCCESS);
+            respBody.setMsg(msg + "成功!");
+        } else {
+            respBody.setCode(Consts.FAILED);
+            respBody.setMsg(msg + "失败!");
+        }
+    }
+
+    public static void sendFailed(String msg, RespBody<String> respBody) {
+        respBody.setCode(Consts.FAILED);
+        respBody.setMsg("操作失败!失败原因:" + msg);
+    }
+
+    public static void sendSuccessful(RespBody<String> respBody) {
+        respBody.setCode(Consts.SUCCESS);
+        respBody.setMsg("操作成功!");
     }
 }

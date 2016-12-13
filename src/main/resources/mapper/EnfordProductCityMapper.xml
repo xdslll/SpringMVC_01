@@ -109,6 +109,9 @@
     <if test="name != null and name != ''">
       and name = #{name,jdbcType=VARCHAR}
     </if>
+    <if test="page != null and pageSize != null">
+      limit #{page,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+    </if>
   </select>
   <select id="maxId" resultType="java.lang.Integer">
     select

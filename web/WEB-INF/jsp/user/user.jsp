@@ -24,7 +24,7 @@
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-edit'" plain="true" onclick="editDlg()">编辑</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" plain="true" onclick="removeDlg()">删除</a>
 </div>
-<table id="dg" title="用户列表" class="easyui-datagrid" style="width:100%;height:500px;"
+<table id="dg" title="用户列表" class="easyui-datagrid" style="width:90%;height:500px;"
        data-options="
                 url: '<%=request.getContextPath()%>/user/get',
                 method: 'get',
@@ -34,18 +34,24 @@
                 collapsible: false,
                 animate: true,
                 rownumbers: true,
-                iconCls: 'icon-man',
+                iconCls: 'icon-ok',
+                pagination: true,
                 singleSelect: true,
-                pagination: false,
+                pageSize: 15,
+                pageList: [10, 15, 30],
+                toolbar: '#toolbar',
+                border: false,
+                fit: true,
+                nowrap: false,
+                striped: true,
                 toolbar: '#user-toolbar'
                 ">
     <thead>
     <tr>
-        <th data-options="field:'username'" width="20%">用户名</th>
-        <th data-options="field:'name'" width="10%">姓名</th>
-        <th data-options="field:'roleId'" width="10%">角色</th>
-        <th data-options="field:'orgId'" width="30%">机构</th>
-        <th data-options="field:'email'" width="30%">邮箱</th>
+        <th data-options="field:'username'" width="25%">用户名</th>
+        <th data-options="field:'name'" width="25%">姓名</th>
+        <th data-options="field:'roleName'" width="25%">角色</th>
+        <th data-options="field:'deptName'" width="25%">门店</th>
     </tr>
     </thead>
 </table>
@@ -67,13 +73,13 @@
         </div>
         <div class="fitem">
             <label>角色:</label>
-            <input name="roleId" class="easyui-textbox" style="width: 90px;" id="role_id" editable="false">
+            <input name="roleName" class="easyui-textbox" style="width: 90px;" id="role_name" editable="false">
             <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onClick="showSelectRole();" style="margin-left:10px;">选择</a>
         </div>
         <div class="fitem">
-            <label>机构:</label>
-            <input name="orgId" class="easyui-textbox" style="width: 90px;" id="org_id" editable="false">
-            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onClick="showSelectOrg();" style="margin-left:10px;">选择</a>
+            <label>门店:</label>
+            <input name="deptName" class="easyui-textbox" style="width: 90px;" id="dept_name" editable="false">
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onClick="showSelectDept();" style="margin-left:10px;">选择</a>
         </div>
         <div class="fitem">
             <label>邮箱:</label>
@@ -81,6 +87,8 @@
         </div>
         <div class="fitem">
             <input name="id" type="hidden">
+            <input name="roleId" type="hidden" id="role_id">
+            <input name="deptId" type="hidden" id="dept_id">
         </div>
     </form>
 </div>
@@ -88,8 +96,111 @@
     <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="save()" style="width:90px">保存</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">取消</a>
 </div>
+<!=============================
+    展示权限窗口
+==============================!>
+<div id="dlg_select_role" class="easyui-dialog" style="width:400px;height:280px;"
+     closed="true" buttons="#dlg_select_role_buttons">
+    <table id="dg_select_role" class="easyui-datagrid" style="width:100%;height:100%;"
+           data-options="
+            url: '<%=request.getContextPath()%>/role/get',
+            method: 'get',
+            idField: 'id',
+            showFooter: true,
+            fitColumns: true,
+            collapsible: false,
+            animate: true,
+            rownumbers: true,
+            iconCls: 'icon-ok',
+            singleSelect: true,
+            toolbar: '#dlg_select_role_buttons',
+            border: false,
+            fit: true,
+            nowrap: false,
+            striped: true,
+            ">
+        <thead>
+        <tr>
+            <th data-options="field:'id'" width="50%">权限ID</th>
+            <th data-options="field:'name'" width="50%">权限名称</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<div id="dlg_select_role_buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="selectRole()" style="width:90px">选择</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg_select_role').dialog('close')" style="width:90px">取消</a>
+</div>
+<!=============================
+    展示门店窗口
+==============================!>
+<div id="dlg_select_dept" class="easyui-dialog" style="width:400px;height:280px;"
+     closed="true" buttons="#dlg_select_dept_buttons">
+    <table id="dg_select_dept" class="easyui-datagrid" style="width:100%;height:100%;"
+           data-options="
+            url: '<%=request.getContextPath()%>/dept/get2',
+            method: 'get',
+            idField: 'id',
+            showFooter: true,
+            fitColumns: true,
+            collapsible: false,
+            animate: true,
+            rownumbers: true,
+            iconCls: 'icon-ok',
+            singleSelect: true,
+            toolbar: '#dlg_select_role_buttons',
+            border: false,
+            fit: true,
+            nowrap: false,
+            striped: true,
+            ">
+        <thead>
+        <tr>
+            <th data-options="field:'code'" width="33%">门店编码</th>
+            <th data-options="field:'name'" width="33%">门店名称</th>
+            <th data-options="field:'areaName'" width="33%">区域名称</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<div id="dlg_select_dept_buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="selectDept()" style="width:90px">选择</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg_select_dept').dialog('close')" style="width:90px">取消</a>
+</div>
 <script>
     var url;
+
+    function selectDept() {
+        var row = $('#dg_select_dept').datagrid('getSelected');
+        if (row) {
+            var deptId = row.id;
+            var deptName = row.name;
+            $("#dept_name").textbox('setValue', deptName);
+            $("#dept_id").val(deptId);
+            $('#dlg_select_dept').dialog('close');
+        }
+    }
+
+    //显示选择父结点的对话框
+    function showSelectDept() {
+        $('#dlg_select_dept').dialog('open').dialog('center').dialog('setTitle','选择账号对应的门店');
+    }
+
+    function selectRole() {
+        var row = $('#dg_select_role').datagrid('getSelected');
+        if (row) {
+            var roleId = row.id;
+            var roleName = row.name;
+            $("#role_name").textbox('setValue', roleName);
+            $("#role_id").val(roleId);
+            $('#dlg_select_role').dialog('close');
+        }
+    }
+
+    //显示选择父结点的对话框
+    function showSelectRole() {
+        $('#dlg_select_role').dialog('open').dialog('center').dialog('setTitle','选择账号对应的角色');
+    }
 
     //显示新增菜单窗口
     function newDlg() {
@@ -116,9 +227,9 @@
                 if (r){
                     var url = "<%=request.getContextPath()%>/user/delete?userId=" + row.id;
                     $.get(url, function(result) {
-                        var result = eval('('+result+')');
+                        result = eval('('+result+')');
                         if (result.code != '0') {
-                            $.messager.alert('操作失败', result, 'error');
+                            $.messager.alert('操作失败', result.msg, 'error');
                         } else {
                             $('#dg').datagrid('reload');
                         }
@@ -147,22 +258,6 @@
         });
     }
 
-    //显示选择父结点的对话框
-    function showSelectRole() {
-        $('#dlg_select_parent').dialog('open').dialog('center').dialog('setTitle','选择父节点');
-    }
-
-    //选择父结点
-    function selectParent() {
-        var row = $('#dlg_select_parent_grid').datagrid('getSelected');
-        var id = row.id;
-        $("#parent_id").textbox('setValue', id);
-        $('#dlg_select_parent').dialog('close');
-    }
-
-    function showSelectOrg() {
-
-    }
 </script>
 </body>
 </html>

@@ -1,9 +1,12 @@
 package com.demo.web.system;
 
+import com.alibaba.fastjson.JSONObject;
 import com.demo.model.EnfordSystemMenu;
 import com.demo.model.EnfordSystemRole;
+import com.demo.model.EnfordSystemUser;
 import com.demo.model.RespBody;
 import com.demo.service.RoleService;
+import com.demo.service.UserService;
 import com.demo.util.*;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -12,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author xiads
@@ -26,6 +31,9 @@ public class RoleController {
     @Resource
     private RoleService roleService;
 
+    @Resource
+    private UserService userService;
+
     @RequestMapping("/role/manage")
     public String manage() {
         return "/user/role";
@@ -38,9 +46,24 @@ public class RoleController {
             roles = roleService.getRoles();
         }
         catch (Exception ex) {
-            logger.error("exception occured when getRoles:" + ex);
+            ex.printStackTrace();
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(roles));
+    }
+
+    @RequestMapping("/role/get2")
+    public void getRoles2(HttpServletRequest req, HttpServletResponse resp) {
+        List<EnfordSystemRole> roles = null;
+        JSONObject result = new JSONObject();
+        try {
+            roles = roleService.getRoles();
+            result.put("rows", roles);
+            result.put("total", roles.size());
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(result));
     }
 
     @RequestMapping("/role/add")
@@ -54,9 +77,7 @@ public class RoleController {
             roleService.addRoleMenu(roleId, getMenuIds(role));
             respBody.setCode(Consts.SUCCESS);
             respBody.setMsg("添加角色成功！");
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             logger.error("exception occured when addRole:" + ex);
             respBody.setCode(Consts.FAILED);
             respBody.setMsg("添加角色出错:" + ex.getMessage());
@@ -76,7 +97,7 @@ public class RoleController {
             //更新权限关联的菜单信息
             int[] menuIds = getMenuIds(role);
             //重新添加权限
-            roleService.addRoleMenu(roleId, menuIds);
+            int ret = roleService.updateRoleMenu(roleId, menuIds);
             respBody.setCode(Consts.SUCCESS);
             respBody.setMsg("编辑角色成功！");
         }
@@ -92,12 +113,18 @@ public class RoleController {
     public void deleteRole(HttpServletRequest req, HttpServletResponse resp, int roleId) {
         RespBody<String> respBody = new RespBody<String>();
         try {
-            roleService.deleteRole(roleId);
-            respBody.setCode(Consts.SUCCESS);
-            respBody.setMsg("删除角色成功！");
+            Map<String, Object> param = new HashMap<String, Object>();
+            param.put("roleId", roleId);
+            List<EnfordSystemUser> userList = userService.getUserByParam(param);
+            if (userList != null && userList.size() > 0) {
+                ResponseUtil.sendFailed("该角色下已有" + userList.size() + "个用户,无法删除!", respBody);
+            } else {
+                int ret = roleService.deleteRole(roleId);
+                ResponseUtil.checkResult(ret, "删除角色", respBody);
+            }
         }
         catch (Exception ex) {
-            logger.error("exception occured when deleteRole:" + ex);
+            ex.printStackTrace();
             respBody.setCode(Consts.FAILED);
             respBody.setMsg("删除角色出错:" + ex.getMessage());
         }
@@ -123,8 +150,9 @@ public class RoleController {
         if (!StringUtil.isEmpty(menuIdsStr) && menuIdsStr.contains(",")) {
             String[] menuIdsArrayStr = menuIdsStr.split(",");
             return StringUtil.convert(menuIdsArrayStr);
-        }
-        {
+        } else if(!StringUtil.isEmpty(menuIdsStr)) {
+            return new int[]{Integer.valueOf(menuIdsStr)};
+        } else{
             return new int[0];
         }
     }

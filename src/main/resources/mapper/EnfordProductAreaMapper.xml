@@ -96,5 +96,8 @@
       and name = #{name,jdbcType=INTEGER}
     </if>
     order by id asc
+    <if test="page != null and pageSize != null">
+      limit #{page,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+    </if>
   </select>
 </mapper>

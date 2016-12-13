@@ -871,4 +871,62 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
     public EnfordMarketResearch getMarketResearchById(int resId) {
         return researchMapper.selectByPrimaryKey(resId);
     }
+
+    @Override
+    public List<EnfordMarketResearch> getMarketResearchByParam2(Map<String, Object> param) {
+        EnfordProductDepartment dept = (EnfordProductDepartment) param.get("dept");
+        int state = (int) param.get("state");
+        param.put("deptId", dept.getId());
+        List<EnfordMarketResearch> researchList = researchMapper.selectByParam2(param);
+        for (EnfordMarketResearch research : researchList) {
+            switch (research.getState()) {
+                case RESEARCH_STATE_CANCELED:
+                    research.setStateDesp("已取消");
+                    break;
+                case RESEARCH_STATE_HAVE_STARTED:
+                    research.setStateDesp("已开始");
+                    break;
+                case RESEARCH_STATE_HAVE_PUBLISHED:
+                    research.setStateDesp("已发布");
+                    break;
+                case RESEARCH_STATE_NOT_PUBLISH:
+                    research.setStateDesp("未发布");
+                    break;
+                case RESEARCH_STATE_HAVE_FINISHED:
+                    research.setStateDesp("已结束");
+                    break;
+                default:
+                    research.setConfirmDesp("未知状态");
+            }
+            switch (research.getConfirmType()) {
+                case RESEARCH_CONFIRM_TYPE_APP:
+                    research.setConfirmDesp("APP端确认");
+                    break;
+                case RESEARCH_CONFIRM_TYPE_APP_MISTAKE:
+                    research.setConfirmDesp("APP端误操作");
+                    break;
+                case RESEARCH_CONFIRM_TYPE_ERROR:
+                    research.setConfirmDesp("确认失败");
+                    break;
+                case RESEARCH_CONFIRM_TYPE_SYSTEM:
+                    research.setConfirmDesp("系统自动确认");
+                    break;
+                default:
+                    research.setConfirmDesp("未知错误");
+            }
+            //查询商品总数
+            param.clear();
+            param.put("resId", research.getId());
+            int codCount = researchCommodityMapper.countByParam(param);
+            //计算完成进度
+            param.clear();
+            param.put("compId", dept.getCompId());
+            param.put("resId", research.getId());
+            int finishCount = priceMapper.countByParam(param);
+            float finishPercentFloat = (float) finishCount / codCount;
+            int finishPercent = (int) (finishPercentFloat * 100);
+            research.setFinishPercent(finishPercent + "%");
+        }
+        return researchList;
+    }
 }

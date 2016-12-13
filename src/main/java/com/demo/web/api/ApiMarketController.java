@@ -122,14 +122,21 @@ public class ApiMarketController implements Consts {
         RespBody respBody = new RespBody();
         try {
             EnfordProductPrice price = FastJSONHelper.deserialize(json, EnfordProductPrice.class);
-            int count = priceService.addPrice(price);
-            if (count > 0) {
-                respBody.setCode(SUCCESS);
-                respBody.setMsg("新增价格成功");
-                priceService.addPriceToSQLServer(price);
-            } else {
+            float retailPrice = price.getRetailPrice();
+            float promptPrice = price.getPromptPrice();
+            if (retailPrice < promptPrice) {
                 respBody.setCode(FAILED);
-                respBody.setMsg("新增价格失败");
+                respBody.setMsg("新增价格失败,零售价必须大于促销价");
+            } else {
+                int count = priceService.addPrice(price);
+                if (count > 0) {
+                    respBody.setCode(SUCCESS);
+                    respBody.setMsg("新增价格成功");
+                    priceService.addPriceToSQLServer(price);
+                } else {
+                    respBody.setCode(FAILED);
+                    respBody.setMsg("新增价格失败");
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -145,14 +152,21 @@ public class ApiMarketController implements Consts {
         RespBody respBody = new RespBody();
         try {
             EnfordProductPrice price = FastJSONHelper.deserialize(json, EnfordProductPrice.class);
-            int count = priceService.updatePrice(price);
-            if (count > 0) {
-                respBody.setCode(SUCCESS);
-                respBody.setMsg("修改价格成功");
-                priceService.addPriceToSQLServer(price);
-            } else {
+            float retailPrice = price.getRetailPrice();
+            float promptPrice = price.getPromptPrice();
+            if (retailPrice < promptPrice) {
                 respBody.setCode(FAILED);
-                respBody.setMsg("修改价格失败");
+                respBody.setMsg("新增价格失败,零售价必须大于促销价");
+            } else {
+                int count = priceService.updatePrice(price);
+                if (count > 0) {
+                    respBody.setCode(SUCCESS);
+                    respBody.setMsg("修改价格成功");
+                    priceService.addPriceToSQLServer(price);
+                } else {
+                    respBody.setCode(FAILED);
+                    respBody.setMsg("修改价格失败");
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -288,7 +302,7 @@ public class ApiMarketController implements Consts {
             now = sdf.parse(sdf.format(now));
 
             researchBill.setConfirmDate(sdf.format(now));
-            researchBill.setState(BILL_RESEARCH_FINISHED);
+            researchBill.setState(BILL_RESEARCH_PHONE);
             researchBill.setBillNumber(research.getBillNumber());
             System.out.println(researchBill.toString());
 

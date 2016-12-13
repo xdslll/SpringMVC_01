@@ -25,6 +25,9 @@ public class AreaServiceImpl implements AreaService {
     @Resource
     EnfordProductDepartmentMapper deptMapper;
 
+    @Resource
+    EnfordMarketResearchDeptMapper researchDeptMapper;
+
     @Override
     public List<EnfordProductArea> getAreaTree(int resId) {
         //查询所有的区域
@@ -67,6 +70,38 @@ public class AreaServiceImpl implements AreaService {
         }
         areaList.add(emptyArea);
         return areaList;
+    }
+
+    @Override
+    public EnfordProductArea getAreaDeptTree(int areaId) {
+        EnfordProductArea area = areaMapper.selectByPrimaryKey(areaId);
+        if (area != null) {
+            Map<String, Object> param = new HashMap<String, Object>();
+            param.put("areaId", area.getId());
+            List<EnfordProductDepartment> deptList = null;
+            deptList = deptMapper.selectByParam(param);
+            for (EnfordProductDepartment dept : deptList) {
+                dept.setAreaName(area.getName());
+                param.clear();
+                param.put("exeId", dept.getId());
+                dept.setResCount(researchDeptMapper.countByParam(param));
+            }
+            area.setChildren(deptList);
+        } else if (areaId == 0) {
+            area = new EnfordProductArea();
+            area.setId(0);
+            area.setName("全部区域");
+            Map<String, Object> param = new HashMap<String, Object>();
+            List<EnfordProductDepartment> deptList = deptMapper.selectAll();
+            for (EnfordProductDepartment dept : deptList) {
+                dept.setAreaName("全部区域");
+                param.clear();
+                param.put("exeId", dept.getId());
+                dept.setResCount(researchDeptMapper.countByParam(param));
+            }
+            area.setChildren(deptList);
+        }
+        return area;
     }
 
     @Override
@@ -145,5 +180,71 @@ public class AreaServiceImpl implements AreaService {
             areaList.add(emptyArea);
             return areaList;
         }
+    }
+
+    @Override
+    public List<EnfordProductArea> getArea(Map<String, Object> param) {
+        return areaMapper.selectByParam(param);
+    }
+
+    @Override
+    public int addArea(EnfordProductArea area) {
+        return areaMapper.insertSelective(area);
+    }
+
+    @Override
+    public int updateArea(EnfordProductArea area) {
+        return areaMapper.updateByPrimaryKeySelective(area);
+    }
+
+    @Override
+    public int deleteArea(int id) {
+        return areaMapper.deleteByPrimaryKey(id);
+    }
+
+
+
+    @Override
+    public EnfordProductArea getAreaDeptTreeByKeyword(int areaId, String keyword, int page, int pageSize) {
+        EnfordProductArea area = areaMapper.selectByPrimaryKey(areaId);
+        if (area != null) {
+            Map<String, Object> param = new HashMap<String, Object>();
+            param.put("areaId", area.getId());
+            param.put("keyword", keyword);
+            param.put("page", (page - 1) * pageSize);
+            param.put("pageSize", pageSize);
+            List<EnfordProductDepartment> deptList = null;
+            deptList = deptMapper.selectByParam(param);
+            for (EnfordProductDepartment dept : deptList) {
+                dept.setAreaName(area.getName());
+                param.clear();
+                param.put("exeId", dept.getId());
+                dept.setResCount(researchDeptMapper.countByParam(param));
+            }
+            area.setChildren(deptList);
+        } else if (areaId == 0) {
+            area = new EnfordProductArea();
+            area.setId(0);
+            area.setName("全部区域");
+            Map<String, Object> param = new HashMap<String, Object>();
+            param.put("keyword", keyword);
+            List<EnfordProductDepartment> deptList = deptMapper.selectByParam(param);
+            for (EnfordProductDepartment dept : deptList) {
+                dept.setAreaName("全部区域");
+                param.clear();
+                param.put("exeId", dept.getId());
+                dept.setResCount(researchDeptMapper.countByParam(param));
+            }
+            area.setChildren(deptList);
+        }
+        return area;
+    }
+
+    @Override
+    public int countByKeyword(int areaId, String keyword) {
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("areaId", areaId);
+        param.put("keyword", keyword);
+        return deptMapper.countByParam(param);
     }
 }

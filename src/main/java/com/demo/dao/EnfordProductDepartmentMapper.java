@@ -61,4 +61,8 @@ public interface EnfordProductDepartmentMapper {
     List<EnfordProductDepartment> selectByResId(Map<String, Object> param);
 
     List<EnfordProductDepartment> selectByAreaName(Map<String, Object> param);
+
+    int countByParam(Map<String, Object> param);
+
+    List<EnfordProductDepartment> selectNotInArea(Map<String, Object> param);
 }

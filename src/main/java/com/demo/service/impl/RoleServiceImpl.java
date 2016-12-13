@@ -3,9 +3,11 @@ package com.demo.service.impl;
 import com.demo.dao.EnfordSystemMenuMapper;
 import com.demo.dao.EnfordSystemRoleMapper;
 import com.demo.dao.EnfordSystemRoleMenuMapper;
+import com.demo.model.EnfordProductArea;
 import com.demo.model.EnfordSystemMenu;
 import com.demo.model.EnfordSystemRole;
 import com.demo.model.EnfordSystemRoleMenu;
+import com.demo.service.AreaService;
 import com.demo.service.RoleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,9 +32,28 @@ public class RoleServiceImpl implements RoleService {
     @Resource
     EnfordSystemMenuMapper menuMapper;
 
+    @Resource
+    AreaService areaService;
+
     @Override
     public List<EnfordSystemRole> getRoles() {
-        return roleMapper.select();
+        List<EnfordSystemRole> roles = roleMapper.select();
+        for (EnfordSystemRole role : roles) {
+            int areaId = role.getAreaId();
+            if (areaId == -1) {
+                role.setAreaName("未分配区域");
+            } else if (areaId == 0) {
+                role.setAreaName("全部区域");
+            } else {
+                EnfordProductArea area = areaService.getAreaDeptTree(areaId);
+                if (area != null) {
+                    role.setAreaName(area.getName());
+                } else {
+                    role.setAreaName("未分配区域");
+                }
+            }
+        }
+        return roles;
     }
 
     @Transactional
@@ -67,7 +88,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public int addRole(EnfordSystemRole role) {
-        return roleMapper.insert(role);
+        return roleMapper.insertSelective(role);
     }
 
     @Override
@@ -112,8 +133,28 @@ public class RoleServiceImpl implements RoleService {
                 EnfordSystemRoleMenu roleMenu = new EnfordSystemRoleMenu();
                 roleMenu.setRoleId(roleId);
                 roleMenu.setMenuId(menuIds[i]);
-                roleMenuMapper.insert(roleMenu);
+                roleMenuMapper.insertSelective(roleMenu);
                 count++;
+            }
+        }
+        return count;
+    }
+
+    @Transactional
+    @Override
+    public int updateRoleMenu(int roleId, int[] menuIds) {
+        int count = 0;
+        for (int i = 0; i < menuIds.length; i++) {
+            int menuId = menuIds[i];
+            //获取menu数据
+            EnfordSystemMenu menu = menuMapper.selectById(menuId);
+            //判断menu id是否存在,且不为根节点
+            if (menu != null && menu.getParent() != 0) {
+                EnfordSystemRoleMenu roleMenu = new EnfordSystemRoleMenu();
+                roleMenu.setRoleId(roleId);
+                roleMenu.setMenuId(menuId);
+                int ret = roleMenuMapper.insertSelective(roleMenu);
+                count += ret;
             }
         }
         return count;
@@ -122,6 +163,11 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public int deleteRoleMenuByRoldId(int roleId) {
         return roleMenuMapper.deleteByRoleId(roleId);
+    }
+
+    @Override
+    public EnfordSystemRole getRole(int roleId) {
+        return roleMapper.selectByPrimaryKey(roleId);
     }
 
 }

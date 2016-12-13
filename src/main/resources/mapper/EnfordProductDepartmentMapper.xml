@@ -133,19 +133,6 @@
       area_id = #{areaId,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
-
-  <select id="selectByParam" resultType="com.demo.model.EnfordProductDepartment">
-    select
-    <include refid="Base_Column_List" />
-    from enford_product_department
-    where 1=1
-    <if test="code != null">
-      and code = #{code,jdbcType=VARCHAR}
-    </if>
-    <if test="areaId != null">
-      and area_id = #{areaId,jdbcType=INTEGER}
-    </if>
-  </select>
   <select id="selectAll" resultType="com.demo.model.EnfordProductDepartment">
     select
     <include refid="Base_Column_List" />
@@ -174,5 +161,61 @@
     </if>
     and a.exe_id=c.id
     and b.id=c.area_id;
+  </select>
+  <select id="countByParam" resultType="java.lang.Integer">
+    select count(*) from enford_product_department
+    where 1=1
+    <if test="code != null">
+      and code = #{code,jdbcType=VARCHAR}
+    </if>
+    <if test="areaId != null">
+      and area_id = #{areaId,jdbcType=INTEGER}
+    </if>
+    <if test="compId != null">
+      and comp_id = #{compId,jdbcType=INTEGER}
+    </if>
+    <if test="cityId != null">
+      and city_id = #{cityId,jdbcType=INTEGER}
+    </if>
+    <if test="keyword != null">
+      and (code like CONCAT('%','${keyword}','%')
+      or name like CONCAT('%', '${keyword}', '%'))
+    </if>
+  </select>
+  <select id="selectByParam" resultType="com.demo.model.EnfordProductDepartment">
+    select
+    <include refid="Base_Column_List" />
+    from enford_product_department
+    where 1=1
+    <if test="code != null">
+      and code = #{code,jdbcType=VARCHAR}
+    </if>
+    <if test="areaId != null">
+      and area_id = #{areaId,jdbcType=INTEGER}
+    </if>
+    <if test="compId != null">
+      and comp_id = #{compId,jdbcType=INTEGER}
+    </if>
+    <if test="cityId != null">
+      and city_id = #{cityId,jdbcType=INTEGER}
+    </if>
+    <if test="keyword != null">
+      and (code like CONCAT('%','${keyword}','%')
+      or name like CONCAT('%', '${keyword}', '%'))
+    </if>
+    order by code asc
+    <if test="page != null and pageSize != null">
+      limit #{page,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+    </if>
+  </select>
+  <select id="selectNotInArea" resultType="com.demo.model.EnfordProductDepartment">
+    select
+    <include refid="Base_Column_List" />
+    from enford_product_department
+    where 1=1
+    <if test="areaId != null">
+      and area_id != #{areaId,jdbcType=INTEGER}
+    </if>
+    order by code asc
   </select>
 </mapper>

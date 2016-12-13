@@ -59,4 +59,6 @@ public interface EnfordSystemUserMapper {
     List<EnfordSystemUser> select();
 
     List<EnfordSystemUser> selectByParam(Map<String, Object> param);
+
+    int count();
 }

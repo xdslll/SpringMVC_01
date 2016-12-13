@@ -32,6 +32,10 @@ public interface RoleService {
 
     int addRoleMenu(int roleId, int[] menuIds);
 
+    int updateRoleMenu(int roleId, int[] menuIds);
+
     int deleteRoleMenuByRoldId(int roleId);
+
+    EnfordSystemRole getRole(int roleId);
 
 }

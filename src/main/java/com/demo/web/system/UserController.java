@@ -1,5 +1,6 @@
 package com.demo.web.system;
 
+import com.alibaba.fastjson.JSONObject;
 import com.demo.model.RespBody;
 import com.demo.model.EnfordSystemUser;
 import com.demo.service.UserService;
@@ -9,11 +10,14 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author xiads
@@ -98,13 +102,27 @@ public class UserController {
     @RequestMapping("/user/get")
     public void getUsers(HttpServletRequest req, HttpServletResponse resp) {
         List<EnfordSystemUser> users = null;
+        int count = 0;
         try {
-            users = userService.getUsers();
+            String _page = req.getParameter("page");
+            String _rows = req.getParameter("rows");
+            Map<String, Object> param = new HashMap<String, Object>();
+            if (_page != null && _rows != null) {
+                int page = Integer.valueOf(_page);
+                int pageSize = Integer.valueOf(_rows);
+                param.put("page", (page - 1) * pageSize);
+                param.put("pageSize", pageSize);
+            }
+            users = userService.getUserByParam(param);
+            count = userService.count();
         }
         catch (Exception ex) {
-            logger.error("exception occured when getUsers:" + ex);
+            ex.printStackTrace();
         }
-        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(users));
+        JSONObject result = new JSONObject();
+        result.put("rows", users);
+        result.put("total", count);
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(result));
     }
 
     @RequestMapping("/user/add")

@@ -40,8 +40,9 @@
                 ">
     <thead>
     <tr>
-        <th data-options="field:'id'" width="10%">ID</th>
-        <th data-options="field:'name'" width="90%">名称</th>
+        <th data-options="field:'id'" width="33%">ID</th>
+        <th data-options="field:'name'" width="33%">角色名称</th>
+        <th data-options="field:'areaName'" width="33%">区域名称</th>
     </tr>
     </thead>
 </table>
@@ -52,6 +53,11 @@
         <div class="fitem">
             <label>名称:</label>
             <input name="name" class="easyui-textbox" required="true">
+        </div>
+        <div class="fitem">
+            <label>区域:</label>
+            <input name="areaName" class="easyui-textbox" style="width: 90px;" id="area_name" editable="false">
+            <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search" onClick="showSelectArea();" style="margin-left:10px;">选择</a>
         </div>
         <div class="fitem">
             <label>权限:</label>
@@ -67,6 +73,7 @@
         <div class="fitem">
             <input name="id" type="hidden">
             <input name="menu_ids" type="hidden" id="menu_ids">
+            <input name="areaId" type="hidden" id="area_id">
         </div>
     </form>
 </div>
@@ -74,8 +81,61 @@
     <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="save()" style="width:90px">保存</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">取消</a>
 </div>
+<!=============================
+    展示区域窗口
+==============================!>
+<div id="dlg_select_area" class="easyui-dialog" style="width:400px;height:400px;"
+     closed="true" buttons="#dlg_select_area_buttons">
+    <table id="dg_select_area" class="easyui-datagrid" style="width:100%;height:100%;"
+           data-options="
+            url: '<%=request.getContextPath()%>/area/get3',
+            method: 'get',
+            idField: 'id',
+            showFooter: true,
+            fitColumns: true,
+            collapsible: false,
+            animate: true,
+            rownumbers: true,
+            iconCls: 'icon-ok',
+            singleSelect: true,
+            toolbar: '#dlg_select_area_buttons',
+            border: false,
+            fit: true,
+            nowrap: false,
+            striped: true,
+            ">
+        <thead>
+        <tr>
+            <th data-options="field:'id'" width="50%">区域ID</th>
+            <th data-options="field:'name'" width="50%">区域名称</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+<div id="dlg_select_area_buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="selectArea()" style="width:90px">选择</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg_select_area').dialog('close')" style="width:90px">取消</a>
+</div>
 <script>
     var url;
+
+    function selectArea() {
+        var row = $('#dg_select_area').datagrid('getSelected');
+        if (row) {
+            var areaId = row.id;
+            var areaName = row.name;
+            //$("#area_id").textbox('setValue', areaId);
+            $("#area_id").val(areaId);
+            $("#area_name").textbox('setValue', areaName);
+            $('#dlg_select_area').dialog('close');
+        }
+    }
+
+    //显示选择父结点的对话框
+    function showSelectArea() {
+        $('#dlg_select_area').dialog('open').dialog('center').dialog('setTitle','选择角色对应的区域');
+        $("#area_id").css('display', 'none');
+    }
 
     //显示新增菜单窗口
     function newDlg() {
@@ -115,7 +175,7 @@
     function removeDlg() {
         var row = $('#dg').datagrid('getSelected');
         if (row){
-            $.messager.confirm('确定','您确定删除该机构吗?',function(r){
+            $.messager.confirm('确定','您确定删除该角色吗?',function(r){
                 if (r){
                     var url = "<%=request.getContextPath()%>/role/delete?roleId=" + row.id;
                     $.get(url, function(result) {

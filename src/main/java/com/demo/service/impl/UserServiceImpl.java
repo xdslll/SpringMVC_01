@@ -1,7 +1,11 @@
 package com.demo.service.impl;
 
 import com.demo.dao.EnfordSystemUserMapper;
+import com.demo.model.EnfordProductDepartment;
+import com.demo.model.EnfordSystemRole;
 import com.demo.model.EnfordSystemUser;
+import com.demo.service.DeptService;
+import com.demo.service.RoleService;
 import com.demo.service.UserService;
 import com.demo.util.StringUtil;
 import com.demo.util.EncryptUtil;
@@ -21,6 +25,12 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private EnfordSystemUserMapper userMapper;
+
+    @Resource
+    private RoleService roleService;
+
+    @Resource
+    private DeptService deptService;
 
     @Override
     public EnfordSystemUser login(String username, String password) {
@@ -43,7 +53,12 @@ public class UserServiceImpl implements UserService {
         if (StringUtil.isEmpty(user.getName())) {
             user.setName(user.getUsername());
         }
-        return userMapper.insert(user);
+        return userMapper.insertSelective(user);
+    }
+
+    @Override
+    public int addUser2(EnfordSystemUser user) {
+        return userMapper.insertSelective(user);
     }
 
     @Override
@@ -59,5 +74,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public EnfordSystemUser getUser(int id) {
         return userMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public List<EnfordSystemUser> getUserByParam(Map<String, Object> param) {
+        List<EnfordSystemUser> userList = userMapper.selectByParam(param);
+        for (EnfordSystemUser user : userList) {
+            int roleId = user.getRoleId();
+            EnfordSystemRole role = roleService.getRole(roleId);
+            user.setRole(role);
+            if (role != null) {
+                user.setRoleName(role.getName());
+            } else if (roleId == 0) {
+                user.setRoleName("管理员");
+            } else {
+                user.setRoleName("未知角色");
+            }
+
+            int deptId = user.getDeptId();
+            EnfordProductDepartment dept = deptService.getDepartmentByDeptId(deptId);
+            if (dept != null) {
+                user.setDeptName(dept.getName());
+            } else {
+                user.setDeptName("未分配门店");
+            }
+        }
+        return userList;
+    }
+
+    @Override
+    public int count() {
+        return userMapper.count();
     }
 }

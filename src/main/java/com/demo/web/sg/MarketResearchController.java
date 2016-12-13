@@ -71,6 +71,11 @@ public class MarketResearchController implements Consts {
         return "/market_research/market_research_export";
     }
 
+    @RequestMapping("/market_research/area")
+    public String marketResearchArea() {
+        return "/market_research/market_research_area";
+    }
+
     @RequestMapping("/market_research/get")
     public void getMarketResearch(HttpServletRequest req, HttpServletResponse resp,
                              @RequestParam("page") int page,
