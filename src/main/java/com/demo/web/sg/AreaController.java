@@ -102,7 +102,11 @@ public class AreaController {
                     dept.setChildren(resList);
                 }
             }
-            count = areaService.countByKeyword(areaId, keyword);
+            if (areaId == 0) {
+                count = areaService.countByKeyword(null, null);
+            } else {
+                count = areaService.countByKeyword(areaId, keyword);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

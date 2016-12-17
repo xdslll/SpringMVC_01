@@ -228,6 +228,8 @@ public class AreaServiceImpl implements AreaService {
             area.setName("全部区域");
             Map<String, Object> param = new HashMap<String, Object>();
             param.put("keyword", keyword);
+            param.put("page", (page - 1) * pageSize);
+            param.put("pageSize", pageSize);
             List<EnfordProductDepartment> deptList = deptMapper.selectByParam(param);
             for (EnfordProductDepartment dept : deptList) {
                 dept.setAreaName("全部区域");
@@ -241,7 +243,7 @@ public class AreaServiceImpl implements AreaService {
     }
 
     @Override
-    public int countByKeyword(int areaId, String keyword) {
+    public int countByKeyword(Integer areaId, String keyword) {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("areaId", areaId);
         param.put("keyword", keyword);

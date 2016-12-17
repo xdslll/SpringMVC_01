@@ -41,5 +41,5 @@ public interface AreaService {
 
     EnfordProductArea getAreaDeptTreeByKeyword(int areaId, String keyword, int page, int pageSize);
 
-    int countByKeyword(int areaId, String keyword);
+    int countByKeyword(Integer areaId, String keyword);
 }

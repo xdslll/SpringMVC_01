@@ -122,8 +122,18 @@ public class ApiMarketController implements Consts {
         RespBody respBody = new RespBody();
         try {
             EnfordProductPrice price = FastJSONHelper.deserialize(json, EnfordProductPrice.class);
-            float retailPrice = price.getRetailPrice();
-            float promptPrice = price.getPromptPrice();
+            float retailPrice = 0.0f;
+            try {
+                retailPrice = price.getRetailPrice();
+            } catch (Exception ex) {
+                retailPrice = 0.0f;
+            }
+            float promptPrice = 0.0f;
+            try {
+                promptPrice = price.getPromptPrice();
+            } catch (Exception ex) {
+                promptPrice = 0.0f;
+            }
             if (retailPrice < promptPrice) {
                 respBody.setCode(FAILED);
                 respBody.setMsg("新增价格失败,零售价必须大于促销价");
@@ -152,8 +162,18 @@ public class ApiMarketController implements Consts {
         RespBody respBody = new RespBody();
         try {
             EnfordProductPrice price = FastJSONHelper.deserialize(json, EnfordProductPrice.class);
-            float retailPrice = price.getRetailPrice();
-            float promptPrice = price.getPromptPrice();
+            float retailPrice = 0.0f;
+            try {
+                retailPrice = price.getRetailPrice();
+            } catch (Exception ex) {
+                retailPrice = 0.0f;
+            }
+            float promptPrice = 0.0f;
+            try {
+                promptPrice = price.getPromptPrice();
+            } catch (Exception ex) {
+                promptPrice = 0.0f;
+            }
             if (retailPrice < promptPrice) {
                 respBody.setCode(FAILED);
                 respBody.setMsg("新增价格失败,零售价必须大于促销价");
