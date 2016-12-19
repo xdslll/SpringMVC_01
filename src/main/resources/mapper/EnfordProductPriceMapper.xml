@@ -260,5 +260,8 @@
     <if test="deptId != null">
       and dept_id = #{deptId,jdbcType=INTEGER}
     </if>
+    <if test="uploadBy != null">
+      and upload_by = #{uploadBy,jdbcType=INTEGER}
+    </if>
   </select>
 </mapper>

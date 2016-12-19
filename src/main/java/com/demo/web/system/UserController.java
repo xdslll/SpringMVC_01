@@ -3,6 +3,7 @@ package com.demo.web.system;
 import com.alibaba.fastjson.JSONObject;
 import com.demo.model.RespBody;
 import com.demo.model.EnfordSystemUser;
+import com.demo.service.CommodityPriceService;
 import com.demo.service.UserService;
 import com.demo.util.*;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
@@ -30,6 +31,9 @@ public class UserController {
 
     @Resource
     UserService userService;
+
+    @Resource
+    CommodityPriceService priceService;
 
     @RequestMapping("/login")
     public String login() {
@@ -162,14 +166,18 @@ public class UserController {
     public void deleteUser(HttpServletRequest req, HttpServletResponse resp, int userId) {
         RespBody<String> respBody = new RespBody<String>();
         try {
-            userService.deleteUser(userId);
-            respBody.setCode(Consts.SUCCESS);
-            respBody.setMsg("删除用户成功！");
-        }
-        catch (Exception ex) {
-            logger.error("exception occured when deleteUser:" + ex);
-            respBody.setCode(Consts.FAILED);
-            respBody.setMsg("删除用户出错:" + ex.getMessage());
+            Map<String, Object> param = new HashMap<String, Object>();
+            param.put("uploadBy", userId);
+            int count = priceService.countPrice(param);
+            if (count > 0) {
+                ResponseUtil.sendFailed("该用户已上报" + count + "条市调记录,无法删除!", respBody);
+            } else {
+                int ret = userService.deleteUser(userId);
+                ResponseUtil.checkResult(ret, "删除用户", respBody);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            ResponseUtil.sendFailed("删除用户出错:" + ex.getMessage(), respBody);
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }

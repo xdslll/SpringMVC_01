@@ -134,7 +134,17 @@ public class ApiMarketController implements Consts {
             } catch (Exception ex) {
                 promptPrice = 0.0f;
             }
-            if (retailPrice < promptPrice) {
+            if (retailPrice == 0 && promptPrice > 0) {
+                int count = priceService.addPrice(price);
+                if (count > 0) {
+                    respBody.setCode(SUCCESS);
+                    respBody.setMsg("新增价格成功");
+                    priceService.addPriceToSQLServer(price);
+                } else {
+                    respBody.setCode(FAILED);
+                    respBody.setMsg("新增价格失败");
+                }
+            } else if (retailPrice < promptPrice) {
                 respBody.setCode(FAILED);
                 respBody.setMsg("新增价格失败,零售价必须大于促销价");
             } else {
@@ -174,7 +184,17 @@ public class ApiMarketController implements Consts {
             } catch (Exception ex) {
                 promptPrice = 0.0f;
             }
-            if (retailPrice < promptPrice) {
+            if (retailPrice == 0 && promptPrice > 0) {
+                int count = priceService.updatePrice(price);
+                if (count > 0) {
+                    respBody.setCode(SUCCESS);
+                    respBody.setMsg("修改价格成功");
+                    priceService.addPriceToSQLServer(price);
+                } else {
+                    respBody.setCode(FAILED);
+                    respBody.setMsg("修改价格失败");
+                }
+            } else if (retailPrice < promptPrice) {
                 respBody.setCode(FAILED);
                 respBody.setMsg("新增价格失败,零售价必须大于促销价");
             } else {

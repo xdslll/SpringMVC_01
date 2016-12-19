@@ -48,10 +48,11 @@
                 ">
     <thead>
     <tr>
-        <th data-options="field:'username'" width="25%">用户名</th>
-        <th data-options="field:'name'" width="25%">姓名</th>
-        <th data-options="field:'roleName'" width="25%">角色</th>
-        <th data-options="field:'deptName'" width="25%">门店</th>
+        <th data-options="field:'username'" width="20%">用户名</th>
+        <th data-options="field:'name'" width="20%">姓名</th>
+        <th data-options="field:'roleName'" width="20%">角色</th>
+        <th data-options="field:'deptName'" width="20%">门店</th>
+        <th data-options="field:'resCount'" width="20%">上报数据量</th>
     </tr>
     </thead>
 </table>

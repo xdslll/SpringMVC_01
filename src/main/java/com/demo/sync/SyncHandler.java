@@ -30,6 +30,9 @@ public class SyncHandler implements Consts {
     //全局变量,判断是否可以同步
     public static boolean CAN_SYNC = true;
 
+    //全局变量,判断是否可以刷新
+    public static boolean CAN_REFRESH = true;
+
     private static final Logger logger = Logger.getLogger(SyncHandler.class);
 
     /**
@@ -82,6 +85,7 @@ public class SyncHandler implements Consts {
         } catch (Exception ex) {
             ex.printStackTrace();
             CAN_SYNC = true;
+            throw new RuntimeException(ex.getMessage());
         }
     }
 
@@ -176,7 +180,19 @@ public class SyncHandler implements Consts {
                 }
             }
         }*/
-        refreshData2(researchMapper, researchDeptMapper, userMapper, priceMapper);
+        try {
+            if (CAN_REFRESH) {
+                CAN_REFRESH = false;
+                refreshData2(researchMapper, researchDeptMapper, userMapper, priceMapper);
+                CAN_REFRESH = true;
+            } else {
+                System.out.println("==================刷新中,请耐心等候!");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            CAN_REFRESH = true;
+            throw new RuntimeException(ex.getMessage());
+        }
         System.out.println("==================刷新市调清单状态成功");
     }
 

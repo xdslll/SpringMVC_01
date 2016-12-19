@@ -407,9 +407,9 @@ public class MysqlHandler {
             ResultSet rs = mysqlStatement.executeQuery(sql);
             if (rs.first()) {
                 System.out.println("开始更新第" + (i + 1) + "条数据");
-                updateEnfordMarketResearchDept2(conn2, mrPlanBillDeptDetail, rs);
+                //updateEnfordMarketResearchDept2(conn2, mrPlanBillDeptDetail, rs);
                 try {
-                    rs.updateRow();
+                    //rs.updateRow();
                     System.out.println("完成更新第" + (i + 1) + "条数据");
                 } catch (Exception ex) {
                     System.out.println("更新第" + (i + 1) + "条数据出错!");
@@ -553,7 +553,7 @@ public class MysqlHandler {
             //如果货物存在则获取货物ID,如果货物不存在,则新增货物信息
             int goodsId = -1;
             if (rsGoodsDetail.first()) {
-                goodsId = rsGoodsDetail.getInt(EnfordProductCommodity.colId);goodsId = rsGoodsDetail.getInt(EnfordProductCommodity.colId);
+                goodsId = rsGoodsDetail.getInt(EnfordProductCommodity.colId);
             } else {
                 String sqlGetGoodsMaxId = "SELECT max(id) AS id FROM enford_product_commodity";
                 ResultSet rsGoodsMaxId = mysqlStatement.executeQuery(sqlGetGoodsMaxId);

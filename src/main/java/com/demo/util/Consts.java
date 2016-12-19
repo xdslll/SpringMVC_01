@@ -75,4 +75,23 @@ public interface Consts {
     public static final String APP_SECRET_KEY = "237e76067bf76223ad18940e4036dc82";
     public static final String ENCODING_AES_KEY = "3aAdCcbkSuz9Jw32pAsaUjvU0UALLivMxRtzBMmMFOk";
 
+    /**
+     * 日志状态——ERP同步
+     */
+    public static final int LOG_TYPE_SYNC = 0;
+
+    /**
+     * 日志状态——刷新市调状态
+     */
+    public static final int LOG_TYPE_STATE = 1;
+
+    /**
+     * 日志结果——成功
+     */
+    public static final int LOG_RESULT_SUCCESS = 0;
+
+    /**
+     * 日志结果——失败
+     */
+    public static final int LOG_RESULT_FAILED = 1;
 }

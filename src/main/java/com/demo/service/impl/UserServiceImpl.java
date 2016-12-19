@@ -4,6 +4,7 @@ import com.demo.dao.EnfordSystemUserMapper;
 import com.demo.model.EnfordProductDepartment;
 import com.demo.model.EnfordSystemRole;
 import com.demo.model.EnfordSystemUser;
+import com.demo.service.CommodityPriceService;
 import com.demo.service.DeptService;
 import com.demo.service.RoleService;
 import com.demo.service.UserService;
@@ -31,6 +32,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private DeptService deptService;
+
+    @Resource
+    private CommodityPriceService priceService;
 
     @Override
     public EnfordSystemUser login(String username, String password) {
@@ -98,6 +102,10 @@ public class UserServiceImpl implements UserService {
             } else {
                 user.setDeptName("未分配门店");
             }
+            param.clear();
+            param.put("uploadBy", user.getId());
+            int count = priceService.countPrice(param);
+            user.setResCount(count);
         }
         return userList;
     }
