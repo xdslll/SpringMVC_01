@@ -77,7 +77,7 @@ public class SyncHandler implements Consts {
         try {
             if (CAN_SYNC) {
                 CAN_SYNC = false;
-                sync();
+                sync2();
                 CAN_SYNC = true;
             } else {
                 System.out.println("==================同步中,请耐心等候!");
@@ -87,6 +87,27 @@ public class SyncHandler implements Consts {
             CAN_SYNC = true;
             throw new RuntimeException(ex.getMessage());
         }
+    }
+
+    private void sync2() throws SQLException {
+        SQLServerHandler sqlServerHandler = new SQLServerHandler();
+        MysqlHandler mysqlHandler = new MysqlHandler();
+        //开始获取市调清单
+        System.out.println("开始获取市调清单");
+        List<MarketResearchBill> marketResearchBillList = sqlServerHandler.syncMarketResearchBill2();
+        System.out.println("市调清单获取成功");
+        //开始同步市调清单
+        System.out.println("开始同步市调清单");
+        mysqlHandler.syncEnfordMarketResearch2(marketResearchBillList);
+        System.out.println("市调清单同步成功");
+        //开始同步市调部门
+        System.out.println("开始同步市调部门");
+        mysqlHandler.syncEnfordMarketResearchDept2(marketResearchBillList);
+        System.out.println("市调部门同步成功");
+        //开始同步市调商品
+        System.out.println("开始同步市调商品");
+        sqlServerHandler.syncMrCompetitorPrice(marketResearchBillList, mysqlHandler);
+        System.out.println("市调商品同步成功");
     }
 
     private void sync() throws SQLException {

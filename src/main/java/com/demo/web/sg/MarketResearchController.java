@@ -54,6 +54,9 @@ public class MarketResearchController implements Consts {
     @Resource
     AreaService areaService;
 
+    @Resource
+    LogService logService;
+
     //显示进行中的市调清单
     @RequestMapping("/market_research/manage")
     public String marketResearchList() {
@@ -758,8 +761,36 @@ public class MarketResearchController implements Consts {
         System.out.println("开始同步市调清单...");
         RespBody respBody = new RespBody();
         try {
+            System.out.println("==================开始同步市调清单数据");
             SyncHandler syncHandler = new SyncHandler();
-            syncHandler.syncData();
+            EnfordSystemLog log = new EnfordSystemLog();
+            log.setType(LOG_TYPE_SYNC);
+            log.setStart(new Date());
+            long start = System.currentTimeMillis();
+            try {
+                syncHandler.syncData();
+
+                log.setResult(LOG_RESULT_SUCCESS);
+                log.setEnd(new Date());
+                long end = System.currentTimeMillis();
+                long cost = end - start;
+                log.setTime(String.valueOf((double)cost / 1000) + "秒");
+                log.setRemark("同步百年数据成功");
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                log.setResult(LOG_RESULT_FAILED);
+                log.setEnd(new Date());
+                long end = System.currentTimeMillis();
+                long cost = end - start;
+                log.setTime(String.valueOf((double)cost / 1000) + "秒");
+                log.setRemark("同步百年数据失败,失败原因:" + e.getMessage());
+            }
+            try {
+                logService.insert(log);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
 
             respBody.setCode(SUCCESS);
             respBody.setMsg("同步成功!");

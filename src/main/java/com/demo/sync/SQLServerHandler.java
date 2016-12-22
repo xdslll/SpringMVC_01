@@ -167,6 +167,24 @@ public class SQLServerHandler implements Consts {
         return mrPlanBillGoodsDetailList;
     }
 
+    private void setMarketResearchBill(MarketResearchBill marketResearchBill, ResultSet rs) throws SQLException {
+        marketResearchBill.setBillNumber(rs.getString(MarketResearchBill.colBillNumber));
+        marketResearchBill.setConfirmDate(rs.getString(MarketResearchBill.colConfirmDate));
+        marketResearchBill.setConfirmManCode(rs.getString(MarketResearchBill.colConfirmManCode));
+        marketResearchBill.setConfirmManName(rs.getString(MarketResearchBill.colConfirmManName));
+        marketResearchBill.setDeptCode(rs.getString(MarketResearchBill.colDeptCode));
+        marketResearchBill.setMrDate(rs.getString(MarketResearchBill.colMRDate));
+        marketResearchBill.setMrTypeCode(rs.getString(MarketResearchBill.colMRTypeCode));
+        marketResearchBill.setMrTypeName(rs.getString(MarketResearchBill.colMRTypeName));
+        marketResearchBill.setMrUnit(rs.getInt(MarketResearchBill.colMRUnit));
+        marketResearchBill.setNodeName(rs.getString(MarketResearchBill.colNodeName));
+        marketResearchBill.setState(rs.getInt(MarketResearchBill.colState));
+        marketResearchBill.setLastConfirmDate(rs.getString(MarketResearchBill.colLastConfirmDate));
+        marketResearchBill.setMrBeginTime(rs.getString(MarketResearchBill.colMRBeginTime));
+        marketResearchBill.setMrEndTime(rs.getString(MarketResearchBill.colMREndTime));
+        marketResearchBill.setRemark(rs.getString(MarketResearchBill.colRemark));
+    }
+
     /**
      * 三期,根据新的数据结构,同步市调清单和部门信息
      *
@@ -387,6 +405,125 @@ public class SQLServerHandler implements Consts {
             return ret;
         } else {
             return 0;
+        }
+    }
+
+    /**
+     * 同步市调清单
+     *
+     * @return
+     */
+    public List<MarketResearchBill> syncMarketResearchBill2() {
+        List<MarketResearchBill> marketResearchBillList = new ArrayList<MarketResearchBill>();
+        Connection conn = null;
+        ResultSet rs = null;
+        Statement sqlServerStatement = null;
+        try {
+            conn = connectToSQLServer();
+            sqlServerStatement = conn.createStatement();
+            String sql = "SELECT * FROM tbMarketResearchBill WHERE State=0";
+            rs = sqlServerStatement.executeQuery(sql);
+            int index = 0;
+            while (rs.next()) {
+                MarketResearchBill marketResearchBill = new MarketResearchBill();
+                setMarketResearchBill(marketResearchBill, rs);
+                marketResearchBillList.add(marketResearchBill);
+                index++;
+                System.out.println("正在同步第" + index + "条数据,市调单号["+marketResearchBill.getBillNumber() + "]");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+                if (sqlServerStatement != null) {
+                    sqlServerStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return marketResearchBillList;
+    }
+
+    /**
+     * 三期功能,同步市调商品
+     *
+     * @param marketResearchBillList
+     * @param mysqlHandler
+     */
+    public void syncMrCompetitorPrice(List<MarketResearchBill> marketResearchBillList, MysqlHandler mysqlHandler) {
+        Connection conn = null;
+        ResultSet rs = null;
+        Statement sqlServerStatement = null;
+        try {
+            conn = connectToSQLServer();
+            sqlServerStatement = conn.createStatement();
+            //循环读取市调清单,仅需读取状态为0的市调清单
+            for (MarketResearchBill marketResearchBill : marketResearchBillList) {
+                //System.out.println("市调[" + marketResearchBill.getBillNumber() + "]状态为" + marketResearchBill.getState());
+                //if (marketResearchBill.getState() == RESEARCH_STATE_HAVE_STARTED) {
+                    String sql = "SELECT * FROM tbMRCompetitorPrice WHERE BillNumber='" + marketResearchBill.getBillNumber() + "'";
+                    rs = sqlServerStatement.executeQuery(sql);
+                    int index = 0;
+                    List<MRCompetitorPrice> mrCompetitorPriceList = new ArrayList<MRCompetitorPrice>();
+                    while (rs.next()) {
+                        MRCompetitorPrice mrCompetitorPrice = new MRCompetitorPrice();
+                        mrCompetitorPrice.setBillNumber(rs.getString(MRCompetitorPrice.colBillNumber));
+
+                        index++;
+
+                        System.out.println("开始读取[" + marketResearchBill.getBillNumber() + "]第" + index + "条商品数据");
+                        mrCompetitorPrice.setBaseBarCode(rs.getString(MRCompetitorPrice.colBaseBarCode));
+                        mrCompetitorPrice.setBaseMeasureUnit(rs.getString(MRCompetitorPrice.colBaseMeasureUnit));
+                        mrCompetitorPrice.setCompetitorCode(rs.getString(MRCompetitorPrice.colCompetitorCode));
+                        mrCompetitorPrice.setCompetitorName(rs.getString(MRCompetitorPrice.colCompetitorName));
+                        mrCompetitorPrice.setCompetitorRetailPrice(rs.getString(MRCompetitorPrice.colCompetitorRetailPrice));
+                        mrCompetitorPrice.setCompetitorSpecialOfferPrice(rs.getString(MRCompetitorPrice.colCompetitorSpecialOfferPrice));
+                        mrCompetitorPrice.setGoodsCode(rs.getString(MRCompetitorPrice.colGoodsCode));
+                        mrCompetitorPrice.setGoodsName(rs.getString(MRCompetitorPrice.colGoodsName));
+                        mrCompetitorPrice.setGoodsSpec(rs.getString(MRCompetitorPrice.colGoodsSpec));
+                        mrCompetitorPrice.setInsideId(rs.getString(MRCompetitorPrice.colInsideCode));
+                        mrCompetitorPrice.setCategoryCode2(rs.getString(MRCompetitorPrice.colCategoryCode2));
+                        mrCompetitorPrice.setCategoryCode4(rs.getString(MRCompetitorPrice.colCategoryCode4));
+                        mrCompetitorPrice.setCategoryName2(rs.getString(MRCompetitorPrice.colCategoryName2));
+                        mrCompetitorPrice.setCategoryName4(rs.getString(MRCompetitorPrice.colCategoryName4));
+                        mrCompetitorPrice.setCompetitorSOPStartDate(rs.getString(MRCompetitorPrice.colCompetitorSOPStartDate));
+                        mrCompetitorPrice.setCompetitorSOPEndDate(rs.getString(MRCompetitorPrice.colCompetitorSOPEndDate));
+
+                        //System.out.println(mrCompetitorPrice.toString());
+                        mrCompetitorPriceList.add(mrCompetitorPrice);
+                        System.out.println("完成读取[" + marketResearchBill.getBillNumber() + "]第" + index + "条商品数据");
+                    }
+
+                    System.out.println("开始写入[" + marketResearchBill.getBillNumber() + "]商品数据");
+                    mysqlHandler.syncEnfordMarketResearchGoods2(mrCompetitorPriceList);
+                    System.out.println("完成写入[" + marketResearchBill.getBillNumber() + "]商品数据");
+                //} else {
+                //    System.out.println("市调清单[" + marketResearchBill.getBillNumber() + "]已完成市调,无需更新");
+                //}
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+                if (sqlServerStatement != null) {
+                    sqlServerStatement.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
