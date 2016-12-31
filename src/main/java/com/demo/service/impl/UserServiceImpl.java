@@ -67,6 +67,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int updateUser(EnfordSystemUser user) {
+        user.setPassword(EncryptUtil.md5(user.getPassword()));
         return userMapper.updateByPrimaryKeySelective(user);
     }
 

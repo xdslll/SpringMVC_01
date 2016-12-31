@@ -24,7 +24,8 @@
     select 
     <include refid="Base_Column_List" />
     from enford_product_area
-    where id = #{id,jdbcType=INTEGER}
+    where 1=1
+    and id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     <!--
@@ -98,6 +99,55 @@
     order by id asc
     <if test="page != null and pageSize != null">
       limit #{page,jdbcType=INTEGER}, #{pageSize,jdbcType=INTEGER}
+    </if>
+  </select>
+  <select id="statsByParam" resultType="java.lang.Integer">
+    select count(*)
+    from enford_market_research a, enford_market_research_dept b, enford_product_department c
+    where 1=1
+    and a.id=b.res_id
+    <if test="startDt != null">
+    and a.start_dt &gt;= #{startDt,jdbcType=VARCHAR}
+    </if>
+    <if test="endDt != null">
+    and a.end_dt &lt;= #{endDt,jdbcType=VARCHAR}
+    </if>
+    and b.exe_id=c.id
+    <if test="areaId != null">
+    and c.area_id=#{areaId,jdbcType=INTEGER}
+    </if>
+  </select>
+  <select id="statsPriceByParam" resultType="java.lang.Integer">
+    select count(*)
+    from enford_product_price a, enford_product_department b, enford_market_research c
+    where 1=1
+    and a.res_id=c.id
+    and a.dept_id=b.id
+    <if test="startDt != null">
+      and c.start_dt &gt;= #{startDt,jdbcType=VARCHAR}
+    </if>
+    <if test="endDt != null">
+      and c.end_dt &lt;= #{endDt,jdbcType=VARCHAR}
+    </if>
+    <if test="areaId != null">
+      and b.area_id=#{areaId,jdbcType=INTEGER}
+    </if>
+  </select>
+  <select id="statsTotalByParam" resultType="java.lang.Integer">
+    select count(*)
+    from enford_market_research_commodity a, enford_market_research_dept b, enford_product_department c, enford_market_research d
+    where 1=1
+    and a.res_id=b.res_id
+    and a.res_id=d.id
+    and b.exe_id=c.id
+    <if test="areaId != null">
+      and c.area_id=#{areaId,jdbcType=INTEGER}
+    </if>
+    <if test="startDt != null">
+      and d.start_dt &gt;= #{startDt,jdbcType=VARCHAR}
+    </if>
+    <if test="endDt != null">
+      and d.end_dt &lt;= #{endDt,jdbcType=VARCHAR}
     </if>
   </select>
 </mapper>

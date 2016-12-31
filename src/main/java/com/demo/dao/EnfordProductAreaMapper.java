@@ -55,4 +55,10 @@ public interface EnfordProductAreaMapper {
     int updateByPrimaryKey(EnfordProductArea record);
 
     List<EnfordProductArea> selectByParam(Map<String, Object> param);
+
+    int statsByParam(Map<String, Object> param);
+
+    int statsPriceByParam(Map<String, Object> param);
+
+    int statsTotalByParam(Map<String, Object> param);
 }

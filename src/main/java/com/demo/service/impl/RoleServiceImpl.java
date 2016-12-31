@@ -39,8 +39,49 @@ public class RoleServiceImpl implements RoleService {
     public List<EnfordSystemRole> getRoles() {
         List<EnfordSystemRole> roles = roleMapper.select();
         for (EnfordSystemRole role : roles) {
-            int areaId = role.getAreaId();
-            if (areaId == -1) {
+            String areaIds = role.getAreaId();
+            String areaNames = "";
+            if (areaIds.contains(",")) {
+                String[] areaIdsStr = areaIds.split(",");
+                for (int i = 0; i < areaIdsStr.length; i++) {
+                    String areaIdStr = areaIdsStr[i];
+                    int areaId = Integer.valueOf(areaIdStr);
+                    String areaName = "";
+                    if (areaId == -1) {
+                        areaName = "未分配区域";
+                    } else if (areaId == 0) {
+                        areaName = "全部区域";
+                    } else {
+                        EnfordProductArea area = areaService.getAreaDeptTree(areaId);
+                        if (area != null) {
+                            areaName = area.getName();
+                        } else {
+                            areaName = "未分配区域";
+                        }
+                    }
+                    if (i == areaIdsStr.length - 1) {
+                        areaNames += areaName;
+                    } else {
+                        areaNames += areaName + ",";
+                    }
+                }
+                role.setAreaName(areaNames);
+            } else {
+                int areaId = Integer.valueOf(areaIds);
+                if (areaId == -1) {
+                    role.setAreaName("未分配区域");
+                } else if (areaId == 0) {
+                    role.setAreaName("全部区域");
+                } else {
+                    EnfordProductArea area = areaService.getAreaDeptTree(areaId);
+                    if (area != null) {
+                        role.setAreaName(area.getName());
+                    } else {
+                        role.setAreaName("未分配区域");
+                    }
+                }
+            }
+            /*if (areaId == -1) {
                 role.setAreaName("未分配区域");
             } else if (areaId == 0) {
                 role.setAreaName("全部区域");
@@ -51,7 +92,7 @@ public class RoleServiceImpl implements RoleService {
                 } else {
                     role.setAreaName("未分配区域");
                 }
-            }
+            }*/
         }
         return roles;
     }

@@ -18,6 +18,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,13 +85,15 @@ public class AreaController {
             int roleId = user.getRoleId();
             EnfordSystemRole role = roleService.getRole(roleId);
             int areaId = -1;
+            String areaIds = "";
+            EnfordProductArea area = null;
             if (role != null) {
-                areaId = role.getAreaId();
+                areaIds = role.getAreaId();
+                area = areaService.getAreaDeptTreeByKeywords(areaIds, keyword, page, pageSize);
             } else if (roleId == 0) {
                 areaId = 0;
+                area = areaService.getAreaDeptTreeByKeyword(areaId, keyword, page, pageSize);
             }
-            //EnfordProductArea area = areaService.getAreaDeptTree(areaId);
-            EnfordProductArea area = areaService.getAreaDeptTreeByKeyword(areaId, keyword, page, pageSize);
             if (area != null) {
                 deptList = area.getChildren();
                 for (EnfordProductDepartment dept : deptList) {
@@ -298,5 +301,54 @@ public class AreaController {
             ResponseUtil.sendFailed("删除区域出错:" + ex.getMessage(), respBody);
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
+    }
+
+    /**
+     * 三期功能:区域统计功能
+     * @param req
+     * @param resp
+     */
+    @RequestMapping("/area/stats")
+    public void getAreaStats(HttpServletRequest req, HttpServletResponse resp) {
+        List<EnfordProductArea> areaList = null;
+        JSONObject result = new JSONObject();
+        try {
+            List<Integer> areaIds = getAreaIds(req);
+            areaList = areaService.getAreaStats(areaIds);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        result.put("rows", areaList);
+        result.put("total", areaList.size());
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(result));
+    }
+
+    /**
+     * 三期功能:获取当前登录用户下的所有区域
+     * @param req
+     * @return
+     */
+    private List<Integer> getAreaIds(HttpServletRequest req) {
+        EnfordSystemUser user = (EnfordSystemUser) req.getSession().getAttribute("user");
+        int roleId = user.getRoleId();
+        EnfordSystemRole role = roleService.getRole(roleId);
+        String areaIds = role.getAreaId();
+        List<Integer> areaIdsList = new ArrayList<Integer>();
+        if (areaIds != null) {
+            if (areaIds.contains(",")) {
+                String[] areaIdsStr = areaIds.split(",");
+                for (String areaId : areaIdsStr) {
+                    areaIdsList.add(Integer.valueOf(areaId));
+                }
+            } else {
+                areaIdsList.add(Integer.valueOf(areaIds));
+            }
+        }
+        return areaIdsList;
+    }
+
+    private void check(long start, long end, String msg) {
+        double during = (double) (end - start) / 1000;
+        System.out.println("[" + msg + "]过程花费时间:" + during + "秒");
     }
 }

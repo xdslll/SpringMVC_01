@@ -901,6 +901,54 @@ public class MysqlHandler {
             rsCheckGoods.updateInt(EnfordMarketResearchCommodity.colResId, rs2.getInt(EnfordMarketResearchCommodity.colId));
         }
 
+        if (!isEmpty(mrPlanBillGoodsDetail.getCategoryCode2()) &&
+                !isEmpty(mrPlanBillGoodsDetail.getCategoryName2())) {
+            //查询分类是否存在
+            String sql3 = "SELECT * FROM enford_product_category WHERE code='" + Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode2()) + "'";
+            System.out.println(sql3);
+            Statement s3 = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs3 = s3.executeQuery(sql3);
+            //插入新的父分类
+            if (!rs3.first()) {
+                rs3.moveToInsertRow();
+                rs3.updateInt("code", Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode2()));
+                rs3.updateString("name", mrPlanBillGoodsDetail.getCategoryName2());
+                rs3.updateInt("parent", 0);
+                try {
+                    rs3.insertRow();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            rs3.close();
+        }
+
+        if (!isEmpty(mrPlanBillGoodsDetail.getCategoryCode2()) &&
+                !isEmpty(mrPlanBillGoodsDetail.getCategoryName2()) &&
+                !isEmpty(mrPlanBillGoodsDetail.getCategoryCode4()) &&
+                !isEmpty(mrPlanBillGoodsDetail.getCategoryName4())) {
+            //查询子分类是否存在
+            String sql4 = "SELECT * FROM enford_product_category WHERE code='"
+                    + Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode4()) + "' and parent='"
+                    + Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode2()) + "'";
+            System.out.println(sql4);
+            Statement s4 = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs4 = s4.executeQuery(sql4);
+            //插入新的子分类
+            if (!rs4.first()) {
+                rs4.moveToInsertRow();
+                rs4.updateInt("code", Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode4()));
+                rs4.updateString("name", mrPlanBillGoodsDetail.getCategoryName4());
+                rs4.updateInt("parent", Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode2()));
+                try {
+                    rs4.insertRow();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            rs4.close();
+        }
+
         rsCheckGoods.updateInt(EnfordMarketResearchCommodity.colCodId, goodsId);
         rsCheckGoods.updateString(EnfordMarketResearchCommodity.colBillNumber, mrPlanBillGoodsDetail.getBillNumber());
         //rsCheckGoods.updateInt(EnfordMarketResearchCommodity.colInsideId, mrPlanBillGoodsDetail.getInsideId());

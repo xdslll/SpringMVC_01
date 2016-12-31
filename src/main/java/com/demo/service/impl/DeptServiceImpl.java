@@ -64,13 +64,18 @@ public class DeptServiceImpl implements DeptService {
             EnfordProductDepartment dept = depts.get(i);
             int cityId = dept.getCityId();
             int compId = dept.getCompId();
+            int areaId = dept.getAreaId();
             EnfordProductCity city = cityMapper.selectByPrimaryKey(cityId);
             EnfordProductCompetitors comp = competitorsMapper.selectByPrimaryKey(compId);
+            EnfordProductArea area = areaMapper.selectByPrimaryKey(areaId);
             if (city != null) {
                 dept.setCityName(city.getName());
             }
             if (comp != null) {
                 dept.setCompName(comp.getName());
+            }
+            if (area != null) {
+                dept.setAreaName(area.getName());
             }
         }
         return depts;

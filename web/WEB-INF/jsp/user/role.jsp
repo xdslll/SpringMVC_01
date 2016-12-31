@@ -97,7 +97,7 @@
             animate: true,
             rownumbers: true,
             iconCls: 'icon-ok',
-            singleSelect: true,
+            singleSelect: false,
             toolbar: '#dlg_select_area_buttons',
             border: false,
             fit: true,
@@ -120,13 +120,24 @@
     var url;
 
     function selectArea() {
-        var row = $('#dg_select_area').datagrid('getSelected');
-        if (row) {
-            var areaId = row.id;
-            var areaName = row.name;
+        var rows = $('#dg_select_area').datagrid('getSelections');
+        if (rows) {
+            var areaIds = '', areaNames = '';
+            for(var i=0; i<rows.length; i++) {
+                var row = rows[i];
+                var areaId = row.id;
+                var areaName = row.name;
+                if (i == rows.length - 1) {
+                    areaIds += areaId;
+                    areaNames += areaName;
+                } else {
+                    areaIds += areaId + ",";
+                    areaNames += areaName + ",";
+                }
+            }
             //$("#area_id").textbox('setValue', areaId);
-            $("#area_id").val(areaId);
-            $("#area_name").textbox('setValue', areaName);
+            $("#area_id").val(areaIds);
+            $("#area_name").textbox('setValue', areaNames);
             $('#dlg_select_area').dialog('close');
         }
     }

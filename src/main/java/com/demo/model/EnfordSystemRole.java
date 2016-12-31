@@ -19,7 +19,7 @@ public class EnfordSystemRole {
 
     private String menu_ids;
 
-    private int areaId;
+    private String areaId;
 
     private String areaName;
 
@@ -79,11 +79,11 @@ public class EnfordSystemRole {
         this.menu_ids = menu_ids;
     }
 
-    public int getAreaId() {
+    public String getAreaId() {
         return areaId;
     }
 
-    public void setAreaId(int areaId) {
+    public void setAreaId(String areaId) {
         this.areaId = areaId;
     }
 

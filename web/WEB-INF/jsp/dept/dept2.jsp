@@ -60,6 +60,7 @@
             <th data-options="field:'name'" width="20%">门店名称</th>
             <th data-options="field:'cityName'" width="20%">所在城市</th>
             <th data-options="field:'compName'" width="20%">竞争门店</th>
+            <th data-options="field:'areaName'" width="20%">所属区域</th>
         </tr>
         </thead>
     </table>

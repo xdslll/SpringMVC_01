@@ -1,6 +1,7 @@
 package com.demo.web.system;
 
 import com.alibaba.fastjson.JSONObject;
+import com.demo.dao.EnfordSystemUserMapper;
 import com.demo.model.RespBody;
 import com.demo.model.EnfordSystemUser;
 import com.demo.service.CommodityPriceService;
@@ -31,6 +32,9 @@ public class UserController {
 
     @Resource
     UserService userService;
+
+    @Resource
+    EnfordSystemUserMapper userMapper;
 
     @Resource
     CommodityPriceService priceService;
@@ -202,7 +206,8 @@ public class UserController {
                         respBody.setMsg("两次输入的新密码不符!");
                     } else {
                         user.setPassword(EncryptUtil.md5(newPwd));
-                        userService.updateUser(user);
+                        //userService.updateUser(user);
+                        userMapper.updateByPrimaryKeySelective(user);
                         respBody.setCode(Consts.SUCCESS);
                         respBody.setMsg("修改密码成功！");
                     }
