@@ -1,5 +1,6 @@
 package com.demo.service;
 
+import com.demo.model.EnfordProduct;
 import com.demo.model.EnfordProductCategory;
 
 import java.util.List;
@@ -19,4 +20,9 @@ public interface CategoryService {
 
     List<EnfordProductCategory> getCategoryByParam(Map<String, Object> param);
 
+    List<EnfordProductCategory> getCategoryWithParent();
+
+    int totalByParam(Map<String, Object> param);
+
+    int finishByParam(Map<String, Object> param);
 }

@@ -174,7 +174,6 @@
       img_url = #{imgUrl,jdbcType=VARCHAR},
     where id = #{id,jdbcType=INTEGER}
   </update>
-
   <select id="selectByParam" resultType="com.demo.model.EnfordProductCategory">
     select
     <include refid="Base_Column_List" />
@@ -221,5 +220,61 @@
     where a.cod_id = b.com_id
     and a.res_id = b.res_id
     and a.dept_id = b.dept_id
+  </select>
+  <select id="selectWithParent" resultType="com.demo.model.EnfordProductCategory">
+    select a.`code`, a.`name`, b.`code` as parentCode, b.`name` as parentName
+    from enford_product_category a, enford_product_category b
+    where a.parent = b.`code`
+    and a.parent != '0'
+  </select>
+  <select id="totalByParam" resultType="java.lang.Integer">
+    select count(*)
+    from
+    (select a.id as res_id
+    from enford_market_research a, enford_market_research_dept b, enford_product_department c
+    where 1=1
+    and a.id=b.res_id
+    <if test="startDt != null">
+      and a.start_dt &gt;= #{startDt,jdbcType=VARCHAR}
+    </if>
+    <if test="endDt != null">
+      and a.end_dt &lt;= #{endDt,jdbcType=VARCHAR}
+    </if>
+    and b.exe_id=c.id
+    <if test="areaId != null">
+      and c.area_id=#{areaId,jdbcType=INTEGER}
+    </if>
+    ) a, enford_market_research_commodity b,
+    enford_product_commodity c
+    where a.res_id=b.res_id
+    and b.cod_id=c.id
+    <if test="code != null">
+      and c.category_code=#{code,jdbcType=INTEGER};
+    </if>
+  </select>
+  <select id="finishByParam" resultType="java.lang.Integer">
+    select count(*)
+    from
+    (select a.id as res_id
+    from enford_market_research a, enford_market_research_dept b, enford_product_department c
+    where 1=1
+    and a.id=b.res_id
+    <if test="startDt != null">
+      and a.start_dt &gt;= #{startDt,jdbcType=VARCHAR}
+    </if>
+    <if test="endDt != null">
+      and a.end_dt &lt;= #{endDt,jdbcType=VARCHAR}
+    </if>
+    and b.exe_id=c.id
+    <if test="areaId != null">
+      and c.area_id=#{areaId,jdbcType=INTEGER}
+    </if>
+    ) a, enford_product_price b,
+    enford_product_commodity c
+    where a.res_id=b.res_id
+    and b.com_id=c.id
+    <if test="code != null">
+      and c.category_code=#{code,jdbcType=INTEGER};
+    </if>
   </select>
 </mapper>

@@ -87,4 +87,19 @@ public class CategoryServiceImpl implements CategoryService {
     public List<EnfordProductCategory> getCategoryByParam(Map<String, Object> param) {
         return categoryMapper.selectByParam(param);
     }
+
+    @Override
+    public List<EnfordProductCategory> getCategoryWithParent() {
+        return categoryMapper.selectWithParent();
+    }
+
+    @Override
+    public int totalByParam(Map<String, Object> param) {
+        return categoryMapper.totalByParam(param);
+    }
+
+    @Override
+    public int finishByParam(Map<String, Object> param) {
+        return categoryMapper.finishByParam(param);
+    }
 }

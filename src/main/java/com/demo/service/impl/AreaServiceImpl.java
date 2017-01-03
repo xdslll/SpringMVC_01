@@ -4,9 +4,11 @@ import com.demo.dao.EnfordMarketResearchDeptMapper;
 import com.demo.dao.EnfordProductAreaMapper;
 import com.demo.dao.EnfordProductDepartmentMapper;
 import com.demo.model.EnfordProductArea;
+import com.demo.model.EnfordProductCategory;
 import com.demo.model.EnfordProductDepartment;
 import com.demo.model.EnfordSystemUser;
 import com.demo.service.AreaService;
+import com.demo.service.CategoryService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -27,6 +29,9 @@ public class AreaServiceImpl implements AreaService {
 
     @Resource
     EnfordMarketResearchDeptMapper researchDeptMapper;
+
+    @Resource
+    CategoryService categoryService;
 
     @Override
     public List<EnfordProductArea> getAreaTree(int resId) {
@@ -275,31 +280,6 @@ public class AreaServiceImpl implements AreaService {
     /**
      * 三期功能:统计区域下的市调进度
      *
-     * @param areaIds
-     * @return
-     */
-    @Override
-    public List<EnfordProductArea> getAreaStats(List<Integer> areaIds) {
-        List<EnfordProductArea> areaList;
-        if (areaIds.size() == 1 && areaIds.get(0) == 0) {
-            areaList = areaMapper.selectByParam(null);
-            for (EnfordProductArea area : areaList) {
-                statsArea(area);
-            }
-        } else {
-            areaList = new ArrayList<EnfordProductArea>();
-            for (int id : areaIds) {
-                EnfordProductArea area = areaMapper.selectByPrimaryKey(id);
-                statsArea(area);
-                areaList.add(area);
-            }
-        }
-        return areaList;
-    }
-
-    /**
-     * 三期功能:统计区域下的市调进度
-     *
      * @param area
      */
     private void statsArea(EnfordProductArea area) {
@@ -333,6 +313,132 @@ public class AreaServiceImpl implements AreaService {
         int resPriceByMonth = areaMapper.statsPriceByParam(param);
         int resTotalByMonth = areaMapper.statsTotalByParam(param);
         String percentByMonth = ((int) (((double) (resPriceByMonth) / resTotalByMonth) * 100)) + "%";
-        area.setFinishPercentByMonth(percentByYear);
+        area.setFinishPercentByMonth(percentByMonth);
     }
+
+    /**
+     * 三期功能:统计部门市调进度
+     *
+     * @param dept
+     */
+    private void statsDept(EnfordProductDepartment dept) {
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH) + 1;
+        String yearBegin = year + "-1-1";
+        String yearEnd = year + "-12-31";
+        String monthBegin = year + "-" + month + "-1";
+        String monthEnd = year + "-" + month + "-31";
+        //统计年度市调总数
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("startDt", yearBegin);
+        param.put("endDt", yearEnd);
+        param.put("deptId", dept.getId());
+        int countByYear = areaMapper.statsByParam(param);
+        dept.setCountByYear(countByYear);
+        //统计年度市调总进度
+        int resPriceByYear = areaMapper.statsPriceByParam(param);
+        int resTotalByYear = areaMapper.statsTotalByParam(param);
+        String percentByYear = ((int) (((double) (resPriceByYear) / resTotalByYear) * 100)) + "%";
+        dept.setFinishPercentByYear(percentByYear);
+        //统计月度市调总数
+        param.clear();
+        param.put("startDt", monthBegin);
+        param.put("endDt", monthEnd);
+        param.put("deptId", dept.getId());
+        int countByMonth = areaMapper.statsByParam(param);
+        dept.setCountByMonth(countByMonth);
+        //统计月度市调总进度
+        int resPriceByMonth = areaMapper.statsPriceByParam(param);
+        int resTotalByMonth = areaMapper.statsTotalByParam(param);
+        String percentByMonth = ((int) (((double) (resPriceByMonth) / resTotalByMonth) * 100)) + "%";
+        dept.setFinishPercentByMonth(percentByMonth);
+    }
+
+    /**
+     * 三期功能:统计区域下的市调进度
+     *
+     * @param areaIds
+     * @return
+     */
+    @Override
+    public List<EnfordProductArea> getAreaStats(List<Integer> areaIds) {
+        List<EnfordProductArea> areaList;
+        if (areaIds.size() == 1 && areaIds.get(0) == 0) {
+            areaList = areaMapper.selectByParam(null);
+            for (EnfordProductArea area : areaList) {
+                statsArea(area);
+            }
+        } else {
+            areaList = new ArrayList<EnfordProductArea>();
+            for (int id : areaIds) {
+                EnfordProductArea area = areaMapper.selectByPrimaryKey(id);
+                statsArea(area);
+                areaList.add(area);
+            }
+        }
+        return areaList;
+    }
+
+    /**
+     * 三期功能:统计某个区域下的所有部门市调进度
+     *
+     * @param areaId
+     * @return
+     */
+    @Override
+    public List<EnfordProductDepartment> getDeptStats(int areaId) {
+        List<EnfordProductDepartment> deptList;
+        EnfordProductArea area = areaMapper.selectByPrimaryKey(areaId);
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("areaId", areaId);
+        deptList = deptMapper.selectByParam(param);
+        for (EnfordProductDepartment dept: deptList) {
+            statsDept(dept);
+            dept.setAreaName(area.getName());
+        }
+        return deptList;
+    }
+
+    @Override
+    public List<EnfordProductCategory> getCatStats(int areaId) {
+        List<EnfordProductCategory> catList = categoryService.getCategoryWithParent();
+        for(EnfordProductCategory cat : catList) {
+            Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH) + 1;
+            String yearBegin = year + "-1-1";
+            String yearEnd = year + "-12-31";
+            String monthBegin = year + "-" + month + "-1";
+            String monthEnd = year + "-" + month + "-31";
+            //统计年度市调总数
+            Map<String, Object> param = new HashMap<String, Object>();
+            /*yearBegin = "2016-01-01";
+            yearEnd = "2016-12-31";
+            monthBegin = "2016-12-01";
+            monthEnd = "2016-12-31";*/
+            param.put("startDt", yearBegin);
+            param.put("endDt", yearEnd);
+            param.put("areaId", areaId);
+            param.put("code", cat.getCode());
+            int totalByYear = categoryService.totalByParam(param);
+            int finishByYear = categoryService.finishByParam(param);
+            String percentByYear = ((int) (((double) (finishByYear) / totalByYear) * 100)) + "%";
+            cat.setCodCountByYear(totalByYear);
+            cat.setFinishCountByYear(percentByYear);
+
+            param.clear();
+            param.put("startDt", monthBegin);
+            param.put("endDt", monthEnd);
+            param.put("areaId", areaId);
+            param.put("code", cat.getCode());
+            int totalByMonth = categoryService.totalByParam(param);
+            int finishByMonth = categoryService.finishByParam(param);
+            String percentByMonth = ((int) (((double) (finishByMonth) / totalByMonth) * 100)) + "%";
+            cat.setCodCount(totalByMonth);
+            cat.setFinishCountByMonth(percentByMonth);
+        }
+        return catList;
+    }
+
 }

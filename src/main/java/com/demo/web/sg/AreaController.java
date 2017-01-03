@@ -304,26 +304,6 @@ public class AreaController {
     }
 
     /**
-     * 三期功能:区域统计功能
-     * @param req
-     * @param resp
-     */
-    @RequestMapping("/area/stats")
-    public void getAreaStats(HttpServletRequest req, HttpServletResponse resp) {
-        List<EnfordProductArea> areaList = null;
-        JSONObject result = new JSONObject();
-        try {
-            List<Integer> areaIds = getAreaIds(req);
-            areaList = areaService.getAreaStats(areaIds);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        result.put("rows", areaList);
-        result.put("total", areaList.size());
-        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(result));
-    }
-
-    /**
      * 三期功能:获取当前登录用户下的所有区域
      * @param req
      * @return
@@ -350,5 +330,65 @@ public class AreaController {
     private void check(long start, long end, String msg) {
         double during = (double) (end - start) / 1000;
         System.out.println("[" + msg + "]过程花费时间:" + during + "秒");
+    }
+
+    /**
+     * 三期功能:区域统计功能
+     * @param req
+     * @param resp
+     */
+    @RequestMapping("/area/stats")
+    public void getAreaStats(HttpServletRequest req, HttpServletResponse resp) {
+        List<EnfordProductArea> areaList = null;
+        JSONObject result = new JSONObject();
+        try {
+            List<Integer> areaIds = getAreaIds(req);
+            areaList = areaService.getAreaStats(areaIds);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        result.put("rows", areaList);
+        result.put("total", areaList.size());
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(result));
+    }
+
+    /**
+     * 三期功能:部门统计功能
+     * @param req
+     * @param resp
+     */
+    @RequestMapping("/area/stats/dept")
+    public void getDeptStats(HttpServletRequest req, HttpServletResponse resp,
+                             @RequestParam("areaId") int areaId) {
+        JSONObject result = new JSONObject();
+        List<EnfordProductDepartment> deptList = null;
+        try {
+            deptList = areaService.getDeptStats(areaId);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        result.put("rows", deptList);
+        result.put("total", deptList.size());
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(result));
+    }
+
+    /**
+     * 三期功能:分类统计功能
+     * @param req
+     * @param resp
+     */
+    @RequestMapping("/area/stats/cat")
+    public void getCatStats(HttpServletRequest req, HttpServletResponse resp,
+                             @RequestParam("areaId") int areaId) {
+        JSONObject result = new JSONObject();
+        List<EnfordProductCategory> catList = null;
+        try {
+            catList = areaService.getCatStats(areaId);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        result.put("rows", catList);
+        result.put("total", catList.size());
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(result));
     }
 }

@@ -1,6 +1,7 @@
 package com.demo.service;
 
 import com.demo.model.EnfordProductArea;
+import com.demo.model.EnfordProductCategory;
 import com.demo.model.EnfordProductDepartment;
 import com.demo.model.EnfordSystemUser;
 
@@ -46,4 +47,8 @@ public interface AreaService {
     EnfordProductArea getAreaDeptTreeByKeywords(String areaIds, String keyword, int page, int pageSize);
 
     List<EnfordProductArea> getAreaStats(List<Integer> areaIds);
+
+    List<EnfordProductDepartment> getDeptStats(int areaId);
+
+    List<EnfordProductCategory> getCatStats(int areaId);
 }
