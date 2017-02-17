@@ -303,14 +303,17 @@ public class SyncHandler implements Consts {
                             //判断市调状态,如果为APP上传
                             if (confirmType == RESEARCH_CONFIRM_TYPE_APP) {
                                 if(checkPriceEmpty(research, priceMapper)) {
-                                    researchBill.setState(BILL_RESEARCH_PHONE_MISTAKE);
-                                    research.setConfirmType(RESEARCH_CONFIRM_TYPE_APP_MISTAKE);
+                                    //researchBill.setState(BILL_RESEARCH_PHONE_MISTAKE);
+                                    researchBill.setState(BILL_RESEARCH_EMPTY);
+                                    //research.setConfirmType(RESEARCH_CONFIRM_TYPE_APP_MISTAKE);
+                                    research.setConfirmType(RESEARCH_CONFIRM_TYPE_EMPTY);
                                 } else {
                                     researchBill.setState(BILL_RESEARCH_PHONE);
                                 }
                             } else {
-                                researchBill.setState(BILL_RESEARCH_SYSTEM);
-                                research.setConfirmType(RESEARCH_CONFIRM_TYPE_SYSTEM);
+                                researchBill.setState(BILL_RESEARCH_EMPTY);
+                                //research.setConfirmType(RESEARCH_CONFIRM_TYPE_SYSTEM);
+                                research.setConfirmType(RESEARCH_CONFIRM_TYPE_EMPTY);
                             }
 
                             researchBill.setBillNumber(research.getBillNumber());

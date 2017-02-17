@@ -35,6 +35,7 @@ public interface Consts {
     public static final int RESEARCH_CONFIRM_TYPE_APP = 2;
     public static final int RESEARCH_CONFIRM_TYPE_ERROR = -1;
     public static final int RESEARCH_CONFIRM_TYPE_APP_MISTAKE = 3;
+    public static final int RESEARCH_CONFIRM_TYPE_EMPTY = 4;
 
     /**
      * 市调执行中
@@ -57,9 +58,9 @@ public interface Consts {
     public static final int BILL_RESEARCH_CONFIRMED_BY_ERP = 3;
 
     /**
-     * 市调被系统自动确认
+     * 市调数据为空的情况
      */
-    public static final int BILL_RESEARCH_SYSTEM = 4;
+    public static final int BILL_RESEARCH_EMPTY = 4;
 
     /**
      * 市调被手机app误确认
