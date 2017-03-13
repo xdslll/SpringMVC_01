@@ -365,14 +365,19 @@ public class SyncHandler implements Consts {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("resId", research.getId());
         List<EnfordProductPrice> priceList = priceMapper.selectByParam(param);
-        for (EnfordProductPrice price : priceList) {
+        /*for (EnfordProductPrice price : priceList) {
             float promptPrice = price.getPromptPrice();
             float retailPrice = price.getRetailPrice();
             if (promptPrice > 0.0f || retailPrice > 0.0f) {
                 return false;
             }
         }
-        return true;
+        return true;*/
+        if (priceList.size() > 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }
