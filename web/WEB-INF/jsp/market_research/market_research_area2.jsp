@@ -27,6 +27,8 @@
 <div id="toolbar">
     <a href="javascript:void(0)" class="easyui-linkbutton" onclick="showDeptInfo()">查看部门信息</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" onclick="showCatInfo()">查看分类信息</a>
+    请选择月份:<input id="dt" class="easyui-datebox" label="请选择月份" labelPosition="top"
+                 data-options="formatter:myformatter,parser:myparser,buttons:buttons,onSelect:onSelect">
 </div>
 <div class="main_table">
     <table id="dg" title="区域市调统计" class="easyui-datagrid"
@@ -169,6 +171,54 @@
             dg.datagrid('reload');
             dg.datagrid('clearSelections');
         }
+    }
+
+    function myformatter(date){
+        var y = date.getFullYear();
+        var m = date.getMonth()+1;
+        return y+'-'+(m<10?('0'+m):m);
+    }
+
+    function myparser(s){
+        if (!s) return new Date();
+        var ss = (s.split('-'));
+        var y = parseInt(ss[0],10);
+        var m = parseInt(ss[1],10);
+        if (!isNaN(y) && !isNaN(m)){
+            return new Date(y,m-1);
+        } else {
+            return new Date();
+        }
+    }
+
+    var buttons = $.extend([], $.fn.datebox.defaults.buttons);
+    buttons.splice(1, 0, {
+        text: 'Clear',
+        handler: function(target){
+            $('#dt').combo('setText','');
+            var dg = $('#dg');
+            //设置datagrid请求参数
+            var queryParams = dg.datagrid('options').queryParams;
+            queryParams.year = '';
+            queryParams.month = '';
+            dg.datagrid('options').queryParams = queryParams;
+            dg.datagrid('reload');
+            dg.datagrid('clearSelections');
+        }
+    });
+
+    function onSelect(date){
+        //$('#dt').text(date);
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var dg = $('#dg');
+        //设置datagrid请求参数
+        var queryParams = dg.datagrid('options').queryParams;
+        queryParams.year = year;
+        queryParams.month = month;
+        dg.datagrid('options').queryParams = queryParams;
+        dg.datagrid('reload');
+        dg.datagrid('clearSelections');
     }
 </script>
 </body>

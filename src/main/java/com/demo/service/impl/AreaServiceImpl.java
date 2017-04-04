@@ -317,6 +317,44 @@ public class AreaServiceImpl implements AreaService {
     }
 
     /**
+     * 三期功能:通过年月和区域进行统计
+     *
+     * @param area
+     * @param year
+     * @param month
+     */
+    private void statsAreaByYearAndMonth(EnfordProductArea area, String year, String month) {
+        String yearBegin = year + "-1-1";
+        String yearEnd = year + "-12-31";
+        String monthBegin = year + "-" + month + "-1";
+        String monthEnd = year + "-" + month + "-31";
+        //统计年度市调总数
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("startDt", yearBegin);
+        param.put("endDt", yearEnd);
+        param.put("areaId", area.getId());
+        int countByYear = areaMapper.statsByParam(param);
+        area.setCountByYear(countByYear);
+        //统计年度市调总进度
+        int resPriceByYear = areaMapper.statsPriceByParam(param);
+        int resTotalByYear = areaMapper.statsTotalByParam(param);
+        String percentByYear = ((int) (((double) (resPriceByYear) / resTotalByYear) * 100)) + "%";
+        area.setFinishPercentByYear(percentByYear);
+        //统计月度市调总数
+        param.clear();
+        param.put("startDt", monthBegin);
+        param.put("endDt", monthEnd);
+        param.put("areaId", area.getId());
+        int countByMonth = areaMapper.statsByParam(param);
+        area.setCountByMonth(countByMonth);
+        //统计月度市调总进度
+        int resPriceByMonth = areaMapper.statsPriceByParam(param);
+        int resTotalByMonth = areaMapper.statsTotalByParam(param);
+        String percentByMonth = ((int) (((double) (resPriceByMonth) / resTotalByMonth) * 100)) + "%";
+        area.setFinishPercentByMonth(percentByMonth);
+    }
+
+    /**
      * 三期功能:统计部门市调进度
      *
      * @param dept
@@ -374,6 +412,33 @@ public class AreaServiceImpl implements AreaService {
             for (int id : areaIds) {
                 EnfordProductArea area = areaMapper.selectByPrimaryKey(id);
                 statsArea(area);
+                areaList.add(area);
+            }
+        }
+        return areaList;
+    }
+
+    /**
+     * 三期功能,增加按照年月的统计功能
+     *
+     * @param areaIds
+     * @param year
+     * @param month
+     * @return
+     */
+    @Override
+    public List<EnfordProductArea> getAreaStatsByYearAndMonth(List<Integer> areaIds, String year, String month) {
+        List<EnfordProductArea> areaList;
+        if (areaIds.size() == 1 && areaIds.get(0) == 0) {
+            areaList = areaMapper.selectByParam(null);
+            for (EnfordProductArea area : areaList) {
+                statsAreaByYearAndMonth(area, year, month);
+            }
+        } else {
+            areaList = new ArrayList<EnfordProductArea>();
+            for (int id : areaIds) {
+                EnfordProductArea area = areaMapper.selectByPrimaryKey(id);
+                statsAreaByYearAndMonth(area, year, month);
                 areaList.add(area);
             }
         }

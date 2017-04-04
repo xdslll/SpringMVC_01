@@ -9,6 +9,7 @@ import com.demo.service.RoleService;
 import com.demo.util.Consts;
 import com.demo.util.FastJSONHelper;
 import com.demo.util.ResponseUtil;
+import com.demo.util.StringUtil;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -340,10 +341,17 @@ public class AreaController {
     @RequestMapping("/area/stats")
     public void getAreaStats(HttpServletRequest req, HttpServletResponse resp) {
         List<EnfordProductArea> areaList = null;
+        String year = req.getParameter("year");
+        String month = req.getParameter("month");
+        System.out.println("year=" + year + ",month=" + month);
         JSONObject result = new JSONObject();
         try {
             List<Integer> areaIds = getAreaIds(req);
-            areaList = areaService.getAreaStats(areaIds);
+            if (!StringUtil.isEmpty(year) && !StringUtil.isEmpty(month)) {
+                areaList = areaService.getAreaStatsByYearAndMonth(areaIds, year, month);
+            } else {
+                areaList = areaService.getAreaStats(areaIds);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
