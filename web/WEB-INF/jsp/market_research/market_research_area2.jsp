@@ -48,17 +48,24 @@
                 pageSize: 10,
                 pageList: [10, 15, 20],
                 pagination: false,
-                singleSelect: true
+                singleSelect: true,
+                nowrap: false
                 ">
         <thead>
             <tr>
-                <th data-options="field:'name'" width="15%">对应区域</th>
-                <th data-options="field:'countByMonth'" width="15%">当月档期</th>
-                <th data-options="field:'finishPercentByMonth'" width="15%">月度完成百分比</th>
-                <th data-options="field:'countByYear'" width="15%">年度累计</th>
-                <th data-options="field:'finishPercentByYear'" width="15%">年度完成百分比</th>
-                <th data-options="field:'cci'" width="15%">CCI</th>
-                <th data-options="field:'cost'" width="15%">投入</th>
+                <th data-options="field:'name'" width="10%">对应区域</th>
+                <th data-options="field:'countByMonth'" width="8%">当月累计(次)</th>
+                <th data-options="field:'codCountByMonth'" width="9%">当月需调研(件)</th>
+                <th data-options="field:'finishByMonth'" width="9%">当月已调研(件)</th>
+                <th data-options="field:'notFinishByMonth'" width="9%">当月未调研(件)</th>
+                <th data-options="field:'finishPercentByMonth'" width="8%">月完成百分比</th>
+                <th data-options="field:'countByYear'" width="8%">年度累计(次)</th>
+                <th data-options="field:'codCountByYear'" width="9%">年度需调研(件)</th>
+                <th data-options="field:'finishByYear'" width="9%">年度已调研(件)</th>
+                <th data-options="field:'notFinishByYear'" width="9%">年度未调研(件)</th>
+                <th data-options="field:'finishPercentByYear'" width="8%">年完成百分比</th>
+                <th data-options="field:'cci'" width="5%">CCI</th>
+                <th data-options="field:'cost'" width="5%">投入</th>
             </tr>
         </thead>
     </table>

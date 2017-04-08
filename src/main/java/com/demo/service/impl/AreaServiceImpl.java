@@ -3,10 +3,7 @@ package com.demo.service.impl;
 import com.demo.dao.EnfordMarketResearchDeptMapper;
 import com.demo.dao.EnfordProductAreaMapper;
 import com.demo.dao.EnfordProductDepartmentMapper;
-import com.demo.model.EnfordProductArea;
-import com.demo.model.EnfordProductCategory;
-import com.demo.model.EnfordProductDepartment;
-import com.demo.model.EnfordSystemUser;
+import com.demo.model.*;
 import com.demo.service.AreaService;
 import com.demo.service.CategoryService;
 import org.springframework.stereotype.Service;
@@ -290,30 +287,7 @@ public class AreaServiceImpl implements AreaService {
         String yearEnd = year + "-12-31";
         String monthBegin = year + "-" + month + "-1";
         String monthEnd = year + "-" + month + "-31";
-        //统计年度市调总数
-        Map<String, Object> param = new HashMap<String, Object>();
-        param.put("startDt", yearBegin);
-        param.put("endDt", yearEnd);
-        param.put("areaId", area.getId());
-        int countByYear = areaMapper.statsByParam(param);
-        area.setCountByYear(countByYear);
-        //统计年度市调总进度
-        int resPriceByYear = areaMapper.statsPriceByParam(param);
-        int resTotalByYear = areaMapper.statsTotalByParam(param);
-        String percentByYear = ((int) (((double) (resPriceByYear) / resTotalByYear) * 100)) + "%";
-        area.setFinishPercentByYear(percentByYear);
-        //统计月度市调总数
-        param.clear();
-        param.put("startDt", monthBegin);
-        param.put("endDt", monthEnd);
-        param.put("areaId", area.getId());
-        int countByMonth = areaMapper.statsByParam(param);
-        area.setCountByMonth(countByMonth);
-        //统计月度市调总进度
-        int resPriceByMonth = areaMapper.statsPriceByParam(param);
-        int resTotalByMonth = areaMapper.statsTotalByParam(param);
-        String percentByMonth = ((int) (((double) (resPriceByMonth) / resTotalByMonth) * 100)) + "%";
-        area.setFinishPercentByMonth(percentByMonth);
+        statsArea(yearBegin, yearEnd, monthBegin, monthEnd, area);
     }
 
     /**
@@ -328,6 +302,10 @@ public class AreaServiceImpl implements AreaService {
         String yearEnd = year + "-12-31";
         String monthBegin = year + "-" + month + "-1";
         String monthEnd = year + "-" + month + "-31";
+        statsArea(yearBegin, yearEnd, monthBegin, monthEnd, area);
+    }
+
+    private void statsArea(String yearBegin, String yearEnd, String monthBegin, String monthEnd, EnfordProductArea area) {
         //统计年度市调总数
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("startDt", yearBegin);
@@ -340,6 +318,9 @@ public class AreaServiceImpl implements AreaService {
         int resTotalByYear = areaMapper.statsTotalByParam(param);
         String percentByYear = ((int) (((double) (resPriceByYear) / resTotalByYear) * 100)) + "%";
         area.setFinishPercentByYear(percentByYear);
+        area.setFinishByYear(String.valueOf(resPriceByYear));
+        area.setNotFinishByYear(String.valueOf(resTotalByYear - resPriceByYear));
+        area.setCodCountByYear(String.valueOf(resTotalByYear));
         //统计月度市调总数
         param.clear();
         param.put("startDt", monthBegin);
@@ -352,6 +333,9 @@ public class AreaServiceImpl implements AreaService {
         int resTotalByMonth = areaMapper.statsTotalByParam(param);
         String percentByMonth = ((int) (((double) (resPriceByMonth) / resTotalByMonth) * 100)) + "%";
         area.setFinishPercentByMonth(percentByMonth);
+        area.setFinishByMonth(String.valueOf(resPriceByMonth));
+        area.setNotFinishByMonth(String.valueOf(resTotalByMonth - resPriceByMonth));
+        area.setCodCountByMonth(String.valueOf(resTotalByMonth));
     }
 
     /**
