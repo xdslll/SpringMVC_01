@@ -343,7 +343,7 @@ public class AreaController {
         List<EnfordProductArea> areaList = null;
         String year = req.getParameter("year");
         String month = req.getParameter("month");
-        System.out.println("year=" + year + ",month=" + month);
+        //System.out.println("year=" + year + ",month=" + month);
         JSONObject result = new JSONObject();
         try {
             List<Integer> areaIds = getAreaIds(req);
@@ -370,8 +370,14 @@ public class AreaController {
                              @RequestParam("areaId") int areaId) {
         JSONObject result = new JSONObject();
         List<EnfordProductDepartment> deptList = null;
+        String year = req.getParameter("year");
+        String month = req.getParameter("month");
         try {
-            deptList = areaService.getDeptStats(areaId);
+            if (!StringUtil.isEmpty(year) && !StringUtil.isEmpty(month)) {
+                deptList = areaService.getDeptStatsByYearAndMonth(areaId, year, month);
+            } else {
+                deptList = areaService.getDeptStats(areaId);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -398,5 +404,22 @@ public class AreaController {
         result.put("rows", catList);
         result.put("total", catList.size());
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(result));
+    }
+
+    @RequestMapping("/area/changeShow")
+    public void update(HttpServletRequest req, HttpServletResponse resp, int id, int ifShow) {
+        RespBody<String> respBody = new RespBody<String>();
+        try {
+            EnfordProductArea area = new EnfordProductArea();
+            area.setId(id);
+            area.setIfShow(ifShow == 0 ? 1 : 0);
+            int ret = areaService.updateArea(area);
+            ResponseUtil.checkResult(ret, "更新区域", respBody);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            respBody.setCode(Consts.FAILED);
+            respBody.setMsg("更新区域出错:" + ex.getMessage());
+        }
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
     }
 }

@@ -29,6 +29,7 @@
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove'" onclick="removeDlg()">删除</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-lock'" onclick="viewDlg()">查看已绑定门店</a>
     <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-link'" onclick="bindDlg()">查看未绑定门店</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-link'" onclick="ifShow()">是否加入统计</a>
 </div>
 <!=============================
     区域信息列表
@@ -57,7 +58,8 @@
                     ">
         <thead>
         <tr>
-            <th data-options="field:'name'" width="100%">区域名称</th>
+            <th data-options="field:'name'" width="50%">区域名称</th>
+            <th data-options="field:'ifShowText'" width="50%">是否加入统计</th>
         </tr>
         </thead>
     </table>
@@ -316,6 +318,34 @@
         var options = dg.datagrid('getPager').data("pagination").options;
         options.pageNumber = 1;
         dg.datagrid('reload');
+    }
+
+    function ifShow() {
+        var areaRow = $('#dg').datagrid('getSelected');
+        var areaIfShow = areaRow.ifShow;
+        var areaName = areaRow.name;
+        var areaId = areaRow.id;
+        var showText = '';
+        if (areaIfShow == 0) {
+            showText = '您是否确定将[' + areaName + ']区域取消统计?';
+        } else {
+            showText = '您是否确定将[' + areaName + ']区域j加入统计?';
+        }
+        if (areaRow) {
+            $.messager.confirm('确定', showText, function(r){
+                if (r){
+                    var url = "<%=request.getContextPath()%>/area/changeShow?id=" + areaId + "&ifShow=" + areaIfShow;
+                    $.get(url, function(result) {
+                        result = eval('('+result+')');
+                        if (result.code != '0') {
+                            $.messager.alert('操作失败', result.msg, 'error');
+                        } else {
+                            $('#dg').datagrid('reload');
+                        }
+                    })
+                }
+            });
+        }
     }
 
 </script>

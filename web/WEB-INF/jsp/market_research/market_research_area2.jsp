@@ -95,15 +95,21 @@
             fit: true
          ">
         <thead><tr>
-            <th data-options="field:'code'" width="11%">门店编码</th>
-            <th data-options="field:'name'" width="11%">门店名称</th>
-            <th data-options="field:'areaName'" width="11%">所属区域</th>
-            <th data-options="field:'countByMonth'" width="11%">当月档期</th>
-            <th data-options="field:'finishPercentByMonth'" width="11%">月度完成百分比</th>
-            <th data-options="field:'countByYear'" width="11%">年度累计</th>
-            <th data-options="field:'finishPercentByYear'" width="11%">年度完成百分比</th>
-            <th data-options="field:'cci'" width="11%">CCI</th>
-            <th data-options="field:'cost'" width="11%">投入</th>
+            <th data-options="field:'code'" width="8%">门店编码</th>
+            <th data-options="field:'name'" width="8%">门店名称</th>
+            <th data-options="field:'areaName'" width="8%">所属区域</th>
+            <th data-options="field:'countByMonth'" width="7%">当月累计</th>
+            <th data-options="field:'codCountByMonth'" width="7%">当月需调研</th>
+            <th data-options="field:'finishByMonth'" width="7%">当月已调研</th>
+            <th data-options="field:'notFinishByMonth'" width="7%">当月未调研</th>
+            <th data-options="field:'finishPercentByMonth'" width="8%">月完成百分比</th>
+            <th data-options="field:'countByYear'" width="7%">年度累计</th>
+            <th data-options="field:'codCountByYear'" width="7%">年度需调研</th>
+            <th data-options="field:'finishByYear'" width="7%">年度已调研</th>
+            <th data-options="field:'notFinishByYear'" width="7%">年度未调研</th>
+            <th data-options="field:'finishPercentByYear'" width="8%">年完成百分比</th>
+            <th data-options="field:'cci'" width="5%">CCI</th>
+            <th data-options="field:'cost'" width="5%">投入</th>
         </tr></thead>
     </table>
 </div>
@@ -160,6 +166,8 @@
             //设置datagrid请求参数
             var queryParams = dg.datagrid('options').queryParams;
             queryParams.areaId = row.id;
+            queryParams.year = year;
+            queryParams.month = month;
             dg.datagrid('options').queryParams = queryParams;
             dg.datagrid('reload');
             dg.datagrid('clearSelections');
@@ -174,6 +182,8 @@
             //设置datagrid请求参数
             var queryParams = dg.datagrid('options').queryParams;
             queryParams.areaId = row.id;
+            queryParams.year = year;
+            queryParams.month = month;
             dg.datagrid('options').queryParams = queryParams;
             dg.datagrid('reload');
             dg.datagrid('clearSelections');
@@ -214,10 +224,12 @@
         }
     });
 
+    var year, month;
+
     function onSelect(date){
         //$('#dt').text(date);
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
+        year = date.getFullYear();
+        month = date.getMonth() + 1;
         var dg = $('#dg');
         //设置datagrid请求参数
         var queryParams = dg.datagrid('options').queryParams;

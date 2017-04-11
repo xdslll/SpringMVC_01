@@ -186,7 +186,16 @@ public class AreaServiceImpl implements AreaService {
 
     @Override
     public List<EnfordProductArea> getArea(Map<String, Object> param) {
-        return areaMapper.selectByParam(param);
+        List<EnfordProductArea> areaList = areaMapper.selectByParam(param);
+        for (EnfordProductArea area : areaList) {
+            int ifShow = area.getIfShow();
+            if (ifShow == 0) {
+                area.setIfShowText("显示");
+            } else {
+                area.setIfShowText("不显示");
+            }
+        }
+        return areaList;
     }
 
     @Override
@@ -291,7 +300,7 @@ public class AreaServiceImpl implements AreaService {
     }
 
     /**
-     * 三期功能:通过年月和区域进行统计
+     * 三期功能:通过年月和区域进行统计区域
      *
      * @param area
      * @param year
@@ -305,6 +314,15 @@ public class AreaServiceImpl implements AreaService {
         statsArea(yearBegin, yearEnd, monthBegin, monthEnd, area);
     }
 
+    /**
+     * 三期功能:
+     *
+     * @param yearBegin
+     * @param yearEnd
+     * @param monthBegin
+     * @param monthEnd
+     * @param area
+     */
     private void statsArea(String yearBegin, String yearEnd, String monthBegin, String monthEnd, EnfordProductArea area) {
         //统计年度市调总数
         Map<String, Object> param = new HashMap<String, Object>();
@@ -339,6 +357,21 @@ public class AreaServiceImpl implements AreaService {
     }
 
     /**
+     * 三期功能:通过年月和区域进行统计部门
+     *
+     * @param dept
+     * @param year
+     * @param month
+     */
+    private void statsDeptByYearAndMonth(EnfordProductDepartment dept, String year, String month) {
+        String yearBegin = year + "-1-1";
+        String yearEnd = year + "-12-31";
+        String monthBegin = year + "-" + month + "-1";
+        String monthEnd = year + "-" + month + "-31";
+        statsDept(yearBegin, yearEnd, monthBegin, monthEnd, dept);
+    }
+
+    /**
      * 三期功能:统计部门市调进度
      *
      * @param dept
@@ -351,6 +384,10 @@ public class AreaServiceImpl implements AreaService {
         String yearEnd = year + "-12-31";
         String monthBegin = year + "-" + month + "-1";
         String monthEnd = year + "-" + month + "-31";
+        statsDept(yearBegin, yearEnd, monthBegin, monthEnd, dept);
+    }
+
+    private void statsDept(String yearBegin, String yearEnd, String monthBegin, String monthEnd, EnfordProductDepartment dept) {
         //统计年度市调总数
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("startDt", yearBegin);
@@ -363,6 +400,9 @@ public class AreaServiceImpl implements AreaService {
         int resTotalByYear = areaMapper.statsTotalByParam(param);
         String percentByYear = ((int) (((double) (resPriceByYear) / resTotalByYear) * 100)) + "%";
         dept.setFinishPercentByYear(percentByYear);
+        dept.setFinishByYear(String.valueOf(resPriceByYear));
+        dept.setNotFinishByYear(String.valueOf(resTotalByYear - resPriceByYear));
+        dept.setCodCountByYear(String.valueOf(resTotalByYear));
         //统计月度市调总数
         param.clear();
         param.put("startDt", monthBegin);
@@ -375,6 +415,9 @@ public class AreaServiceImpl implements AreaService {
         int resTotalByMonth = areaMapper.statsTotalByParam(param);
         String percentByMonth = ((int) (((double) (resPriceByMonth) / resTotalByMonth) * 100)) + "%";
         dept.setFinishPercentByMonth(percentByMonth);
+        dept.setFinishByMonth(String.valueOf(resPriceByMonth));
+        dept.setNotFinishByMonth(String.valueOf(resTotalByMonth - resPriceByMonth));
+        dept.setCodCountByMonth(String.valueOf(resTotalByMonth));
     }
 
     /**
@@ -388,15 +431,23 @@ public class AreaServiceImpl implements AreaService {
         List<EnfordProductArea> areaList;
         if (areaIds.size() == 1 && areaIds.get(0) == 0) {
             areaList = areaMapper.selectByParam(null);
-            for (EnfordProductArea area : areaList) {
-                statsArea(area);
+            Iterator<EnfordProductArea> it = areaList.iterator();
+            while (it.hasNext()) {
+                EnfordProductArea area = it.next();
+                if (area.getIfShow() != 0) {
+                    it.remove();
+                } else {
+                    statsArea(area);
+                }
             }
         } else {
             areaList = new ArrayList<EnfordProductArea>();
             for (int id : areaIds) {
                 EnfordProductArea area = areaMapper.selectByPrimaryKey(id);
-                statsArea(area);
-                areaList.add(area);
+                if (area.getIfShow() == 0) {
+                    statsArea(area);
+                    areaList.add(area);
+                }
             }
         }
         return areaList;
@@ -415,15 +466,23 @@ public class AreaServiceImpl implements AreaService {
         List<EnfordProductArea> areaList;
         if (areaIds.size() == 1 && areaIds.get(0) == 0) {
             areaList = areaMapper.selectByParam(null);
-            for (EnfordProductArea area : areaList) {
-                statsAreaByYearAndMonth(area, year, month);
+            Iterator<EnfordProductArea> it = areaList.iterator();
+            while (it.hasNext()) {
+                EnfordProductArea area = it.next();
+                if (area.getIfShow() != 0) {
+                    it.remove();
+                } else {
+                    statsAreaByYearAndMonth(area, year, month);
+                }
             }
         } else {
             areaList = new ArrayList<EnfordProductArea>();
             for (int id : areaIds) {
                 EnfordProductArea area = areaMapper.selectByPrimaryKey(id);
-                statsAreaByYearAndMonth(area, year, month);
-                areaList.add(area);
+                if (area.getIfShow() == 0) {
+                    statsAreaByYearAndMonth(area, year, month);
+                    areaList.add(area);
+                }
             }
         }
         return areaList;
@@ -444,6 +503,20 @@ public class AreaServiceImpl implements AreaService {
         deptList = deptMapper.selectByParam(param);
         for (EnfordProductDepartment dept: deptList) {
             statsDept(dept);
+            dept.setAreaName(area.getName());
+        }
+        return deptList;
+    }
+
+    @Override
+    public List<EnfordProductDepartment> getDeptStatsByYearAndMonth(int areaId, String year, String month) {
+        List<EnfordProductDepartment> deptList;
+        EnfordProductArea area = areaMapper.selectByPrimaryKey(areaId);
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("areaId", areaId);
+        deptList = deptMapper.selectByParam(param);
+        for (EnfordProductDepartment dept: deptList) {
+            statsDeptByYearAndMonth(dept, year, month);
             dept.setAreaName(area.getName());
         }
         return deptList;

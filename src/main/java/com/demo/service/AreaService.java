@@ -53,4 +53,6 @@ public interface AreaService {
     List<EnfordProductCategory> getCatStats(int areaId);
 
     List<EnfordProductArea> getAreaStatsByYearAndMonth(List<Integer> areaIds, String year, String month);
+
+    List<EnfordProductDepartment> getDeptStatsByYearAndMonth(int areaId, String year, String month);
 }
