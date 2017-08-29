@@ -109,6 +109,9 @@ public class RoleServiceImpl implements RoleService {
             int menuId = roleMenu.getMenuId();
             //获取菜单对象
             EnfordSystemMenu menu = menuMapper.selectById(menuId);
+            if (menu == null) {
+                System.out.println("menu is null");
+            }
             //获取父菜单的id
             int parentId = menu.getParent();
             //获取父菜单

@@ -1,6 +1,7 @@
 package com.demo.web.system;
 
 import com.demo.model.RespBody;
+import com.demo.service.RoleService;
 import com.demo.util.Consts;
 import com.demo.util.FastJSONHelper;
 import com.demo.util.ResponseUtil;
@@ -26,6 +27,9 @@ public class MenuController {
 
     @Resource
     private MenuService menuService;
+
+    @Resource
+    private RoleService roleService;
 
     @RequestMapping(value = "/menu/get")
     public void getMenu(HttpServletRequest req, HttpServletResponse resp) {
@@ -94,7 +98,10 @@ public class MenuController {
     public void deleteMenu(HttpServletRequest req, HttpServletResponse resp, int menuId) {
         RespBody<String> respBody = new RespBody<String>();
         try {
+            //删除菜单
             menuService.deleteMenu(menuId);
+            //删除菜单和角色的关联
+            
             respBody.setCode(Consts.SUCCESS);
             respBody.setMsg("删除菜单成功！");
         }

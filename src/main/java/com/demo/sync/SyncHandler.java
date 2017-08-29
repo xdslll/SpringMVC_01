@@ -240,6 +240,11 @@ public class SyncHandler implements Consts {
             System.out.println("当前时间:" + now);
 
             for (com.demo.model.EnfordMarketResearch research : researchList) {
+
+                if (research.getId() != 8020) {
+                    continue;
+                }
+
                 int state = research.getState();
                 Date startDt = research.getStartDt();
                 Date endDt = research.getEndDt();
@@ -299,6 +304,7 @@ public class SyncHandler implements Consts {
                                 researchBill.setConfirmManName("管理员");
                             }
                             researchBill.setConfirmDate(sdf.format(now));
+                            //researchBill.setLastConfirmDate(sdf.format(now));
 
                             //判断市调状态,如果为APP上传
                             if (confirmType == RESEARCH_CONFIRM_TYPE_APP) {
@@ -321,8 +327,12 @@ public class SyncHandler implements Consts {
                             System.out.println(researchBill.toString());
                             //将数据回写到SQLServer服务器
                             try {
-                                SQLServerHandler sqlServerHandler = new SQLServerHandler();
-                                sqlServerHandler.setResearchConfirmed(researchBill);
+                                if (confirmType == RESEARCH_CONFIRM_TYPE_APP
+                                        || confirmType == RESEARCH_CONFIRM_TYPE_EMPTY) {
+                                    SQLServerHandler sqlServerHandler = new SQLServerHandler();
+                                    sqlServerHandler.setResearchConfirmed(researchBill);
+                                    research.setConfirmType(RESEARCH_CONFIRM_TYPE_SYSTEM);
+                                }
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }

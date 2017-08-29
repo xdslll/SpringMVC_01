@@ -138,6 +138,7 @@ public class RoleController {
             menuList = roleService.getMenusByRoleId(roleId);
         }
         catch (Exception ex) {
+            ex.printStackTrace();
             logger.error("exception occured when getMenu:" + ex);
         }
         ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(menuList));
