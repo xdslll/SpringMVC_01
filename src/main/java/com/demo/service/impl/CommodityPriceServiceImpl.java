@@ -140,6 +140,8 @@ public class CommodityPriceServiceImpl implements CommodityPriceService, Consts 
             return sqlServerHandler.addPrice(price);
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return 0;
     }

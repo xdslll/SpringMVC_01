@@ -61,4 +61,6 @@ public interface EnfordMarketResearchMapper {
     int countByParam(Map<String, Object> param);
 
     List<EnfordMarketResearch> selectByParam2(Map<String, Object> param);
+
+    List<EnfordMarketResearch> selectNotClosed();
 }

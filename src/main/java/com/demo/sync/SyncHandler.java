@@ -1,9 +1,6 @@
 package com.demo.sync;
 
-import com.demo.dao.EnfordMarketResearchDeptMapper;
-import com.demo.dao.EnfordMarketResearchMapper;
-import com.demo.dao.EnfordProductPriceMapper;
-import com.demo.dao.EnfordSystemUserMapper;
+import com.demo.dao.*;
 import com.demo.model.*;
 import com.demo.model.EnfordMarketResearch;
 import com.demo.model.EnfordMarketResearchDept;
@@ -14,6 +11,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -110,7 +108,7 @@ public class SyncHandler implements Consts {
         System.out.println("市调商品同步成功");
     }
 
-    private void sync() throws SQLException {
+    private void sync() throws SQLException, ClassNotFoundException {
         SQLServerHandler sqlServerHandler = new SQLServerHandler();
         Connection conn = sqlServerHandler.connectToSQLServer();
         if (conn != null) {
@@ -161,7 +159,8 @@ public class SyncHandler implements Consts {
     public void refreshData(EnfordMarketResearchMapper researchMapper,
                             EnfordMarketResearchDeptMapper researchDeptMapper,
                             EnfordSystemUserMapper userMapper,
-                            EnfordProductPriceMapper priceMapper) {
+                            EnfordProductPriceMapper priceMapper,
+                            EnfordSyncLogMapper syncLogMapper) {
         System.out.println("==================开始刷新市调清单状态");
         /*
         Map<String, Object> param = new HashMap<String, Object>();
@@ -204,7 +203,7 @@ public class SyncHandler implements Consts {
         try {
             if (CAN_REFRESH) {
                 CAN_REFRESH = false;
-                refreshData2(researchMapper, researchDeptMapper, userMapper, priceMapper);
+                refreshData2(researchMapper, researchDeptMapper, userMapper, priceMapper, syncLogMapper);
                 CAN_REFRESH = true;
             } else {
                 System.out.println("==================刷新中,请耐心等候!");
@@ -219,147 +218,205 @@ public class SyncHandler implements Consts {
 
     /**
      * 三期,刷新状态功能
-     *  @param researchMapper
+     * @param researchMapper
      * @param researchDeptMapper
      * @param userMapper
+     * @param syncLogMapper
      */
     private void refreshData2(EnfordMarketResearchMapper researchMapper,
                               EnfordMarketResearchDeptMapper researchDeptMapper,
                               EnfordSystemUserMapper userMapper,
-                              EnfordProductPriceMapper priceMapper) {
+                              EnfordProductPriceMapper priceMapper,
+                              EnfordSyncLogMapper syncLogMapper) {
         try {
-            Map<String, Object> param = new HashMap<String, Object>();
-            param.put("status", -1);
-            List<com.demo.model.EnfordMarketResearch> researchList = researchMapper.selectByParam(param);
+            //查询需要更新状态的市调清单，对于已经关闭且上传过的单据无需更新
+            List<com.demo.model.EnfordMarketResearch> researchList = searchMarketResearch(researchMapper);
+            //刷新市调清单列表
+            refreshMarketResearchList(researchList, researchMapper, researchDeptMapper, userMapper, priceMapper, syncLogMapper);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
-            Date now = new Date();
-            //只比较年月日
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-            now = sdf.parse(sdf.format(now));
-            long nowLong = now.getTime();
-            System.out.println("当前时间:" + now);
+    private void refreshMarketResearchList(List<EnfordMarketResearch> researchList,
+                                           EnfordMarketResearchMapper researchMapper,
+                                           EnfordMarketResearchDeptMapper researchDeptMapper,
+                                           EnfordSystemUserMapper userMapper,
+                                           EnfordProductPriceMapper priceMapper,
+                                           EnfordSyncLogMapper syncLogMapper) throws ParseException {
 
-            for (com.demo.model.EnfordMarketResearch research : researchList) {
+        //生成解析器,只比较年月日
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        //获取当前时间
+        Date now = new Date();
+        //解析当前时间
+        now = sdf.parse(sdf.format(now));
 
-                if (research.getId() != 8020) {
-                    continue;
+        for (com.demo.model.EnfordMarketResearch research : researchList) {
+            refreshMarketResearch(research, sdf, now, researchMapper, researchDeptMapper, userMapper, priceMapper, syncLogMapper);
+        }
+    }
+
+    private void refreshMarketResearch(EnfordMarketResearch research,
+                                       SimpleDateFormat sdf,
+                                       Date now,
+                                       EnfordMarketResearchMapper researchMapper,
+                                       EnfordMarketResearchDeptMapper researchDeptMapper,
+                                       EnfordSystemUserMapper userMapper,
+                                       EnfordProductPriceMapper priceMapper,
+                                       EnfordSyncLogMapper syncLogMapper) throws ParseException {
+        //设定通用参数
+        Map<String, Object> param = new HashMap<String, Object>();
+        //判断起始时间
+        Date startDt = research.getStartDt();
+        Date endDt = research.getEndDt();
+        if (startDt == null || endDt == null) return;
+
+        //获取状态
+        int state = research.getState();
+        //解析市调清单的起止时间
+        startDt = sdf.parse(sdf.format(startDt));
+        endDt = sdf.parse(sdf.format(endDt));
+        long startLong = startDt.getTime();
+        long endLong = endDt.getTime();
+        //解析当前时间
+        long nowLong = now.getTime();
+        String nowString = sdf.format(now);
+        //如果状态为已发布
+        if (state == RESEARCH_STATE_HAVE_PUBLISHED) {
+            //市调已经开始,但未结束,则将状态置为已开始
+            if (startLong <= nowLong && nowLong <= endLong) {
+                research.setState(RESEARCH_STATE_HAVE_STARTED);
+                researchMapper.updateByPrimaryKeySelective(research);
+            }
+            //如果已到达结束时间,则将状态置为已结束
+            else if (nowLong > endLong) {
+                research.setState(RESEARCH_STATE_HAVE_FINISHED);
+                researchMapper.updateByPrimaryKeySelective(research);
+            }
+        } else if (state == RESEARCH_STATE_HAVE_STARTED) {
+            //判断市调是否结束
+            if (nowLong > endLong) {
+                research.setState(RESEARCH_STATE_HAVE_FINISHED);
+                researchMapper.updateByPrimaryKeySelective(research);
+            }
+        } else if (state == RESEARCH_STATE_HAVE_FINISHED) {
+            //获取确认状态
+            int confirmType = research.getConfirmType();
+            if (confirmType == RESEARCH_CONFIRM_TYPE_SYSTEM) {
+                System.out.println("市调[" + research.getBillNumber() + "]数据已经回传");
+            } else {
+                //记录同步日志
+                EnfordSyncLog syncLog = new EnfordSyncLog();
+                syncLog.setResId(research.getId());
+                syncLog.setBillNumber(research.getBillNumber());
+                syncLog.setBeforeState(research.getState());
+                syncLog.setBeforeConfirmType(research.getConfirmType());
+                syncLog.setSyncDt(new Date());
+
+                //如果市调已经结束,则写入服务器
+                System.out.println("市调[" + research.getBillNumber() + "]开始执行回传程序");
+                //获取市调部门
+                int resId = research.getId();
+                param.clear();
+                param.put("resId", resId);
+                List<com.demo.model.EnfordMarketResearchDept> marketResearchDeptList =
+                        researchDeptMapper.selectByParam(param);
+                if (marketResearchDeptList != null && marketResearchDeptList.size() > 0) {
+                    EnfordMarketResearchDept researchDept = marketResearchDeptList.get(0);
+                    syncMarketResearchToSQL(researchDept, param, userMapper, nowString,
+                            confirmType, research, priceMapper, researchMapper, syncLog);
+                } else {
+                    research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
+                    researchMapper.updateByPrimaryKeySelective(research);
                 }
 
-                int state = research.getState();
-                Date startDt = research.getStartDt();
-                Date endDt = research.getEndDt();
-                if (startDt != null && endDt != null) {
-                    startDt = sdf.parse(sdf.format(startDt));
-                    endDt = sdf.parse(sdf.format(endDt));
-                    long startLong = startDt.getTime();
-                    long endLong = endDt.getTime();
-                    if (state == RESEARCH_STATE_HAVE_PUBLISHED) {
-                        //市调已经开始,但未结束,则将状态置为已开始
-                        if (startLong <= nowLong && nowLong <= endLong) {
-                            research.setState(RESEARCH_STATE_HAVE_STARTED);
-                            researchMapper.updateByPrimaryKeySelective(research);
-                        } else if (nowLong > endLong) {
-                            research.setState(RESEARCH_STATE_HAVE_FINISHED);
-                            researchMapper.updateByPrimaryKeySelective(research);
-                        }
-                    } else if (state == RESEARCH_STATE_HAVE_STARTED) {
-                        //判断市调是否结束
-                        if (nowLong > endLong) {
-                            research.setState(RESEARCH_STATE_HAVE_FINISHED);
-                            researchMapper.updateByPrimaryKeySelective(research);
-                        }
-                    } else if (state == RESEARCH_STATE_HAVE_FINISHED) {
-                        int confirmType = research.getConfirmType();
-                        /*if (confirmType == RESEARCH_CONFIRM_TYPE_SYSTEM ||
-                                confirmType == RESEARCH_CONFIRM_TYPE_ERROR ||
-                                confirmType == RESEARCH_CONFIRM_TYPE_APP ||
-                                confirmType == RESEARCH_CONFIRM_TYPE_APP_MISTAKE) {
-                            System.out.println("市调[" + research.getBillNumber() + "]数据已经回传");
-                        } else {*/
-                        //如果市调已经结束,则写入服务器
-                        System.out.println("市调[" + research.getBillNumber() + "]开始执行回传程序");
-                        //获取市调部门
-                        int resId = research.getId();
-                        param.clear();
-                        param.put("resId", resId);
-                        List<EnfordMarketResearchDept> marketResearchDeptList =
-                                researchDeptMapper.selectByParam(param);
-                        if (marketResearchDeptList != null && marketResearchDeptList.size() > 0) {
-                            EnfordMarketResearchDept researchDept = marketResearchDeptList.get(0);
-                            param.clear();
-                            param.put("deptId", researchDept.getExeId());
-                            List<EnfordSystemUser> userList = userMapper.selectByParam(param);
-                            MarketResearchBill researchBill = new MarketResearchBill();
-                            if (userList != null && userList.size() > 0) {
-                                researchBill.setConfirmManCode(userList.get(0).getUsername());
-                                researchBill.setConfirmManName(userList.get(0).getUsername());
+                syncLog.setAfterState(RESEARCH_STATE_HAVE_FINISHED);
+                syncLogMapper.insert(syncLog);
+            }
+        } else if (state == RESEARCH_STATE_CANCELED) {
+            research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
+            researchMapper.updateByPrimaryKeySelective(research);
+        } else {
+            research.setState(RESEARCH_STATE_CANCELED);
+            research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
+            researchMapper.updateByPrimaryKeySelective(research);
+        }
+    }
+
+    private void syncMarketResearchToSQL(EnfordMarketResearchDept researchDept,
+                                         Map<String, Object> param,
+                                         EnfordSystemUserMapper userMapper,
+                                         String nowString,
+                                         int confirmType,
+                                         EnfordMarketResearch research,
+                                         EnfordProductPriceMapper priceMapper,
+                                         EnfordMarketResearchMapper researchMapper,
+                                         EnfordSyncLog syncLog) {
+        param.clear();
+        param.put("deptId", researchDept.getExeId());
+        List<EnfordSystemUser> userList = userMapper.selectByParam(param);
+        MarketResearchBill researchBill = new MarketResearchBill();
+        if (userList != null && userList.size() > 0) {
+            researchBill.setConfirmManCode(userList.get(0).getUsername());
+            researchBill.setConfirmManName(userList.get(0).getUsername());
                             /*String name = userList.get(0).getName();
                             if (name == null || name.equals("")) {
                                 researchBill.setConfirmManName(userList.get(0).getUsername());
                             } else {
                                 researchBill.setConfirmManName(name);
                             }*/
-                            } else {
-                                researchBill.setConfirmManCode("888888");
-                                researchBill.setConfirmManName("管理员");
-                            }
-                            researchBill.setConfirmDate(sdf.format(now));
-                            //researchBill.setLastConfirmDate(sdf.format(now));
+        } else {
+            researchBill.setConfirmManCode("888888");
+            researchBill.setConfirmManName("管理员");
+        }
+        researchBill.setConfirmDate(nowString);
+        //researchBill.setLastConfirmDate(sdf.format(now));
 
-                            //判断市调状态,如果为APP上传
-                            if (confirmType == RESEARCH_CONFIRM_TYPE_APP) {
-                                if(checkPriceEmpty(research, priceMapper)) {
-                                    //researchBill.setState(BILL_RESEARCH_PHONE_MISTAKE);
-                                    researchBill.setState(BILL_RESEARCH_EMPTY);
-                                    //research.setConfirmType(RESEARCH_CONFIRM_TYPE_APP_MISTAKE);
-                                    research.setConfirmType(RESEARCH_CONFIRM_TYPE_EMPTY);
-                                } else {
-                                    researchBill.setState(BILL_RESEARCH_PHONE);
-                                }
-                            } else {
-                                researchBill.setState(BILL_RESEARCH_EMPTY);
-                                //research.setConfirmType(RESEARCH_CONFIRM_TYPE_SYSTEM);
-                                research.setConfirmType(RESEARCH_CONFIRM_TYPE_EMPTY);
-                            }
+        //判断是否有价格,有价格返回1,没价格返回4,不考虑从手机确认还是系统确认
+        if (checkPriceEmpty(research, priceMapper)) {
+            syncLog.setHasPrice(0);
+            syncLog.setAfterConfirmType(RESEARCH_CONFIRM_TYPE_EMPTY);
+            researchBill.setState(BILL_RESEARCH_EMPTY);
+            research.setConfirmType(RESEARCH_CONFIRM_TYPE_EMPTY);
+        } else {
+            syncLog.setHasPrice(1);
+            syncLog.setAfterConfirmType(RESEARCH_CONFIRM_TYPE_SYSTEM);
+            researchBill.setState(BILL_RESEARCH_PHONE);
+            research.setConfirmType(RESEARCH_CONFIRM_TYPE_SYSTEM);
+        }
 
-                            researchBill.setBillNumber(research.getBillNumber());
-                            System.out.println(research.toString());
-                            System.out.println(researchBill.toString());
-                            //将数据回写到SQLServer服务器
-                            try {
-                                if (confirmType == RESEARCH_CONFIRM_TYPE_APP
-                                        || confirmType == RESEARCH_CONFIRM_TYPE_EMPTY) {
-                                    SQLServerHandler sqlServerHandler = new SQLServerHandler();
-                                    sqlServerHandler.setResearchConfirmed(researchBill);
-                                    research.setConfirmType(RESEARCH_CONFIRM_TYPE_SYSTEM);
-                                }
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                            //更新确认状态为系统确认
-                            researchMapper.updateByPrimaryKey(research);
-                        } else {
-                            research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
-                            researchMapper.updateByPrimaryKeySelective(research);
-                        }
-                        //}
-                    } else if (state == RESEARCH_STATE_CANCELED){
-                        research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
-                        researchMapper.updateByPrimaryKeySelective(research);
-                    } else {
-                        research.setState(RESEARCH_STATE_CANCELED);
-                        research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
-                        researchMapper.updateByPrimaryKeySelective(research);
-                    }
-                } else {
-                    research.setState(RESEARCH_STATE_CANCELED);
-                    research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
-                    researchMapper.updateByPrimaryKeySelective(research);
-                }
+        researchBill.setBillNumber(research.getBillNumber());
+        //System.out.println(research.toString());
+        //System.out.println(researchBill.toString());
+        //将数据回写到SQLServer服务器
+        try {
+            if (researchBill.getState() == BILL_RESEARCH_EMPTY ||
+                    researchBill.getState() == BILL_RESEARCH_PHONE) {
+                SQLServerHandler sqlServerHandler = new SQLServerHandler();
+                sqlServerHandler.setResearchConfirmed(researchBill);
+                syncLog.setSyncResult(1);
+            } else {
+                syncLog.setSyncResult(0);
             }
+            researchMapper.updateByPrimaryKey(research);
         } catch (Exception ex) {
+            research.setConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
+            researchMapper.updateByPrimaryKey(research);
+            syncLog.setSyncResult(-1);
+            syncLog.setAfterConfirmType(RESEARCH_CONFIRM_TYPE_ERROR);
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * 查询需要更新的市调清单
+     *
+     * @param researchMapper
+     * @return
+     */
+    private List<EnfordMarketResearch> searchMarketResearch(EnfordMarketResearchMapper researchMapper) {
+        return researchMapper.selectNotClosed();
     }
 
     /**

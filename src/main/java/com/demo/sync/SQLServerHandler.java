@@ -54,11 +54,11 @@ public class SQLServerHandler implements Consts {
             + sqlServerPort + ";DatabaseName=" + sqlServerDatabaseName;
 
 
-    public Connection connectToSQLServer() {
+    public Connection connectToSQLServer() throws ClassNotFoundException, SQLException {
         //System.out.println("数据库连接字符串:" + dbURL);
         //System.out.println("用户名:" + userName);
         //System.out.println("密码:" + userPwd);
-        try {
+        /*try {
             Class.forName(sqlServerDriverName);
             Connection conn= DriverManager.getConnection(
                     sqlServerDbURL, sqlServerUserName, sqlServerPwd);
@@ -70,7 +70,13 @@ public class SQLServerHandler implements Consts {
             e.printStackTrace();
             System.out.print("连接SQL Server数据库失败");
         }
-        return null;
+        return null;*/
+        Class.forName(sqlServerDriverName);
+        Connection conn= DriverManager.getConnection(
+                sqlServerDbURL, sqlServerUserName, sqlServerPwd);
+
+        System.out.println("连接SQL Server数据库成功");
+        return conn;
     }
 
     public List<MRPlanBill> syncMRPlanBill(Statement statement) {
@@ -351,7 +357,7 @@ public class SQLServerHandler implements Consts {
         //return mrCompetitorPriceList;
     }
 
-    public int addPrice(EnfordProductPrice price) throws SQLException {
+    public int addPrice(EnfordProductPrice price) throws SQLException, ClassNotFoundException {
         Connection conn = connectToSQLServer();
         if (conn != null) {
             //插入价格信息
@@ -386,7 +392,7 @@ public class SQLServerHandler implements Consts {
         return bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
-    public int setResearchConfirmed(MarketResearchBill researchBill) throws SQLException {
+    public int setResearchConfirmed(MarketResearchBill researchBill) throws SQLException, ClassNotFoundException {
         String updateSql = "UPDATE tbMarketResearchBill SET " +
                 MarketResearchBill.colConfirmManCode + "='" + researchBill.getConfirmManCode() + "'," +
                 MarketResearchBill.colConfirmManName + "='" + researchBill.getConfirmManName() + "'," +

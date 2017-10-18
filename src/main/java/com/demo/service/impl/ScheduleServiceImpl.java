@@ -1,9 +1,6 @@
 package com.demo.service.impl;
 
-import com.demo.dao.EnfordMarketResearchDeptMapper;
-import com.demo.dao.EnfordMarketResearchMapper;
-import com.demo.dao.EnfordProductPriceMapper;
-import com.demo.dao.EnfordSystemUserMapper;
+import com.demo.dao.*;
 import com.demo.model.EnfordMarketResearch;
 import com.demo.model.EnfordSystemLog;
 import com.demo.service.LogService;
@@ -38,6 +35,9 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
 
     @Resource
     EnfordProductPriceMapper priceMapper;
+
+    @Resource
+    EnfordSyncLogMapper syncLogMapper;
 
     @Resource
     LogService logService;
@@ -94,7 +94,7 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
         log.setStart(new Date());
         long start = System.currentTimeMillis();
         try {
-            syncHandler.refreshData(researchMapper, researchDeptMapper, userMapper, priceMapper);
+            syncHandler.refreshData(researchMapper, researchDeptMapper, userMapper, priceMapper, syncLogMapper);
             //写入日志数据
             log.setResult(LOG_RESULT_SUCCESS);
             log.setEnd(new Date());

@@ -232,7 +232,7 @@
   <select id="countByParam" resultType="java.lang.Integer">
     select
     count(*)
-    from enford_market_research
+    from enford_market_recountByParamsearch
     where 1=1
     <if test="status != -1">
       and state = #{status,jdbcType=INTEGER}
@@ -254,5 +254,15 @@
     <if test="page != null and pageSize != null">
       limit #{page,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
     </if>
+  </select>
+  <select id="selectNotClosed" resultType="com.demo.model.EnfordMarketResearch">
+    select
+    <include refid="Base_Column_List" />
+    from enford_market_research
+    where
+    (state!=2 or (confirm_type!=1))
+    and
+    (state!=2 or (confirm_type!=4))
+    order by id desc
   </select>
 </mapper>
