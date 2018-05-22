@@ -165,7 +165,7 @@ public class DataImportController {
                         fileName = fileName.substring(0, fileName.lastIndexOf(".xls"));
                     }
                     File storeFile = new File(Config.getUploadFilePath() + storeFileName + endPrex);
-                    System.out.println("upload file: " + storeFile.toString());
+                    // System.out.println("upload file: " + storeFile.toString());
                     if (!storeFile.exists()) {
                         storeFile.createNewFile();
                     }

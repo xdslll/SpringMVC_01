@@ -41,7 +41,7 @@ public class EncryptUtil {
             md.update(bt);
             strDes = bytes2Hex(md.digest());  //to HexString
         } catch (NoSuchAlgorithmException e) {
-            System.out.println("Invalid algorithm.");
+            // System.out.println("Invalid algorithm.");
             return null;
         }
         return strDes;

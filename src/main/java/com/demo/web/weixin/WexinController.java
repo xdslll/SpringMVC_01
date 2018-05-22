@@ -34,9 +34,9 @@ public class WexinController implements Consts {
         Iterator<Map.Entry> it = set.iterator();
         while (it.hasNext()) {
             Map.Entry entry = it.next();
-            System.out.println("------------------------");
-            System.out.println(entry.getKey().toString() + "=" + entry.getValue().toString());
-            System.out.println("------------------------");
+            // System.out.println("------------------------");
+            // System.out.println(entry.getKey().toString() + "=" + entry.getValue().toString());
+            // System.out.println("------------------------");
         }
         /*try {
             String echostr = req.getParameter("echostr");
@@ -63,9 +63,9 @@ public class WexinController implements Consts {
     private boolean checkSignature(String[] array, String signature) {
         Arrays.sort(array);
         String sortStr = array[0] + array[1] + array[2];
-        System.out.println("origin: " + sortStr);
+        // System.out.println("origin: " + sortStr);
         String sign = EncryptUtil.encrypt(sortStr, "SHA-1");
-        System.out.println("SHA1: " + sign);
+        // System.out.println("SHA1: " + sign);
         if (sign != null && sign.equals(signature)) {
             return true;
         } else {

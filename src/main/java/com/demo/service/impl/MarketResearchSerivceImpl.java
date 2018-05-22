@@ -660,8 +660,8 @@ public class MarketResearchSerivceImpl implements MarketResearchSerivce, Consts 
                         for (int j = 1; j <= 6; j++) {
                             String empName = deptName + "0" + j;
                             String empCode = deptCode + "0" + j;
-                            System.out.println("部门编号:" + deptCode);
-                            System.out.println("员工姓名:" + empName);
+                            // System.out.println("部门编号:" + deptCode);
+                            // System.out.println("员工姓名:" + empName);
                             //System.out.println("员工工号:" + empCode);
                             EnfordSystemUser user = new EnfordSystemUser();
                             user.setName(empName);

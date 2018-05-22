@@ -94,7 +94,7 @@ public final class WeixinHelper implements Consts {
             while ((line = reader.readLine()) != null) {
                 result += line;
             }
-            System.out.println("response --> " + result);
+            // System.out.println("response --> " + result);
             reader.close();
             return result;
         } else {
@@ -326,7 +326,7 @@ public final class WeixinHelper implements Consts {
         WeixinMenuButton menu = createMenuButton();
 
         String json = FastJSONHelper.serialize(menu);
-        System.out.println(json);
+        // System.out.println(json);
 
         StringEntity entity = new StringEntity(json, "UTF-8");
         entity.setContentEncoding("UTF-8");

@@ -263,6 +263,8 @@
     (state!=2 or (confirm_type!=1))
     and
     (state!=2 or (confirm_type!=4))
+    and
+    (state!=2 or (confirm_type!=-1))
     order by id desc
   </select>
 </mapper>

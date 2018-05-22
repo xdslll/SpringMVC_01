@@ -49,7 +49,7 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
     @Scheduled(cron = "0 0/60 * * * ?")
     @Override
     public void syncMarketResearchData() {
-        System.out.println("==================开始同步市调清单数据");
+        // System.out.println("==================开始同步市调清单数据");
         SyncHandler syncHandler = new SyncHandler();
         EnfordSystemLog log = new EnfordSystemLog();
         log.setType(LOG_TYPE_SYNC);
@@ -79,7 +79,7 @@ public class ScheduleServiceImpl implements ScheduleService, Consts {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        System.out.println("==================同步市调清单数据完成");
+        // System.out.println("==================同步市调清单数据完成");
     }
 
     /**

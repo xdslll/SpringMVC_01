@@ -58,7 +58,7 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
             //判断市调清单的状态
             int researchState = research.getState();
             Date now = new Date();
-            System.out.println(research.toString());
+            // System.out.println(research.toString());
             if (researchState == RESEARCH_STATE_CANCELED ||
                     researchState == RESEARCH_STATE_HAVE_FINISHED ||
                     researchState == RESEARCH_STATE_NOT_PUBLISH ||
@@ -68,7 +68,7 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
                     checkEndDate(research.getMrEndDate())) {
                 continue;
             } else {
-                System.out.println(researchDept.toString());
+                // System.out.println(researchDept.toString());
                 /*if (researchDept.getState() == 0 &&
                         researchDept.getEffectiveSign() == 0) {
 
@@ -129,10 +129,10 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
         Date now = new Date();
         try {
             now = sdf.parse(sdf.format(now));
-            System.out.println("当前时间:" + now);
+            // System.out.println("当前时间:" + now);
             endDate = sdf.parse(sdf.format(endDate));
-            System.out.println("结束时间:" + now);
-            System.out.println("判断结果:" + (!endDate.equals(now) || endDate.before(now)));
+            // System.out.println("结束时间:" + now);
+            // System.out.println("判断结果:" + (!endDate.equals(now) || endDate.before(now)));
             if (endDate.equals(now) || endDate.after(now)) {
                 return false;
             } else {
@@ -160,10 +160,10 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
             now = sdf.parse(sdf.format(now));
-            System.out.println("当前时间:" + now.toString());
+            // System.out.println("当前时间:" + now.toString());
             confirmDate = sdf.parse(sdf.format(confirmDate));
-            System.out.println("过期时间:" + confirmDate.toString());
-            System.out.println(confirmDate.after(now));
+            // System.out.println("过期时间:" + confirmDate.toString());
+            // System.out.println(confirmDate.after(now));
         } catch (ParseException e) {
             e.printStackTrace();
             return true;
@@ -206,7 +206,7 @@ public class ApiMarketResearchServiceImpl implements ApiMarketResearchService, C
                 param.put("pageSize", 1);
                 List<EnfordProductPrice> price = apiMapper.selectCommodityPriceByParam(param);
                 if (price != null && price.size() > 0) {
-                    System.out.println(price.get(0).toString());
+                    // System.out.println(price.get(0).toString());
                     commodityList.get(j).setPrice(price.get(0));
                 }
             }

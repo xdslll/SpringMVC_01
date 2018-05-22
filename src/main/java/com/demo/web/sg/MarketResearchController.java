@@ -196,16 +196,16 @@ public class MarketResearchController implements Consts {
         try {
             //获取参数
             String areaName = new String(req.getParameter("areaName").getBytes("ISO-8859-1"), "UTF-8");
-            System.out.println("resId=" + resId);
-            System.out.println("areaName=" + areaName);
+            // System.out.println("resId=" + resId);
+            // System.out.println("areaName=" + areaName);
             //获取所有的部门列表
             deptList = areaService.getAreaDept(resId, areaName);
-            System.out.println("deptList.size()=" + deptList.size());
+            // System.out.println("deptList.size()=" + deptList.size());
             //在上传目录下新建一个区域目录
             String dirPath = Config.getExportPath();
             //查询是否存在区域目录,如存在,则直接删除
             dirPath = dirPath + areaName + "/";
-            System.out.println("dir path=" + dirPath);
+            // System.out.println("dir path=" + dirPath);
             File dir = new File(dirPath);
             if (dir.exists()) {
                 File[] files = dir.listFiles();
@@ -225,7 +225,7 @@ public class MarketResearchController implements Consts {
             //获取市调清单的Excel文件
             EnfordProductImportHistory importHistory = uploadService.getImportHistoryById(importId);
             File originFile = Config.getUploadFile(importHistory);
-            System.out.println("origin file: " + originFile.getAbsolutePath());
+            // System.out.println("origin file: " + originFile.getAbsolutePath());
             //获取市调清单名称
             String researchName = research.getName();
             //根据部门id生成唯一的导出文件名
@@ -234,7 +234,7 @@ public class MarketResearchController implements Consts {
             if (exportFile.exists()) {
                 exportFile.delete();
             }
-            System.out.println(exportFile.getAbsolutePath());
+            // System.out.println(exportFile.getAbsolutePath());
             //将市调清单文件复制到导出文件夹
             fis = new FileInputStream(originFile);
             fos = new FileOutputStream(exportFile);
@@ -243,9 +243,9 @@ public class MarketResearchController implements Consts {
             Workbook book = ExcelUtil.read(fis);
             for (int i = 0; i < deptList.size(); i++) {
             //for (int i = 0; i < 2; i++) {
-                System.out.println("正在执行第" + (i + 1) + "次导出");
+                // System.out.println("正在执行第" + (i + 1) + "次导出");
                 exportExcel(deptList.get(i), resId, book, i + 1);
-                System.out.println("第" + (i + 1) + "次导出执行完毕");
+                // System.out.println("第" + (i + 1) + "次导出执行完毕");
             }
             book.write(fos);
             resp.setContentType("text/html;charset=UTF-8");
@@ -383,7 +383,7 @@ public class MarketResearchController implements Consts {
 
             //解析市调数据,回写价格数据
             for (int index = rowNum + 1; index < lastNum; index++, firstRow++) {
-                System.out.println("position=" + position + ",index=" + index);
+                // System.out.println("position=" + position + ",index=" + index);
                 //获取商品信息
                 Row row = sheet.createRow(index);
                 Row orgRow = sheet.getRow(firstRow);
@@ -489,13 +489,13 @@ public class MarketResearchController implements Consts {
             if (exportFile.exists()) {
                 exportFile.delete();
             }
-            System.out.println(exportFile.getAbsolutePath());
+            // System.out.println(exportFile.getAbsolutePath());
             fos = new FileOutputStream(exportFile);
             //获取市调清单下的所有商品信息
             Map<String, Object> param = new HashMap<String, Object>();
             param.put("resId", resId);
             List<EnfordMarketResearchCommodity> commodityList = marketService.getResearchCodByParam(param);
-            System.out.println(research.toString());
+            // System.out.println(research.toString());
             String mrBeginDate;
             String mrEndDate;
             if (research.getMrBeginDate() == null) {
@@ -511,8 +511,8 @@ public class MarketResearchController implements Consts {
             if (commodityList != null) {
                 for (int i = 0; i < commodityList.size(); i++) {
                     EnfordMarketResearchCommodity commodity = commodityList.get(i);
-                    System.out.println("commodity_mr_begin_date=" + commodity.getMrBeginDate());
-                    System.out.println("commodity_mr_end_date=" + commodity.getMrEndDate());
+                    // System.out.println("commodity_mr_begin_date=" + commodity.getMrBeginDate());
+                    // System.out.println("commodity_mr_end_date=" + commodity.getMrEndDate());
                     //循环读取所有商品信息,获取商品的价格
                     //查询价格并插入价格
                     param.clear();
@@ -548,14 +548,14 @@ public class MarketResearchController implements Consts {
                     if (commodity.getMrEndDate() != null) {
                         mrEndDate = df.format(commodity.getMrEndDate());
                     }
-                    System.out.println("commodity.getCodCode()=" + commodity.getCodCode());
-                    System.out.println("commodity.getRetailPrice()=" + commodity.getRetailPrice());
-                    System.out.println("commodity.getPurchasePrice()=" + commodity.getPurchasePrice());
-                    System.out.println("commodity.getMrBeginDate()=" + commodity.getMrBeginDate());
-                    System.out.println("commodity.getMrEndDate()=" + commodity.getMrEndDate());
-                    System.out.println("commodity.getRemark()=" + commodity.getRemark());
-                    System.out.println("resId=" + resId);
-                    System.out.println("research.toString()=" + research.toString());
+                    // System.out.println("commodity.getCodCode()=" + commodity.getCodCode());
+                    // System.out.println("commodity.getRetailPrice()=" + commodity.getRetailPrice());
+                    // System.out.println("commodity.getPurchasePrice()=" + commodity.getPurchasePrice());
+                    // System.out.println("commodity.getMrBeginDate()=" + commodity.getMrBeginDate());
+                    // System.out.println("commodity.getMrEndDate()=" + commodity.getMrEndDate());
+                    // System.out.println("commodity.getRemark()=" + commodity.getRemark());
+                    // System.out.println("resId=" + resId);
+                    // System.out.println("research.toString()=" + research.toString());
                     //循环写入商品信息
                     String str = commodity.getCodCode() +
                             //"," + commodity.getCodName() +
@@ -763,10 +763,10 @@ public class MarketResearchController implements Consts {
 
     @RequestMapping("/market_research/sync")
     public void syncMarketResearch(HttpServletRequest req, HttpServletResponse resp) {
-        System.out.println("开始同步市调清单...");
+        // System.out.println("开始同步市调清单...");
         RespBody respBody = new RespBody();
         try {
-            System.out.println("==================开始同步市调清单数据");
+            // System.out.println("==================开始同步市调清单数据");
             SyncHandler syncHandler = new SyncHandler();
             EnfordSystemLog log = new EnfordSystemLog();
             log.setType(LOG_TYPE_SYNC);

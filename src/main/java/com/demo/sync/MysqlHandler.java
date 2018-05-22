@@ -83,16 +83,16 @@ public class MysqlHandler {
                 }
             }
             rsGoodsDetail.close();
-            System.out.println("货品ID:" + goodsId);
+            // System.out.println("货品ID:" + goodsId);
             if (goodsId != -1) {
                 String sqlCheckGoods = "SELECT * FROM enford_market_research_commodity WHERE bill_number="
                         + mrPlanBillGoodsDetail.getBillNumber() + " and cod_id=" + goodsId;
                 ResultSet rsCheckGoods = mysqlStatement.executeQuery(sqlCheckGoods);
                 if (rsCheckGoods.first()) {
-                    System.out.println("存在货物信息,开始更新EnfordMarketResearchCommodity");
+                    // System.out.println("存在货物信息,开始更新EnfordMarketResearchCommodity");
                     updateEnfordMarketResearchGoods(conn2, mrPlanBillGoodsDetail, rsCheckGoods, goodsId);
                 } else {
-                    System.out.println("不存在货物信息,开始插入EnfordMarketResearchCommodity");
+                    // System.out.println("不存在货物信息,开始插入EnfordMarketResearchCommodity");
                     rsCheckGoods.moveToInsertRow();
                     updateEnfordMarketResearchGoods(conn2, mrPlanBillGoodsDetail, rsCheckGoods, goodsId);
                     try {
@@ -128,7 +128,7 @@ public class MysqlHandler {
                 !isEmpty(mrPlanBillGoodsDetail.getCategoryName2())) {
             //查询分类是否存在
             String sql3 = "SELECT * FROM enford_product_category WHERE code='" + Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode2()) + "'";
-            System.out.println(sql3);
+            // System.out.println(sql3);
             Statement s3 = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             ResultSet rs3 = s3.executeQuery(sql3);
             //插入新的父分类
@@ -154,7 +154,7 @@ public class MysqlHandler {
             String sql4 = "SELECT * FROM enford_product_category WHERE code='"
                     + Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode4()) + "' and parent='"
                     + Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode2()) + "'";
-            System.out.println(sql4);
+            // System.out.println(sql4);
             Statement s4 = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             ResultSet rs4 = s4.executeQuery(sql4);
             //插入新的子分类
@@ -190,7 +190,7 @@ public class MysqlHandler {
                     + mrPlanBillDeptDetail.getDeptCode();
             ResultSet rs = mysqlStatement.executeQuery(sql);
             if (rs.first()) {
-                System.out.println("开始更新EnfordMarketResearchDept");
+                // System.out.println("开始更新EnfordMarketResearchDept");
                 updateEnfordMarketResearchDept(conn2, mrPlanBillDeptDetail, rs);
                 try {
                     rs.updateRow();
@@ -198,7 +198,7 @@ public class MysqlHandler {
                     ex.printStackTrace();
                 }
             } else {
-                System.out.println("开始插入EnfordMarketResearchDept");
+                // System.out.println("开始插入EnfordMarketResearchDept");
                 rs.moveToInsertRow();
                 updateEnfordMarketResearchDept(conn2, mrPlanBillDeptDetail, rs);
                 try {
@@ -221,13 +221,13 @@ public class MysqlHandler {
         if (rs2.first()) {
             rs.updateInt(EnfordMarketResearchDept.colResId, rs2.getInt(EnfordMarketResearch.colId));
         } else {
-            System.out.println("未查询到市调清单信息!");
+            // System.out.println("未查询到市调清单信息!");
         }
         if (rs3.first()) {
             rs.updateInt(EnfordMarketResearchDept.colExeId, rs3.getInt(EnfordMarketResearch.colId));
             rs.updateInt(EnfordMarketResearchDept.colCompId, rs3.getInt(EnfordMarketResearchDept.colCompId));
         } else {
-            System.out.println("未查询到门店信息!");
+            // System.out.println("未查询到门店信息!");
         }
         rs.updateString(EnfordMarketResearchDept.colBillNumber, mrPlanBillDeptDetail.getBillNumber());
         rs.updateInt(EnfordMarketResearchDept.colInsideId, mrPlanBillDeptDetail.getInsideId());
@@ -247,7 +247,7 @@ public class MysqlHandler {
             String sql = "SELECT * FROM enford_market_research WHERE bill_number='" + mrPlanBill.getBillNumber() + "'";
             ResultSet rs = mysqlStatement.executeQuery(sql);
             if (rs.first()) {
-                System.out.println("开始更新EnfordMarketResearch");
+                // System.out.println("开始更新EnfordMarketResearch");
                 updateEnfordMarketResearch(mrPlanBill, rs);
                 try {
                     rs.updateRow();
@@ -255,7 +255,7 @@ public class MysqlHandler {
                     ex.printStackTrace();
                 }
             } else {
-                System.out.println("开始插入EnfordMarketResearch");
+                // System.out.println("开始插入EnfordMarketResearch");
                 rs.moveToInsertRow();
                 updateEnfordMarketResearch(mrPlanBill, rs);
                 try {
@@ -337,12 +337,12 @@ public class MysqlHandler {
             Connection conn= DriverManager.getConnection(
                     mysqlDbURL, mysqlUserName, mysqlUserPwd);
 
-            System.out.println("连接MySQL数据库成功");
+            // System.out.println("连接MySQL数据库成功");
             return conn;
         }
         catch(Exception e) {
             e.printStackTrace();
-            System.out.print("连接MySQL数据库失败");
+            // System.out.print("连接MySQL数据库失败");
         }
         return null;
     }
@@ -365,24 +365,24 @@ public class MysqlHandler {
             String sql = "SELECT * FROM enford_market_research WHERE bill_number='" + mrPlanBill.getBillNumber() + "'";
             ResultSet rs = mysqlStatement.executeQuery(sql);
             if (rs.first()) {
-                System.out.println("开始更新第" + (i + 1) + "条数据");
+                // System.out.println("开始更新第" + (i + 1) + "条数据");
                 updateEnfordMarketResearch2(mrPlanBill, rs);
                 try {
                     rs.updateRow();
-                    System.out.println("完成更新第" + (i + 1) + "条数据");
+                    // System.out.println("完成更新第" + (i + 1) + "条数据");
                 } catch (Exception ex) {
-                    System.out.println("更新第" + (i + 1) + "条数据出错!");
+                    // System.out.println("更新第" + (i + 1) + "条数据出错!");
                     ex.printStackTrace();
                 }
             } else {
-                System.out.println("开始插入第" + (i + 1) + "条数据");
+                // System.out.println("开始插入第" + (i + 1) + "条数据");
                 rs.moveToInsertRow();
                 updateEnfordMarketResearch2(mrPlanBill, rs);
                 try {
                     rs.insertRow();
-                    System.out.println("完成插入第" + (i + 1) + "条数据");
+                    // System.out.println("完成插入第" + (i + 1) + "条数据");
                 } catch (Exception ex) {
-                    System.out.println("插入第" + (i + 1) + "条数据出错!");
+                    // System.out.println("插入第" + (i + 1) + "条数据出错!");
                     ex.printStackTrace();
                 }
             }
@@ -406,24 +406,24 @@ public class MysqlHandler {
                     + mrPlanBillDeptDetail.getDeptCode();
             ResultSet rs = mysqlStatement.executeQuery(sql);
             if (rs.first()) {
-                System.out.println("开始更新第" + (i + 1) + "条数据");
+                // System.out.println("开始更新第" + (i + 1) + "条数据");
                 //updateEnfordMarketResearchDept2(conn2, mrPlanBillDeptDetail, rs);
                 try {
                     //rs.updateRow();
-                    System.out.println("完成更新第" + (i + 1) + "条数据");
+                    // System.out.println("完成更新第" + (i + 1) + "条数据");
                 } catch (Exception ex) {
-                    System.out.println("更新第" + (i + 1) + "条数据出错!");
+                    // System.out.println("更新第" + (i + 1) + "条数据出错!");
                     ex.printStackTrace();
                 }
             } else {
-                System.out.println("开始插入第" + (i + 1) + "条数据");
+                // System.out.println("开始插入第" + (i + 1) + "条数据");
                 rs.moveToInsertRow();
                 updateEnfordMarketResearchDept2(conn2, mrPlanBillDeptDetail, rs);
-                System.out.println("完成插入第" + (i + 1) + "条数据");
+                // System.out.println("完成插入第" + (i + 1) + "条数据");
                 try {
                     rs.insertRow();
                 } catch (Exception ex) {
-                    System.out.println("插入第" + (i + 1) + "条数据出错!");
+                    // System.out.println("插入第" + (i + 1) + "条数据出错!");
                     ex.printStackTrace();
                 }
             }
@@ -455,7 +455,7 @@ public class MysqlHandler {
             } else {
                 mrBeginDateStr = beginDateStr + mrPlanBill.getMrBeginTime();
             }*/
-            System.out.println("mrBeginDateStr=" + mrBeginDateStr);
+            // System.out.println("mrBeginDateStr=" + mrBeginDateStr);
             if (!isEmpty(mrBeginDateStr)) {
                 Date mrBeginDate = new Date(new SimpleDateFormat("yyyyMMdd").parse(mrBeginDateStr).getTime());
                 rs.updateDate(EnfordMarketResearch.colMrBeginDate, mrBeginDate);
@@ -466,7 +466,7 @@ public class MysqlHandler {
             } else {
                 mrEndDateStr = endDateStr + mrPlanBill.getMrEndTime();
             }*/
-            System.out.println("mrEndDateStr=" + mrEndDateStr);
+            // System.out.println("mrEndDateStr=" + mrEndDateStr);
             if (!isEmpty(mrEndDateStr)) {
                 Date mrEndDate = new Date(new SimpleDateFormat("yyyyMMdd").parse(mrEndDateStr).getTime());
                 rs.updateDate(EnfordMarketResearch.colMrEndDate, mrEndDate);
@@ -504,13 +504,13 @@ public class MysqlHandler {
         if (rs2.first()) {
             rs.updateInt(EnfordMarketResearchDept.colResId, rs2.getInt(EnfordMarketResearch.colId));
         } else {
-            System.out.println("未查询到市调清单信息!");
+            // System.out.println("未查询到市调清单信息!");
         }
         if (rs3.first()) {
             rs.updateInt(EnfordMarketResearchDept.colExeId, rs3.getInt(EnfordMarketResearch.colId));
             rs.updateInt(EnfordMarketResearchDept.colCompId, rs3.getInt(EnfordMarketResearchDept.colCompId));
         } else {
-            System.out.println("未查询到门店信息!");
+            // System.out.println("未查询到门店信息!");
         }
         rs.updateString(EnfordMarketResearchDept.colBillNumber, mrPlanBillDeptDetail.getBillNumber());
         //rs.updateInt(EnfordMarketResearchDept.colInsideId, mrPlanBillDeptDetail.getInsideId());
@@ -540,7 +540,7 @@ public class MysqlHandler {
         if (rsCount.first()) {
             int count = rsCount.getInt("count(*)");
             if (count == mrCompetitorPriceList.size()) {
-                System.out.println("市调[" + mrCompetitorPriceList.get(0).getBillNumber() + "]下的商品已经同步,无需更新!");
+                // System.out.println("市调[" + mrCompetitorPriceList.get(0).getBillNumber() + "]下的商品已经同步,无需更新!");
                 return;
             }
         }
@@ -564,21 +564,21 @@ public class MysqlHandler {
                     String sqlGoodsDetail2 = "SELECT * FROM enford_product_commodity";
                     ResultSet rsGoodsDetail2 = mysqlStatement.executeQuery(sqlGoodsDetail2);
                     //开始新增货物信息
-                    System.out.println("第" + (i + 1) + "条数据中的商品不存在,开始插入新商品");
+                    // System.out.println("第" + (i + 1) + "条数据中的商品不存在,开始插入新商品");
                     rsGoodsDetail2.moveToInsertRow();
                     insertGoods2(mrPlanBillGoodsDetail, rsGoodsDetail2);
                     try {
                         rsGoodsDetail2.insertRow();
-                        System.out.println("第" + (i + 1) + "条数据中的商品插入新商品成功");
+                        // System.out.println("第" + (i + 1) + "条数据中的商品插入新商品成功");
                     } catch (Exception ex) {
-                        System.out.println("第" + (i + 1) + "条数据中的商品插入新商品失败");
+                        // System.out.println("第" + (i + 1) + "条数据中的商品插入新商品失败");
                         ex.printStackTrace();
                     }
                     rsGoodsDetail2.close();
                 }
             }
             rsGoodsDetail.close();
-            System.out.println("货品ID:" + goodsId);
+            // System.out.println("货品ID:" + goodsId);
             if (goodsId != -1) {
                 String sqlCheckGoods = "SELECT * FROM enford_market_research_commodity WHERE bill_number="
                         + mrPlanBillGoodsDetail.getBillNumber() + " and cod_id=" + goodsId;
@@ -587,16 +587,16 @@ public class MysqlHandler {
                     //System.out.println("第" + (i + 1) + "条数据中的商品存在,开始更新");
                     //updateEnfordMarketResearchGoods2(conn2, mrPlanBillGoodsDetail, rsCheckGoods, goodsId);
                     //System.out.println("第" + (i + 1) + "条数据中的商品存在,更新成功");
-                    System.out.println("第" + (i + 1) + "条数据中的商品存在,无需更新");
+                    // System.out.println("第" + (i + 1) + "条数据中的商品存在,无需更新");
                 } else {
-                    System.out.println("第" + (i + 1) + "条数据中的商品不存在,开始插入");
+                    // System.out.println("第" + (i + 1) + "条数据中的商品不存在,开始插入");
                     rsCheckGoods.moveToInsertRow();
                     updateEnfordMarketResearchGoods2(conn2, mrPlanBillGoodsDetail, rsCheckGoods, goodsId);
                     try {
                         rsCheckGoods.insertRow();
-                        System.out.println("第" + (i + 1) + "条数据中的商品不存在,插入成功");
+                        // System.out.println("第" + (i + 1) + "条数据中的商品不存在,插入成功");
                     } catch (Exception ex) {
-                        System.out.println("第" + (i + 1) + "条数据中的商品不存在,插入失败");
+                        // System.out.println("第" + (i + 1) + "条数据中的商品不存在,插入失败");
                         ex.printStackTrace();
                     }
                 }
@@ -632,7 +632,7 @@ public class MysqlHandler {
                 !isEmpty(mrPlanBillGoodsDetail.getCategoryName2())) {
             //查询分类是否存在
             String sql3 = "SELECT * FROM enford_product_category WHERE code='" + Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode2()) + "'";
-            System.out.println(sql3);
+            // System.out.println(sql3);
             Statement s3 = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             ResultSet rs3 = s3.executeQuery(sql3);
             //插入新的父分类
@@ -658,7 +658,7 @@ public class MysqlHandler {
             String sql4 = "SELECT * FROM enford_product_category WHERE code='"
                     + Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode4()) + "' and parent='"
                     + Integer.valueOf(mrPlanBillGoodsDetail.getCategoryCode2()) + "'";
-            System.out.println(sql4);
+            // System.out.println(sql4);
             Statement s4 = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
             ResultSet rs4 = s4.executeQuery(sql4);
             //插入新的子分类
@@ -683,7 +683,7 @@ public class MysqlHandler {
         rsCheckGoods.updateString(EnfordMarketResearchCommodity.colGoodsName, mrPlanBillGoodsDetail.getGoodsName());
         rsCheckGoods.updateString(EnfordMarketResearchCommodity.colBaseBarCode, mrPlanBillGoodsDetail.getBaseBarCode());
         rsCheckGoods.updateString(EnfordMarketResearchCommodity.colBaseMeasureUnit, mrPlanBillGoodsDetail.getBaseMeasureUnit());
-        System.out.println("mrBeginDate=" + mrPlanBillGoodsDetail.getCompetitorSOPStartDate() + ",mrEndDate=" + mrPlanBillGoodsDetail.getCompetitorSOPEndDate());
+        // System.out.println("mrBeginDate=" + mrPlanBillGoodsDetail.getCompetitorSOPStartDate() + ",mrEndDate=" + mrPlanBillGoodsDetail.getCompetitorSOPEndDate());
         if (mrPlanBillGoodsDetail.getCompetitorSOPStartDate() != null) {
             Date mrBeginDate = new Date(new SimpleDateFormat("yyyyMMdd").parse(mrPlanBillGoodsDetail.getCompetitorSOPStartDate()).getTime());
             rsCheckGoods.updateDate(EnfordMarketResearchCommodity.colMrBeginDate, mrBeginDate);
@@ -708,7 +708,7 @@ public class MysqlHandler {
                 String sql = "SELECT * FROM enford_market_research WHERE bill_number='" + mrPlanBill.getBillNumber() + "'";
                 rs = mysqlStatement.executeQuery(sql);
                 if (!rs.first()) {
-                    System.out.println("开始插入第" + (i + 1) + "条市调清单[" + mrPlanBill.getBillNumber() + "]");
+                    // System.out.println("开始插入第" + (i + 1) + "条市调清单[" + mrPlanBill.getBillNumber() + "]");
                     rs.moveToInsertRow();
                     updateEnfordMarketResearch2(mrPlanBill, rs);
                     //System.out.println("完成插入第" + (i + 1) + "条数据");
@@ -754,7 +754,7 @@ public class MysqlHandler {
                         + mrPlanBillDeptDetail.getDeptCode();
                 rs = mysqlStatement.executeQuery(sql);
                 if (!rs.first()) {
-                    System.out.println("开始插入第" + (i + 1) + "条市调部门[" + mrPlanBillDeptDetail.getBillNumber() + "]");
+                    // System.out.println("开始插入第" + (i + 1) + "条市调部门[" + mrPlanBillDeptDetail.getBillNumber() + "]");
                     rs.moveToInsertRow();
                     updateEnfordMarketResearchDept2(conn, mrPlanBillDeptDetail, rs);
                     //System.out.println("完成插入第" + (i + 1) + "条数据");
@@ -800,7 +800,7 @@ public class MysqlHandler {
             if (rsCount.first()) {
                 int count = rsCount.getInt("count(*)");
                 if (count == mrCompetitorPriceList.size()) {
-                    System.out.println("市调[" + mrCompetitorPriceList.get(0).getBillNumber() + "]下的商品已经同步,无需更新!");
+                    // System.out.println("市调[" + mrCompetitorPriceList.get(0).getBillNumber() + "]下的商品已经同步,无需更新!");
                     return;
                 }
             }
@@ -827,14 +827,14 @@ public class MysqlHandler {
                         String sqlGoodsDetail2 = "SELECT * FROM enford_product_commodity";
                         ResultSet rsGoodsDetail2 = mysqlStatement.executeQuery(sqlGoodsDetail2);
                         //开始新增货物信息
-                        System.out.println("第" + (i + 1) + "条数据中的商品不存在,开始插入新商品");
+                        // System.out.println("第" + (i + 1) + "条数据中的商品不存在,开始插入新商品");
                         rsGoodsDetail2.moveToInsertRow();
                         insertGoods2(mrPlanBillGoodsDetail, rsGoodsDetail2);
                         try {
                             rsGoodsDetail2.insertRow();
-                            System.out.println("第" + (i + 1) + "条数据中的商品插入新商品成功");
+                            // System.out.println("第" + (i + 1) + "条数据中的商品插入新商品成功");
                         } catch (Exception ex) {
-                            System.out.println("第" + (i + 1) + "条数据中的商品插入新商品失败");
+                            // System.out.println("第" + (i + 1) + "条数据中的商品插入新商品失败");
                             ex.printStackTrace();
                         }
                         rsGoodsDetail2.close();
@@ -855,7 +855,7 @@ public class MysqlHandler {
                         //System.out.println("第" + (i + 1) + "条数据中的商品存在,开始更新");
                         //updateEnfordMarketResearchGoods2(conn2, mrPlanBillGoodsDetail, rsCheckGoods, goodsId);
                         //System.out.println("第" + (i + 1) + "条数据中的商品存在,更新成功");
-                        System.out.println("第" + (i + 1) + "条数据中的商品存在,无需更新");
+                        // System.out.println("第" + (i + 1) + "条数据中的商品存在,无需更新");
                     } else {
                         long start4 = System.currentTimeMillis();
                         //System.out.println("第" + (i + 1) + "条数据中的商品不存在,开始插入");

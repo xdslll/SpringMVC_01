@@ -393,8 +393,12 @@ public class SyncHandler implements Consts {
         try {
             if (researchBill.getState() == BILL_RESEARCH_EMPTY ||
                     researchBill.getState() == BILL_RESEARCH_PHONE) {
+                //同步市调清单的状态
                 SQLServerHandler sqlServerHandler = new SQLServerHandler();
                 sqlServerHandler.setResearchConfirmed(researchBill);
+                //同步市调清单下的价格数据
+                //如果价格数据已经存在,则无需再次同步
+
                 syncLog.setSyncResult(1);
             } else {
                 syncLog.setSyncResult(0);

@@ -72,10 +72,10 @@ public class SQLServerHandler implements Consts {
         }
         return null;*/
         Class.forName(sqlServerDriverName);
-        Connection conn= DriverManager.getConnection(
+        Connection conn = DriverManager.getConnection(
                 sqlServerDbURL, sqlServerUserName, sqlServerPwd);
 
-        System.out.println("连接SQL Server数据库成功");
+        // System.out.println("连接SQL Server数据库成功");
         return conn;
     }
 
@@ -104,7 +104,7 @@ public class SQLServerHandler implements Consts {
                 mrPlanBill.setBlankFinishDate(rs.getString(MRPlanBill.colBlankFinishDate));
                 mrPlanBill.setBlankFinishRemark(rs.getString(MRPlanBill.colBlankFinishRemark));
 
-                System.out.println(mrPlanBill.toString());
+                // System.out.println(mrPlanBill.toString());
                 mrPlanBillList.add(mrPlanBill);
             }
 
@@ -131,7 +131,7 @@ public class SQLServerHandler implements Consts {
                 mrPlanBillDeptDetail.setState(rs.getInt(MRPlanBillDeptDetail.colState));
                 mrPlanBillDeptDetail.setEffectiveSign(rs.getInt(MRPlanBillDeptDetail.colEffectiveSign));
 
-                System.out.println(mrPlanBillDeptDetail.toString());
+                // System.out.println(mrPlanBillDeptDetail.toString());
                 mrPlanBillDeptDetailList.add(mrPlanBillDeptDetail);
             }
 
@@ -162,7 +162,7 @@ public class SQLServerHandler implements Consts {
                 mrPlanBillGoodsDetail.setCategoryCode4(rs.getString(MRPlanBillGoodsDetail.colCategoryCode4));
                 mrPlanBillGoodsDetail.setCategoryName4(rs.getString(MRPlanBillGoodsDetail.colCategoryName4));
 
-                System.out.println(mrPlanBillGoodsDetail.toString());
+                // System.out.println(mrPlanBillGoodsDetail.toString());
                 mrPlanBillGoodsDetailList.add(mrPlanBillGoodsDetail);
             }
 
@@ -225,7 +225,7 @@ public class SQLServerHandler implements Consts {
                 //System.out.println(marketResearchBill.toString());
                 marketResearchBillList.add(marketResearchBill);
                 index++;
-                System.out.println("完成同步第" + index + "条数据");
+                // System.out.println("完成同步第" + index + "条数据");
             }
 
             rs.close();
@@ -252,7 +252,7 @@ public class SQLServerHandler implements Consts {
         try {
             //循环读取市调清单,仅需读取状态为0的市调清单
             for (MarketResearchBill marketResearchBill : marketResearchBillList) {
-                System.out.println("市调[" + marketResearchBill.getBillNumber() + "]状态为" + marketResearchBill.getState());
+                // System.out.println("市调[" + marketResearchBill.getBillNumber() + "]状态为" + marketResearchBill.getState());
                 if (marketResearchBill.getState() == RESEARCH_STATE_HAVE_STARTED) {
                     String sql = "SELECT * FROM tbMRCompetitorPrice WHERE BillNumber='" + marketResearchBill.getBillNumber() + "'";
                     ResultSet rs = sqlServerStatement.executeQuery(sql);
@@ -264,7 +264,7 @@ public class SQLServerHandler implements Consts {
 
                         index++;
 
-                        System.out.println("开始同步[" + marketResearchBill.getBillNumber() + "]第" + index + "条商品数据");
+                        // System.out.println("开始同步[" + marketResearchBill.getBillNumber() + "]第" + index + "条商品数据");
                         mrCompetitorPrice.setBaseBarCode(rs.getString(MRCompetitorPrice.colBaseBarCode));
                         mrCompetitorPrice.setBaseMeasureUnit(rs.getString(MRCompetitorPrice.colBaseMeasureUnit));
                         mrCompetitorPrice.setCompetitorCode(rs.getString(MRCompetitorPrice.colCompetitorCode));
@@ -284,7 +284,7 @@ public class SQLServerHandler implements Consts {
 
                         //System.out.println(mrCompetitorPrice.toString());
                         mrCompetitorPriceList.add(mrCompetitorPrice);
-                        System.out.println("完成同步[" + marketResearchBill.getBillNumber() + "]第" + index + "条商品数据");
+                        // System.out.println("完成同步[" + marketResearchBill.getBillNumber() + "]第" + index + "条商品数据");
                     }
                     rs.close();
 
@@ -292,15 +292,15 @@ public class SQLServerHandler implements Consts {
                         Statement mysqlStatement = conn2.createStatement(
                                 ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
                         try {
-                            System.out.println("开始写入[" + marketResearchBill.getBillNumber() + "]商品数据");
+                            // System.out.println("开始写入[" + marketResearchBill.getBillNumber() + "]商品数据");
                             mysqlHandler.syncEnfordMarketResearchGoods2(conn2, mysqlStatement, mrCompetitorPriceList);
-                            System.out.println("完成写入[" + marketResearchBill.getBillNumber() + "]商品数据");
+                            // System.out.println("完成写入[" + marketResearchBill.getBillNumber() + "]商品数据");
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                     }
                 } else {
-                    System.out.println("市调清单[" + marketResearchBill.getBillNumber() + "]已完成市调,无需更新");
+                    // System.out.println("市调清单[" + marketResearchBill.getBillNumber() + "]已完成市调,无需更新");
                 }
             }
             /*String sql = "SELECT * FROM tbMRCompetitorPrice";
@@ -373,14 +373,14 @@ public class SQLServerHandler implements Consts {
                 rs.updateRow();
             }
             */
-            System.out.println("准备更新价格数据");
+            // System.out.println("准备更新价格数据");
             //System.out.println(price);
             String updateSql = "UPDATE tbMRCompetitorPrice SET " +
                     MRCompetitorPrice.colCompetitorRetailPrice + "=" + parse(price.getRetailPrice()) + "," +
                     MRCompetitorPrice.colCompetitorSpecialOfferPrice + "=" + parse(price.getPromptPrice()) +
                     " WHERE " + MRCompetitorPrice.colBillNumber + "='" + price.getBillNumber() + "' and " +
                     MRCompetitorPrice.colGoodsCode + "='" + price.getCode() + "'";
-            System.out.println("udpateSql=" + updateSql);
+            // System.out.println("udpateSql=" + updateSql);
             return sqlServerStatement.executeUpdate(updateSql);
         }
         return 0;

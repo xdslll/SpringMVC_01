@@ -194,7 +194,7 @@ public class UserController {
             String newPwd = req.getParameter("new_pwd");
             String confirmPwd = req.getParameter("confirm_pwd");
             EnfordSystemUser user = userService.getUser(userId);
-            System.out.println("原密码:" + orgPwd + ",新密码:" + newPwd + ",新密码2:" + confirmPwd + ",真实密码:" + user.getPassword());
+            // System.out.println("原密码:" + orgPwd + ",新密码:" + newPwd + ",新密码2:" + confirmPwd + ",真实密码:" + user.getPassword());
             if (user != null) {
                 String realPwd = user.getPassword();
                 if (!EncryptUtil.md5(orgPwd).equals(realPwd)) {

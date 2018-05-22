@@ -27,16 +27,16 @@ public final class FileHelper {
         ZipOutputStream zos = null;
 
         if(sourceFile.exists() == false){
-            System.out.println("待压缩的文件目录："+sourceFilePath+"不存在.");
+            // System.out.println("待压缩的文件目录："+sourceFilePath+"不存在.");
         }else{
             try {
                 File zipFile = new File(zipFilePath + "/" + fileName +".zip");
                 if(zipFile.exists()){
-                    System.out.println(zipFilePath + "目录下存在名字为:" + fileName +".zip" +"打包文件.");
+                    // System.out.println(zipFilePath + "目录下存在名字为:" + fileName +".zip" +"打包文件.");
                 }else{
                     File[] sourceFiles = sourceFile.listFiles();
                     if(null == sourceFiles || sourceFiles.length<1){
-                        System.out.println("待压缩的文件目录：" + sourceFilePath + "里面不存在文件，无需压缩.");
+                        // System.out.println("待压缩的文件目录：" + sourceFilePath + "里面不存在文件，无需压缩.");
                     }else{
                         fos = new FileOutputStream(zipFile);
                         zos = new ZipOutputStream(new BufferedOutputStream(fos));

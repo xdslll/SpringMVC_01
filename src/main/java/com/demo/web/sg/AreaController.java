@@ -136,7 +136,7 @@ public class AreaController {
             param.put("page", (page - 1) * pageSize);
             param.put("pageSize", pageSize);
             String areaName = req.getParameter("name");
-            System.out.println("areaName=" + areaName);
+            // System.out.println("areaName=" + areaName);
             if (areaName != null && !areaName.trim().equals("")) {
                 param.put("name", URLDecoder.decode(areaName, "UTF-8"));
             }
@@ -330,7 +330,7 @@ public class AreaController {
 
     private void check(long start, long end, String msg) {
         double during = (double) (end - start) / 1000;
-        System.out.println("[" + msg + "]过程花费时间:" + during + "秒");
+        // System.out.println("[" + msg + "]过程花费时间:" + during + "秒");
     }
 
     /**
