@@ -144,7 +144,7 @@ public class ApiMarketController implements Consts {
                     respBody.setCode(FAILED);
                     respBody.setMsg("新增价格失败");
                 }
-            } else if (retailPrice < promptPrice) {
+            } else if (retailPrice <= promptPrice) {
                 respBody.setCode(FAILED);
                 respBody.setMsg("新增价格失败,零售价必须大于促销价");
             } else {
