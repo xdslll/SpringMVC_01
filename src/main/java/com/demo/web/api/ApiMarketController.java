@@ -23,6 +23,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -122,6 +124,7 @@ public class ApiMarketController implements Consts {
         RespBody respBody = new RespBody();
         try {
             EnfordProductPrice price = FastJSONHelper.deserialize(json, EnfordProductPrice.class);
+            int miss = price.getMiss();
             float retailPrice = 0.0f;
             try {
                 retailPrice = price.getRetailPrice();
@@ -144,7 +147,7 @@ public class ApiMarketController implements Consts {
                     respBody.setCode(FAILED);
                     respBody.setMsg("新增价格失败");
                 }
-            } else if (retailPrice <= promptPrice) {
+            } else if (miss == 0 && retailPrice <= promptPrice) {
                 respBody.setCode(FAILED);
                 respBody.setMsg("新增价格失败,零售价必须大于促销价");
             } else {
@@ -173,6 +176,7 @@ public class ApiMarketController implements Consts {
         try {
             EnfordProductPrice price = FastJSONHelper.deserialize(json, EnfordProductPrice.class);
             float retailPrice = 0.0f;
+            int miss = price.getMiss();
             try {
                 retailPrice = price.getRetailPrice();
             } catch (Exception ex) {
@@ -194,7 +198,7 @@ public class ApiMarketController implements Consts {
                     respBody.setCode(FAILED);
                     respBody.setMsg("修改价格失败");
                 }
-            } else if (retailPrice < promptPrice) {
+            } else if (miss == 0 && retailPrice <= promptPrice) {
                 respBody.setCode(FAILED);
                 respBody.setMsg("新增价格失败,零售价必须大于促销价");
             } else {
@@ -318,53 +322,58 @@ public class ApiMarketController implements Consts {
                                 @RequestParam("userId") int userId) {
         RespBody respBody = new RespBody();
         try {
-            EnfordSystemUser user = userService.getUser(userId);
-            EnfordMarketResearch research = researchService.getMarketResearchById(resId);
-            MarketResearchBill researchBill = new MarketResearchBill();
+            respBody.setCode(FAILED);
+            respBody.setMsg("该功能已关闭");
+        } catch (Exception ex) {
+            respBody.setCode(FAILED);
+            respBody.setMsg("确认市调清单失败:" + ex.getMessage());
+        }
+        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
+    }
 
-            if (user != null) {
-                researchBill.setConfirmManCode(user.getUsername());
+    private void confirm(int userId, int resId, RespBody respBody) throws ParseException, SQLException, ClassNotFoundException {
+        EnfordSystemUser user = userService.getUser(userId);
+        EnfordMarketResearch research = researchService.getMarketResearchById(resId);
+        MarketResearchBill researchBill = new MarketResearchBill();
+
+        if (user != null) {
+            researchBill.setConfirmManCode(user.getUsername());
                 /*String name = user.getName();
                 if (name == null || name.equals("")) {
                     researchBill.setConfirmManName(user.getUsername());
                 } else {
                     researchBill.setConfirmManName(name);
                 }*/
-                researchBill.setConfirmManName(user.getUsername());
-            } else {
-                researchBill.setConfirmManCode("888888");
-                researchBill.setConfirmManName("管理员");
-            }
-
-            Date now = new Date();
-            //只比较年月日
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-            now = sdf.parse(sdf.format(now));
-
-            researchBill.setConfirmDate(sdf.format(now));
-            researchBill.setState(BILL_RESEARCH_PHONE);
-            researchBill.setBillNumber(research.getBillNumber());
-            System.out.println(researchBill.toString());
-
-            //将数据回写到SQLServer服务器
-            SQLServerHandler sqlServerHandler = new SQLServerHandler();
-            int ret = sqlServerHandler.setResearchConfirmed(researchBill);
-            if (ret > 0) {
-                respBody.setCode(SUCCESS);
-                respBody.setMsg("确认市调清单成功");
-                //关闭市调清单
-                research.setState(RESEARCH_STATE_HAVE_FINISHED);
-                //设置确认类型为app上传
-                research.setConfirmType(RESEARCH_CONFIRM_TYPE_APP);
-                researchService.updateResearch(research);
-            } else {
-                respBody.setCode(FAILED);
-                respBody.setMsg("确认市调清单失败");
-            }
-        } catch (Exception ex) {
-            respBody.setCode(FAILED);
-            respBody.setMsg("确认市调清单失败:" + ex.getMessage());
+            researchBill.setConfirmManName(user.getUsername());
+        } else {
+            researchBill.setConfirmManCode("888888");
+            researchBill.setConfirmManName("管理员");
         }
-        ResponseUtil.writeStringResponse(resp, FastJSONHelper.serialize(respBody));
+
+        Date now = new Date();
+        //只比较年月日
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        now = sdf.parse(sdf.format(now));
+
+        researchBill.setConfirmDate(sdf.format(now));
+        researchBill.setState(BILL_RESEARCH_PHONE);
+        researchBill.setBillNumber(research.getBillNumber());
+        System.out.println(researchBill.toString());
+
+        //将数据回写到SQLServer服务器
+        SQLServerHandler sqlServerHandler = new SQLServerHandler();
+        int ret = sqlServerHandler.setResearchConfirmed(researchBill);
+        if (ret > 0) {
+            respBody.setCode(SUCCESS);
+            respBody.setMsg("确认市调清单成功");
+            //关闭市调清单
+            research.setState(RESEARCH_STATE_HAVE_FINISHED);
+            //设置确认类型为app上传
+            research.setConfirmType(RESEARCH_CONFIRM_TYPE_APP);
+            researchService.updateResearch(research);
+        } else {
+            respBody.setCode(FAILED);
+            respBody.setMsg("确认市调清单失败");
+        }
     }
 }
